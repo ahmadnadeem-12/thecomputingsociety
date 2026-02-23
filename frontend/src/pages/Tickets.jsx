@@ -47,7 +47,6 @@ export default function Tickets() {
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
-  const [expandedTicketId, setExpandedTicketId] = useState(null); // For expanding ticket inline
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -412,109 +411,79 @@ export default function Tickets() {
 
           <div className="hr" />
           <div style={{ fontWeight: 900, marginBottom: ".35rem" }}>My Tickets</div>
-          <div style={{ display: "grid", gap: ".75rem" }}>
+          <div style={{ display: "grid", gap: "1.5rem" }}>
             {myTickets.slice(0, 10).map((t) => {
               const ev = (eventsCtx.events || []).find((e) => (e._id || e.id) === (t.eventId || t.event));
-              const tId = t._id || t.id;
-              const isExpanded = expandedTicketId === tId;
 
               return (
-                <div
-                  key={t._id || t.id}
-                  className={`expandableTicket ${isExpanded ? 'expanded' : ''}`}
-                >
-                  {/* Collapsed View - Click to expand */}
-                  <div
-                    className="ticketHeader"
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => {
-                      setExpandedTicketId(isExpanded ? null : tId);
-                    }}
-                  >
-                    <div className="ticketHeaderInfo">
-                      <div style={{ fontWeight: 800, fontSize: ".9rem" }}>{ev?.title || "Event"}</div>
-                      <div className="sectionSubtitle" style={{ marginTop: ".15rem", fontSize: ".7rem" }}>
-                        {t.publicTicketId || t.id}
+                <div key={t._id || t.id} className="expandableTicket expanded">
+                  <div className="horizontalTicket expandedHorizontal">
+                    {/* QR Code - Left */}
+                    <div className="ticketQrSection">
+                      <QRCodeCanvas value={getQrPayload(t)} size={120} includeMargin={true} />
+                      <div className="qrScanLabel">Scan at Entry</div>
+                    </div>
+
+                    {/* Details - Center */}
+                    <div className="ticketDetailsSection">
+                      <h3 className="ticketEventTitle">{ev?.title || "Event"}</h3>
+                      <div className="ticketDetailsGrid">
+                        <div className="ticketDetailItem">
+                          <span className="detailLabel">Date</span>
+                          <span className="detailValue">{ev ? formatDate(ev.date) : "TBA"}</span>
+                        </div>
+                        <div className="ticketDetailItem">
+                          <span className="detailLabel">Time</span>
+                          <span className="detailValue">{ev?.time || "TBA"}</span>
+                        </div>
+                        <div className="ticketDetailItem">
+                          <span className="detailLabel">Department</span>
+                          <span className="detailValue">{t.department}</span>
+                        </div>
+                        <div className="ticketDetailItem">
+                          <span className="detailLabel">Semester</span>
+                          <span className="detailValue">{t.semester}</span>
+                        </div>
+                        <div className="ticketDetailItem">
+                          <span className="detailLabel">AG No</span>
+                          <span className="detailValue">{t.agNo}</span>
+                        </div>
+                        <div className="ticketDetailItem">
+                          <span className="detailLabel">Email</span>
+                          <span className="detailValue">{t.email}</span>
+                        </div>
+                      </div>
+                      <div className="ticketIssuedTo">
+                        Issued to: <strong>{t.name}</strong>
+                      </div>
+                      <div className="ticketIdDisplay">
+                        Ticket ID: <code>{t.publicTicketId || (t._id || t.id)}</code>
                       </div>
                     </div>
-                    <div className="ticketHeaderActions">
-                      <span className="expandBtn">
-                        {isExpanded ? '▲ Collapse' : '▼ View More / QR'}
-                      </span>
+
+                    {/* Download Button - Right */}
+                    <div className="ticketActionSection">
+                      <button
+                        className="btn btnPrimary downloadBtn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const ticketData = {
+                            ...t,
+                            eventTitle: ev?.title || 'TCS Event',
+                            eventDate: ev ? formatDate(ev.date) : 'TBA',
+                            eventTime: ev?.time || 'TBA',
+                          };
+                          const expandedTicket = e.target.closest('.expandableTicket');
+                          const canvas = expandedTicket?.querySelector('.ticketQrSection canvas');
+                          if (canvas) {
+                            downloadTicketPDF(ticketData, canvas.toDataURL('image/png'));
+                          }
+                        }}
+                      >
+                        📥 Download PDF
+                      </button>
                     </div>
                   </div>
-
-                  {/* Expanded View - Same layout as Your QR Ticket */}
-                  {isExpanded && (
-                    <div className="horizontalTicket expandedHorizontal">
-                      {/* QR Code - Left */}
-                      <div className="ticketQrSection">
-                        <QRCodeCanvas value={getQrPayload(t)} size={120} includeMargin={true} />
-                        <div className="qrScanLabel">Scan at Entry</div>
-                      </div>
-
-                      {/* Details - Center (Horizontal Grid) */}
-                      <div className="ticketDetailsSection">
-                        <h3 className="ticketEventTitle">{ev?.title || "Event"}</h3>
-                        <div className="ticketDetailsGrid">
-                          <div className="ticketDetailItem">
-                            <span className="detailLabel">Date</span>
-                            <span className="detailValue">{ev ? formatDate(ev.date) : "TBA"}</span>
-                          </div>
-                          <div className="ticketDetailItem">
-                            <span className="detailLabel">Time</span>
-                            <span className="detailValue">{ev?.time || "TBA"}</span>
-                          </div>
-                          <div className="ticketDetailItem">
-                            <span className="detailLabel">Department</span>
-                            <span className="detailValue">{t.department}</span>
-                          </div>
-                          <div className="ticketDetailItem">
-                            <span className="detailLabel">Semester</span>
-                            <span className="detailValue">{t.semester}</span>
-                          </div>
-                          <div className="ticketDetailItem">
-                            <span className="detailLabel">AG No</span>
-                            <span className="detailValue">{t.agNo}</span>
-                          </div>
-                          <div className="ticketDetailItem">
-                            <span className="detailLabel">Email</span>
-                            <span className="detailValue">{t.email}</span>
-                          </div>
-                        </div>
-                        <div className="ticketIssuedTo">
-                          Issued to: <strong>{t.name}</strong>
-                        </div>
-                        <div className="ticketIdDisplay">
-                          Ticket ID: <code>{t.publicTicketId || (t._id || t.id)}</code>
-                        </div>
-                      </div>
-
-                      {/* Download Button - Right */}
-                      <div className="ticketActionSection">
-                        <button
-                          className="btn btnPrimary downloadBtn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const ticketData = {
-                              ...t,
-                              eventTitle: ev?.title || 'TCS Event',
-                              eventDate: ev ? formatDate(ev.date) : 'TBA',
-                              eventTime: ev?.time || 'TBA',
-                            };
-                            // Get QR from this expanded view
-                            const expandedTicket = e.target.closest('.expandableTicket');
-                            const canvas = expandedTicket?.querySelector('.ticketQrSection canvas');
-                            if (canvas) {
-                              downloadTicketPDF(ticketData, canvas.toDataURL('image/png'));
-                            }
-                          }}
-                        >
-                          📥 Download PDF
-                        </button>
-                      </div>
-                    </div>
-                  )}
                 </div>
               );
             })}
