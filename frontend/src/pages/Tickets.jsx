@@ -66,7 +66,7 @@ export default function Tickets() {
   const [myTickets, setMyTickets] = useState([]);
   useEffect(() => {
     if (!user) { setMyTickets([]); return; }
-    listTickets().then(data => setMyTickets((data || []).filter(t => t.userId === user?.id || t.userId === user?._id))).catch(() => setMyTickets([]));
+    listTickets().then(data => setMyTickets((data || []).filter(t => t.userId === (user?.id || user?._id)))).catch(() => setMyTickets([]));
   }, [user, ticket]);
 
   // Get QR code as data URL
@@ -177,9 +177,9 @@ export default function Tickets() {
 
   const qrPayload = ticket
     ? JSON.stringify({
-      ticketId: ticket.id,
+      ticketId: ticket._id || ticket.id,
       publicTicketId: ticket.publicTicketId,
-      userId: ticket.userId,
+      userId: ticket.userId || ticket.user,
       eventId: ticket.eventId,
       agNo: ticket.agNo,
       email: ticket.email,
@@ -190,10 +190,10 @@ export default function Tickets() {
 
   // Helper function to get QR payload for any ticket
   const getQrPayload = (t) => JSON.stringify({
-    ticketId: t.id,
+    ticketId: t._id || t.id,
     publicTicketId: t.publicTicketId,
-    userId: t.userId,
-    eventId: t.eventId,
+    userId: t.userId || t.user,
+    eventId: t.eventId || t.event,
     agNo: t.agNo,
     email: t.email,
   });
@@ -414,12 +414,13 @@ export default function Tickets() {
           <div style={{ fontWeight: 900, marginBottom: ".35rem" }}>My Tickets</div>
           <div style={{ display: "grid", gap: ".75rem" }}>
             {myTickets.slice(0, 10).map((t) => {
-              const ev = (eventsCtx.events || []).find((e) => (e._id || e.id) === t.eventId);
-              const isExpanded = expandedTicketId === t.id;
+              const ev = (eventsCtx.events || []).find((e) => (e._id || e.id) === (t.eventId || t.event));
+              const tId = t._id || t.id;
+              const isExpanded = expandedTicketId === tId;
 
               return (
                 <div
-                  key={t.id}
+                  key={t._id || t.id}
                   className={`expandableTicket ${isExpanded ? 'expanded' : ''}`}
                 >
                   {/* Collapsed View - Click to expand */}
@@ -427,7 +428,7 @@ export default function Tickets() {
                     className="ticketHeader"
                     style={{ cursor: 'pointer' }}
                     onClick={() => {
-                      setExpandedTicketId(isExpanded ? null : t.id);
+                      setExpandedTicketId(isExpanded ? null : tId);
                     }}
                   >
                     <div className="ticketHeaderInfo">
@@ -438,7 +439,7 @@ export default function Tickets() {
                     </div>
                     <div className="ticketHeaderActions">
                       <span className="expandBtn">
-                        {isExpanded ? '▲ Collapse' : '▼ View QR'}
+                        {isExpanded ? '▲ Collapse' : '▼ View More / QR'}
                       </span>
                     </div>
                   </div>
@@ -485,7 +486,7 @@ export default function Tickets() {
                           Issued to: <strong>{t.name}</strong>
                         </div>
                         <div className="ticketIdDisplay">
-                          Ticket ID: <code>{t.publicTicketId || t.id}</code>
+                          Ticket ID: <code>{t.publicTicketId || (t._id || t.id)}</code>
                         </div>
                       </div>
 
