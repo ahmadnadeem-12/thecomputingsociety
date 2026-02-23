@@ -1,0 +1,312 @@
+/* =========================================================
+   FACULTY PAGE - Premium Faculty Cards
+   ========================================================= */
+
+.facultyGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Faculty Card */
+.facultyCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1.75rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(145deg, rgba(25, 15, 40, 0.85) 0%, rgba(12, 8, 20, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all var(--transition-normal);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.facultyCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 100% 60% at 0% 0%, rgba(194, 52, 165, 0.1) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.facultyCard::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gradient-main);
+  opacity: 0.5;
+}
+
+.facultyCard:hover {
+  transform: translateY(-8px);
+  border-color: rgba(194, 52, 165, 0.4);
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.5),
+    0 0 50px rgba(194, 52, 165, 0.15);
+}
+
+.facultyCard:hover::before {
+  opacity: 1;
+}
+
+/* Faculty Header */
+.facultyHeader {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  margin-bottom: 1.25rem;
+}
+
+/* Faculty Photo */
+.facultyPhoto {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.facultyPhoto .dpWrap {
+  width: 85px;
+  height: 85px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.facultyPhoto .dpWrap .dpInner {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.facultyPhoto .dpWrap .dpInner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Role Badge */
+.facultyRoleBadge {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-full);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  z-index: 2;
+}
+
+.facultyRoleBadge.chairman {
+  background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
+  color: #1a0a25;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+}
+
+.facultyRoleBadge.professor {
+  background: var(--gradient-main);
+  color: var(--text-main);
+  box-shadow: 0 4px 15px rgba(220, 39, 67, 0.4);
+}
+
+.facultyRoleBadge.supervisor {
+  background: linear-gradient(135deg, #00d9ff 0%, #0099cc 100%);
+  color: #1a0a25;
+  box-shadow: 0 4px 15px rgba(0, 217, 255, 0.4);
+}
+
+.facultyRoleBadge.lecturer {
+  background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+  color: var(--text-main);
+  box-shadow: 0 4px 15px rgba(155, 89, 182, 0.4);
+}
+
+/* Faculty Info */
+.facultyInfo {
+  flex: 1;
+}
+
+.facultyName {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 0.35rem;
+}
+
+.facultyRole {
+  font-size: 0.85rem;
+  color: var(--accent-pink);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.facultyEducation {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Expertise Tags */
+.expertiseTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.expertiseTag {
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-full);
+  background: rgba(0, 217, 255, 0.1);
+  border: 1px solid rgba(0, 217, 255, 0.3);
+  color: #00d9ff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all var(--transition-fast);
+}
+
+.expertiseTag:hover {
+  background: rgba(0, 217, 255, 0.2);
+  border-color: rgba(0, 217, 255, 0.5);
+}
+
+/* Faculty Stats */
+.facultyStats {
+  display: flex;
+  gap: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.facultyStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.facultyStatNumber {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  background: var(--gradient-main);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.facultyStatLabel {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Faculty Contact */
+.facultyContact {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.contactIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  transition: all var(--transition-normal);
+}
+
+.contactIcon:hover {
+  background: var(--gradient-main);
+  border-color: transparent;
+  color: var(--text-main);
+  transform: translateY(-2px);
+}
+
+/* Chairman Special Card */
+.facultyCard.chairman {
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  background: linear-gradient(145deg, rgba(40, 25, 60, 0.9) 0%, rgba(20, 12, 35, 0.95) 100%);
+}
+
+.facultyCard.chairman::after {
+  background: linear-gradient(90deg, #ffd700, #ffa500, #ffd700);
+  height: 3px;
+}
+
+.facultyCard.chairman:hover {
+  border-color: rgba(255, 215, 0, 0.6);
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.5),
+    0 0 50px rgba(255, 215, 0, 0.15);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .facultyGrid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .facultyHeader {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .facultyStats {
+    justify-content: center;
+  }
+
+  .facultyContact {
+    justify-content: center;
+  }
+}
+
+/* === Faculty Modal Specific Fixes === */
+/* Override cabinet dpWrap animation for faculty modals */
+.modalCenter .dpWrap {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  padding: 3px;
+  background: var(--gradient-main);
+  animation: none !important;
+}
+
+.modalCenter .dpWrap::before {
+  display: none !important;
+}
+
+.modalCenter .dpInner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--bg-darker);
+}
+
+.modalCenter .dpInner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}

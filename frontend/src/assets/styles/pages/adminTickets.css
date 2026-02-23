@@ -1,0 +1,823 @@
+.adminTools {
+    display: grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 980px) {
+    .adminTools {
+        grid-template-columns: 1fr;
+    }
+}
+
+.adminSearch {
+    display: flex;
+    gap: .6rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.adminSearch .input {
+    min-width: min(520px, 100%);
+}
+
+.adminTableWrap {
+    overflow: auto;
+}
+
+.adminTable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.adminTable th,
+.adminTable td {
+    padding: .85rem .9rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: left;
+    vertical-align: top;
+}
+
+.adminTable th {
+    position: sticky;
+    top: 0;
+    background: rgba(10, 10, 12, 0.92);
+    backdrop-filter: blur(10px);
+    font-size: .78rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.70);
+    z-index: 2;
+}
+
+.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: .82rem;
+}
+
+/* ===== TICKETS TAB CONTAINER ===== */
+.ticketsTabContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* ===== QR SCANNER SECTION ===== */
+.scannerSection {
+    background: linear-gradient(145deg, rgba(25, 15, 40, 0.9) 0%, rgba(15, 8, 25, 0.95) 100%);
+    border: 1px solid rgba(194, 52, 165, 0.3);
+    border-radius: 20px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.scannerSection::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #c234a5, #dc2743, transparent);
+}
+
+.scannerHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.scannerTitle {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+    background: linear-gradient(90deg, #ff4d6d, #c77dff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.scanBtn {
+    padding: 0.75rem 1.5rem !important;
+    font-size: 0.9rem !important;
+    gap: 0.5rem;
+}
+
+/* ===== CAMERA CONTAINER ===== */
+.cameraContainer {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #000;
+    min-height: 300px;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Scanning Line Animation */
+.scanningLine {
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    height: 3px;
+    background: linear-gradient(90deg,
+            transparent 0%,
+            #ff4d6d 20%,
+            #dc2743 50%,
+            #ff4d6d 80%,
+            transparent 100%);
+    box-shadow:
+        0 0 10px #dc2743,
+        0 0 20px #dc2743,
+        0 0 40px rgba(220, 39, 67, 0.5);
+    z-index: 5;
+    animation: scanLine 2s ease-in-out infinite;
+    border-radius: 2px;
+}
+
+.scanningLine::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    filter: blur(1px);
+}
+
+@keyframes scanLine {
+
+    0%,
+    100% {
+        top: 15%;
+        opacity: 1;
+    }
+
+    50% {
+        top: 75%;
+        opacity: 0.8;
+    }
+}
+
+/* Corner Brackets for Scanner */
+.scannerCorners {
+    position: absolute;
+    inset: 20px;
+    pointer-events: none;
+    z-index: 4;
+}
+
+.scannerCorners::before,
+.scannerCorners::after {
+    content: "";
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-color: #00ff88;
+    border-style: solid;
+}
+
+.scannerCorners::before {
+    top: 0;
+    left: 0;
+    border-width: 3px 0 0 3px;
+}
+
+.scannerCorners::after {
+    top: 0;
+    right: 0;
+    border-width: 3px 3px 0 0;
+}
+
+.scannerCornersBottom {
+    position: absolute;
+    inset: 20px;
+    pointer-events: none;
+    z-index: 4;
+}
+
+.scannerCornersBottom::before,
+.scannerCornersBottom::after {
+    content: "";
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-color: #00ff88;
+    border-style: solid;
+}
+
+.scannerCornersBottom::before {
+    bottom: 0;
+    left: 0;
+    border-width: 0 0 3px 3px;
+}
+
+.scannerCornersBottom::after {
+    bottom: 0;
+    right: 0;
+    border-width: 0 3px 3px 0;
+}
+
+.qrReader {
+    width: 100%;
+    max-width: 100%;
+}
+
+.qrReader video {
+    border-radius: 12px;
+}
+
+#qr-reader {
+    border: none !important;
+}
+
+#qr-reader__scan_region {
+    border-radius: 12px !important;
+}
+
+#qr-reader__dashboard {
+    display: none !important;
+}
+
+/* ===== SCAN RESULT OVERLAY ===== */
+.scanResultOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+    z-index: 10;
+    padding: 2rem;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.scanResultOverlay.success {
+    background: linear-gradient(135deg, rgba(0, 50, 30, 0.95) 0%, rgba(0, 30, 20, 0.95) 100%);
+}
+
+.scanResultOverlay.error {
+    background: linear-gradient(135deg, rgba(50, 10, 20, 0.95) 0%, rgba(30, 5, 10, 0.95) 100%);
+}
+
+.scanResultIcon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: bounceIn 0.4s ease;
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.scanResultMessage {
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.success .scanResultMessage {
+    color: #00ff88;
+    text-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+}
+
+.error .scanResultMessage {
+    color: #ff4d6d;
+    text-shadow: 0 0 30px rgba(255, 77, 109, 0.5);
+}
+
+.scanResultDetails {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+}
+
+.scanResultDetails strong {
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+.scanResultDetails span {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: monospace;
+}
+
+/* ===== SCANNER INSTRUCTIONS ===== */
+.scannerInstructions {
+    text-align: center;
+    padding: 2rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.instructionIcon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.6;
+}
+
+.scannerInstructions p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.scannerInstructions ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: left;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.scannerInstructions li {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+/* ===== SCAN HISTORY ===== */
+.scanHistoryList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.scanHistoryItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.scanHistoryItem.success {
+    border-color: rgba(0, 255, 136, 0.3);
+    background: rgba(0, 255, 136, 0.05);
+}
+
+.scanHistoryItem.error {
+    border-color: rgba(255, 77, 109, 0.3);
+    background: rgba(255, 77, 109, 0.05);
+}
+
+.scanHistoryStatus {
+    font-size: 1.2rem;
+}
+
+.scanHistoryInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.scanHistoryName {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #fff;
+}
+
+.scanHistoryMeta {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.scanHistoryBadge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.scanHistoryItem.success .scanHistoryBadge {
+    background: rgba(0, 255, 136, 0.2);
+    color: #00ff88;
+}
+
+.scanHistoryItem.error .scanHistoryBadge {
+    background: rgba(255, 77, 109, 0.2);
+    color: #ff4d6d;
+}
+
+/* ===== TICKETS LIST ===== */
+.ticketsList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.ticketCard {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    transition: all 0.2s ease;
+}
+
+.ticketCard:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.ticketCard.checkedIn {
+    border-color: rgba(0, 255, 136, 0.3);
+    background: rgba(0, 255, 136, 0.03);
+}
+
+.ticketInfo {
+    flex: 1;
+    min-width: 200px;
+}
+
+.ticketEventName {
+    font-weight: 800;
+    font-size: 1rem;
+    color: #fff;
+    margin-bottom: 0.25rem;
+}
+
+.ticketStudentInfo {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.ticketActions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.ticketStatus {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.35rem 0.7rem;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.ticketStatus.checked {
+    background: rgba(0, 255, 136, 0.15);
+    color: #00ff88;
+    border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.ticketStatus.pending {
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.ticketBtn {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.75rem !important;
+}
+
+/* ===== EMPTY STATE ===== */
+.emptyState {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.emptyIcon {
+    font-size: 3rem;
+    opacity: 0.4;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.emptyState p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* ===== LEGACY STYLES ===== */
+.statusBtn {
+    padding: .45rem .75rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(0, 0, 0, 0.35);
+    color: #fff;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.statusBtn.ok {
+    border-color: rgba(0, 200, 83, 0.6);
+    background: rgba(0, 200, 83, 0.12);
+}
+
+.adminScan {
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    background: rgba(0, 0, 0, 0.28);
+    border-radius: 20px;
+    padding: .9rem;
+}
+
+.scanRow {
+    display: flex;
+    gap: .7rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.qrVideo {
+    width: 100%;
+    max-height: 260px;
+    border-radius: 16px;
+    margin-top: .7rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    display: none;
+    object-fit: cover;
+}
+
+.qrVideo.show {
+    display: block;
+}
+
+.adminFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin: 1rem 0;
+}
+
+.pager {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.input.small {
+    width: 110px;
+    display: inline-block;
+    margin-left: .6rem;
+}
+
+.checkRow {
+    display: grid;
+    grid-template-columns: 1.1fr 1.1fr .55fr;
+    gap: .6rem;
+}
+
+@media (max-width: 980px) {
+    .checkRow {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Delete Button */
+.deleteBtn {
+    padding: 0.4rem 0.7rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 77, 77, 0.4);
+    background: rgba(255, 50, 50, 0.15);
+    color: #ff6b6b;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.deleteBtn:hover {
+    background: rgba(255, 50, 50, 0.3);
+    border-color: rgba(255, 77, 77, 0.6);
+    transform: scale(1.02);
+}
+
+.deleteBtn:active {
+    transform: scale(0.98);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .scannerSection {
+        padding: 1rem;
+    }
+
+    .scannerHeader {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .scanBtn {
+        width: 100%;
+    }
+
+    .scanResultMessage {
+        font-size: 1.1rem;
+    }
+
+    .scanResultIcon {
+        font-size: 3rem;
+    }
+
+    .ticketCard {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ticketActions {
+        justify-content: space-between;
+    }
+
+    .ticketStats {
+        gap: 0.5rem;
+    }
+
+    .statBox {
+        padding: 0.75rem;
+    }
+
+    .statBox .statNumber {
+        font-size: 1.3rem;
+    }
+}
+
+/* ===== TICKET STATS ===== */
+.ticketStats {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.statBox {
+    flex: 1;
+    min-width: 100px;
+    padding: 1rem 1.25rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    text-align: center;
+}
+
+.statBox.success {
+    border-color: rgba(0, 255, 136, 0.3);
+    background: rgba(0, 255, 136, 0.05);
+}
+
+.statBox.pending {
+    border-color: rgba(255, 193, 7, 0.3);
+    background: rgba(255, 193, 7, 0.05);
+}
+
+.statBox .statNumber {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.statBox.success .statNumber {
+    color: #00ff88;
+}
+
+.statBox.pending .statNumber {
+    color: #ffc107;
+}
+
+.statBox .statLabel {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ===== SEARCH SECTION ===== */
+.searchSection {
+    margin-bottom: 0.5rem;
+}
+
+.searchBox {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.searchInput {
+    width: 100%;
+    padding-right: 3rem !important;
+    font-size: 0.9rem;
+}
+
+.clearSearchBtn {
+    position: absolute;
+    right: 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+}
+
+.clearSearchBtn:hover {
+    background: rgba(255, 77, 109, 0.3);
+    color: #ff4d6d;
+}
+
+.searchResults {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.searchResults strong {
+    color: #00d9ff;
+}
+
+/* ===== TICKET ID DISPLAY ===== */
+.ticketIdDisplay {
+    margin-top: 0.35rem;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.ticketIdDisplay .mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.65rem;
+}
