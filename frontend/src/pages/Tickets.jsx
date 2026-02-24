@@ -168,7 +168,7 @@ export default function Tickets() {
       }, 500);
 
     } catch (e) {
-      setErr(e?.message || "Failed to create ticket.");
+      setErr(e?.response?.data?.message || e?.message || "Failed to create ticket.");
     } finally {
       setIsLoading(false);
     }

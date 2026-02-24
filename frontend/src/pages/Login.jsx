@@ -18,7 +18,7 @@ export default function Login() {
       if (u.role === "admin") nav("/admin/dashboard");
       else nav("/tickets");
     } catch (e2) {
-      setErr(e2.message || "Login failed.");
+      setErr(e2.response?.data?.message || e2.message || "Login failed.");
     }
   };
 

@@ -135,10 +135,19 @@ export default function AdminTickets() {
         try {
           const codes = await detector.detect(video);
           if (codes?.length) {
-            const value = (codes[0].rawValue || "").trim();
-            // If QR contains AG No, put into check-in box
-            setCheckAg(value);
-            setCheckMsg("Scanned AG No. Now select event and Check-in.");
+            const rawValue = (codes[0].rawValue || "").trim();
+            let agNo = rawValue;
+
+            // Try to parse as JSON if it's the full ticket payload
+            try {
+              const data = JSON.parse(rawValue);
+              if (data.agNo) agNo = data.agNo;
+            } catch (err) {
+              // Not JSON, use raw value (fallback for simple strings)
+            }
+
+            setCheckAg(agNo);
+            setCheckMsg(`✅ Scanned: ${agNo}. Select event & Check-in.`);
             stopScan();
             return;
           }
@@ -179,10 +188,15 @@ export default function AdminTickets() {
       setCheckMsg("Already checked-in.");
       return;
     }
-    await setTicketCheckedIn(found._id || found.id, true);
-    setRefresh(x => x + 1);
-    setCheckMsg("Checked-in successfully ✅");
-    setQ(ag);
+    try {
+      await setTicketCheckedIn(found._id || found.id, true);
+      setRefresh(x => x + 1);
+      setCheckMsg(`✅ ${ag} Checked-in successfully!`);
+      setQ(ag);
+      setCheckAg(""); // Clear after success
+    } catch (err) {
+      setCheckMsg(`❌ Error: ${err.response?.data?.message || "Failed to check-in"}`);
+    }
   };
 
   return (

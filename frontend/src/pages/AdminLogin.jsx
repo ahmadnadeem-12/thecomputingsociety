@@ -18,7 +18,7 @@ export default function AdminLogin() {
       if (u.role !== "admin") throw new Error("Not an admin account.");
       nav("/admin/dashboard");
     } catch (e2) {
-      setErr(e2.message || "Login failed.");
+      setErr(e2.response?.data?.message || e2.message || "Admin login failed.");
     }
   };
 

@@ -18,7 +18,7 @@ export default function Register() {
       await register({ name, email, password });
       nav("/tickets");
     } catch (e2) {
-      setErr(e2.message || "Register failed.");
+      setErr(e2.response?.data?.message || e2.message || "Registration failed.");
     }
   };
 
