@@ -27,7 +27,7 @@ const app = express();
 app.use(helmet()); // Security headers
 app.use(
     cors({
-        origin: true, // Allow all for now
+        origin: process.env.CORS_ORIGIN === "*" ? true : process.env.CORS_ORIGIN?.split(","),
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
         allowedHeaders: ["Content-Type", "Authorization"],
