@@ -39,8 +39,11 @@ export async function getSessionUser() {
   try {
     const { data } = await api.get("/auth/me");
     return data.success ? data.user : null;
-  } catch {
-    localStorage.removeItem(TOKEN_KEY);
+  } catch (err) {
+    // Only clear token if we get a definitive 401 Unauthorized
+    if (err.response?.status === 401) {
+      localStorage.removeItem(TOKEN_KEY);
+    }
     return null;
   }
 }

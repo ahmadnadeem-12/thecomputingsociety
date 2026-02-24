@@ -23,7 +23,7 @@ const eventSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ["open", "closed", "upcoming", "cancelled"],
+            enum: ["open", "closed", "upcoming", "cancelled", "past"],
             default: "open",
         },
         featured: {

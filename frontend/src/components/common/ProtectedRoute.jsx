@@ -10,13 +10,17 @@ import { useAuth } from "../../hooks/useAuth";
  * @param {boolean} props.requireAdmin - If true, only admin users can access
  * @param {string} props.redirectTo - Where to redirect if unauthorized
  */
-export default function ProtectedRoute({ 
-  children, 
-  requireAdmin = false, 
-  redirectTo = "/admin/login" 
+export default function ProtectedRoute({
+  children,
+  requireAdmin = false,
+  redirectTo = "/admin/login"
 }) {
-  const { user, isAuthed, isAdmin } = useAuth();
+  const { user, isAuthed, isAdmin, loading } = useAuth();
   const location = useLocation();
+
+  if (loading) {
+    return null; // Or a loading spinner
+  }
 
   // Not logged in at all
   if (!isAuthed) {

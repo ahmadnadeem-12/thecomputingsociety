@@ -104,6 +104,13 @@ export default function Dashboard() {
   }, [refreshKey]);
 
   // Auth check - redirect if not logged in
+  if (eventsCtx.loading || themeCtx.loading) {
+    return null; // Wait for initial context loads
+  }
+
+  const { loading: authLoading } = useAuth();
+  if (authLoading) return null;
+
   if (!user) {
     return (
       <section className="section">
@@ -130,22 +137,51 @@ export default function Dashboard() {
 
   // Events
   const openEventCreate = () => {
-    setEditing({ title: "", date: "2025-12-31", time: "18:00", venue: "", status: "open", featured: false, capacity: 100, seatsRemaining: 100, tags: [], description: "" });
+    setEditing({ title: "", date: "2025-12-31", time: "18:00", venue: "", status: "open", featured: false, capacity: 100, seatsRemaining: 100, tags: "", description: "" });
     setModalType("event");
     setModalOpen(true);
   };
 
   const openEventEdit = (e) => {
-    setEditing({ ...e });
+    setEditing({
+      ...e,
+      tags: Array.isArray(e.tags) ? e.tags.join(", ") : (e.tags || "")
+    });
     setModalType("event");
     setModalOpen(true);
   };
 
   const saveEvent = async () => {
-    if (!editing?.title) return;
-    if (editing._id || editing.id) await eventsCtx.update(editing._id || editing.id, editing);
-    else await eventsCtx.create(editing);
-    setModalOpen(false);
+    try {
+      if (!editing?.title) {
+        alert("Please enter a title");
+        return;
+      }
+
+      // Strip system fields that backend might reject in payload
+      const { _id, id: sid, createdAt, updatedAt, __v, ...data } = editing;
+
+      // Process tags string into array
+      const finalTags = typeof data.tags === "string"
+        ? data.tags.split(",").map(t => t.trim()).filter(t => t)
+        : (data.tags || []);
+
+      const payload = { ...data, tags: finalTags };
+      const id = _id || sid;
+
+      if (id) {
+        await eventsCtx.update(id, payload);
+      } else {
+        await eventsCtx.create(payload);
+      }
+
+      setModalOpen(false);
+      setEditing(null);
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || "Failed to save event";
+      console.error("Save Event Failed:", msg, err);
+      alert(`Error: ${msg}`);
+    }
   };
 
   // Cabinet/Faculty
@@ -401,6 +437,7 @@ export default function Dashboard() {
                 <label htmlFor="featured" className="sectionSubtitle">Featured</label>
               </div>
             </div>
+            <div><div className="label">Tags (comma separated)</div><input className="input" value={editing.tags || ""} onChange={e => setEditing({ ...editing, tags: e.target.value })} aria-label="Event tags" placeholder="e.g. Workshop, Tech, Social" /></div>
             <div><div className="label">Description</div><textarea className="input" style={{ minHeight: 80, borderRadius: 12 }} value={editing.description} onChange={e => setEditing({ ...editing, description: e.target.value })} aria-label="Event description" /></div>
             <div style={{ display: "flex", gap: ".5rem", justifyContent: "flex-end" }}>
               <button className="btn btnGhost" onClick={() => setModalOpen(false)}>Cancel</button>
@@ -531,27 +568,29 @@ export default function Dashboard() {
 
         {/* Home Content Modal */}
         {modalType === "home" && homeEditing && (
-          <div style={{ display: "grid", gap: ".7rem", maxHeight: "60vh", overflowY: "auto" }}>
-            <div><div className="label">Badge Text</div><input className="input" value={homeEditing.heroBadge} onChange={e => setHomeEditing({ ...homeEditing, heroBadge: e.target.value })} aria-label="Hero badge" /></div>
-            <div className="formRow">
-              <div><div className="label">Title Line 1</div><input className="input" value={homeEditing.heroTitle?.line1} onChange={e => setHomeEditing({ ...homeEditing, heroTitle: { ...homeEditing.heroTitle, line1: e.target.value } })} aria-label="Title line 1" /></div>
-              <div><div className="label">Title Line 2</div><input className="input" value={homeEditing.heroTitle?.line2} onChange={e => setHomeEditing({ ...homeEditing, heroTitle: { ...homeEditing.heroTitle, line2: e.target.value } })} aria-label="Title line 2" /></div>
-            </div>
-            <div><div className="label">Title Line 3</div><input className="input" value={homeEditing.heroTitle?.line3} onChange={e => setHomeEditing({ ...homeEditing, heroTitle: { ...homeEditing.heroTitle, line3: e.target.value } })} aria-label="Title line 3" /></div>
-            <div><div className="label">Description</div><textarea className="input" style={{ minHeight: 60, borderRadius: 12 }} value={homeEditing.heroDescription} onChange={e => setHomeEditing({ ...homeEditing, heroDescription: e.target.value })} aria-label="Hero description" /></div>
-
-            <div className="hr" />
-            <div style={{ fontWeight: 900 }}>Stats</div>
-            {(homeEditing.stats || []).map((s, i) => (
-              <div key={i} className="formRow">
-                <div><div className="label">Number</div><input className="input" value={s.number} onChange={e => { const arr = [...homeEditing.stats]; arr[i].number = e.target.value; setHomeEditing({ ...homeEditing, stats: arr }); }} aria-label={`Stat ${i + 1} number`} /></div>
-                <div><div className="label">Label</div><input className="input" value={s.label} onChange={e => { const arr = [...homeEditing.stats]; arr[i].label = e.target.value; setHomeEditing({ ...homeEditing, stats: arr }); }} aria-label={`Stat ${i + 1} label`} /></div>
+          <div style={{ display: "grid", gap: ".7rem" }}>
+            <div style={{ maxHeight: "60vh", overflowY: "auto", paddingRight: "0.5rem", paddingBottom: "1.5rem" }}>
+              <div><div className="label">Badge Text</div><input className="input" value={homeEditing.heroBadge} onChange={e => setHomeEditing({ ...homeEditing, heroBadge: e.target.value })} aria-label="Hero badge" /></div>
+              <div className="formRow">
+                <div><div className="label">Title Line 1</div><input className="input" value={homeEditing.heroTitle?.line1} onChange={e => setHomeEditing({ ...homeEditing, heroTitle: { ...homeEditing.heroTitle, line1: e.target.value } })} aria-label="Title line 1" /></div>
+                <div><div className="label">Title Line 2</div><input className="input" value={homeEditing.heroTitle?.line2} onChange={e => setHomeEditing({ ...homeEditing, heroTitle: { ...homeEditing.heroTitle, line2: e.target.value } })} aria-label="Title line 2" /></div>
               </div>
-            ))}
+              <div><div className="label">Title Line 3</div><input className="input" value={homeEditing.heroTitle?.line3} onChange={e => setHomeEditing({ ...homeEditing, heroTitle: { ...homeEditing.heroTitle, line3: e.target.value } })} aria-label="Title line 3" /></div>
+              <div><div className="label">Description</div><textarea className="input" style={{ minHeight: 60, borderRadius: 12 }} value={homeEditing.heroDescription} onChange={e => setHomeEditing({ ...homeEditing, heroDescription: e.target.value })} aria-label="Hero description" /></div>
 
-            <div style={{ display: "flex", gap: ".5rem", justifyContent: "flex-end", marginTop: ".5rem" }}>
-              <button className="btn btnGhost" onClick={() => setModalOpen(false)}>Cancel</button>
-              <button className="btn btnPrimary" onClick={saveHomeChanges}>Save</button>
+              <div className="hr" />
+              <div style={{ fontWeight: 900 }}>Stats</div>
+              {(homeEditing.stats || []).map((s, i) => (
+                <div key={i} className="formRow">
+                  <div><div className="label">Number</div><input className="input" value={s.number} onChange={e => { const arr = [...homeEditing.stats]; arr[i].number = e.target.value; setHomeEditing({ ...homeEditing, stats: arr }); }} aria-label={`Stat ${i + 1} number`} /></div>
+                  <div><div className="label">Label</div><input className="input" value={s.label} onChange={e => { const arr = [...homeEditing.stats]; arr[i].label = e.target.value; setHomeEditing({ ...homeEditing, stats: arr }); }} aria-label={`Stat ${i + 1} label`} /></div>
+                </div>
+              ))}
+
+              <div style={{ display: "flex", gap: ".5rem", justifyContent: "flex-end", marginTop: ".5rem" }}>
+                <button className="btn btnGhost" onClick={() => setModalOpen(false)}>Cancel</button>
+                <button className="btn btnPrimary" onClick={saveHomeChanges}>Save</button>
+              </div>
             </div>
           </div>
         )}

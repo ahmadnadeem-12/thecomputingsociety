@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "../../hooks/useAuth";
 
 const NAV_ITEMS = [
   { key: "home", label: "Home", path: "/", icon: "🏠" },
@@ -29,7 +30,16 @@ const itemVariants = {
 };
 
 export default function Navbar() {
+  const { isAuthed, isAdmin, loading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Dynamic nav items based on auth
+  const navItems = NAV_ITEMS.map(item => {
+    if (item.key === "admin" && isAuthed && isAdmin) {
+      return { ...item, label: "Admin Panel", path: "/admin/dashboard", icon: "🛠️" };
+    }
+    return item;
+  });
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
@@ -82,7 +92,7 @@ export default function Navbar() {
 
             {/* Nav Links */}
             <nav className="mobileMenuNav">
-              {NAV_ITEMS.map((item, idx) => (
+              {navItems.map((item, idx) => (
                 <motion.div
                   key={item.key}
                   initial={{ opacity: 0, y: 20 }}
@@ -139,7 +149,7 @@ export default function Navbar() {
 
         {/* Navigation Links */}
         <nav className="nav">
-          {NAV_ITEMS.map((item) => (
+          {navItems.map((item) => (
             <motion.div
               key={item.key}
               variants={itemVariants}

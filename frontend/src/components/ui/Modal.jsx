@@ -1,5 +1,6 @@
 
 import React, { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 const overlayVariants = {
@@ -45,23 +46,13 @@ export function Modal({ open, title, children, onClose, maxWidth = "560px" }) {
     };
   }, [onClose, open]);
 
-  return (
+  const modalRoot = document.body;
+
+  return createPortal(
     <AnimatePresence>
       {open && (
         <motion.div
           className="modalOverlay"
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(5,3,10,0.9)",
-            backdropFilter: "blur(8px)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "2rem",
-            zIndex: 1000,
-            overflowY: "auto",
-          }}
           variants={overlayVariants}
           initial="hidden"
           animate="visible"
@@ -72,19 +63,7 @@ export function Modal({ open, title, children, onClose, maxWidth = "560px" }) {
         >
           <motion.div
             className="modalContent"
-            style={{
-              maxWidth,
-              width: "100%",
-              maxHeight: "90vh",
-              background: "linear-gradient(145deg, rgba(25,15,40,0.98) 0%, rgba(12,8,20,0.99) 100%)",
-              borderRadius: "20px",
-              border: "1px solid rgba(255,255,255,0.1)",
-              boxShadow: "0 30px 80px rgba(0,0,0,0.8), 0 0 60px rgba(194,52,165,0.15)",
-              position: "relative",
-              display: "flex",
-              flexDirection: "column",
-              overflow: "hidden",
-            }}
+            style={{ maxWidth }}
             variants={modalVariants}
             initial="hidden"
             animate="visible"
@@ -158,7 +137,8 @@ export function Modal({ open, title, children, onClose, maxWidth = "560px" }) {
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    modalRoot
   );
 }
 

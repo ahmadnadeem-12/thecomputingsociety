@@ -4,8 +4,16 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 export default function AdminLogin() {
-  const { login } = useAuth();
+  const { login, isAdmin, isAuthed, loading } = useAuth();
   const nav = useNavigate();
+
+  // Auto-redirect if already admin
+  React.useEffect(() => {
+    if (!loading && isAuthed && isAdmin) {
+      nav("/admin/dashboard");
+    }
+  }, [isAdmin, isAuthed, loading, nav]);
+
   const [email, setEmail] = useState("admin@tcs.uaf");
   const [password, setPassword] = useState("admin123");
   const [err, setErr] = useState("");

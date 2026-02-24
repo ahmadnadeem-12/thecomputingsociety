@@ -183,9 +183,13 @@ export default function Gallery() {
                 position: "relative",
                 borderRadius: "var(--radius-xl)",
                 overflow: "hidden",
-                aspectRatio: "16/9",
+                minHeight: "400px",
+                maxHeight: "80vh",
                 cursor: "pointer",
                 background: "linear-gradient(145deg, rgba(25,15,40,0.9), rgba(12,8,20,0.95))",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
               }}
               onClick={() => setOpen(true)}
               whileHover={{ scale: 1.01 }}
@@ -195,7 +199,7 @@ export default function Gallery() {
                   key={active.images[currentIndex]}
                   src={active.images[currentIndex]}
                   alt="hero"
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  style={{ width: "100%", height: "100%", objectFit: "contain" }}
                   initial={{ opacity: 0, scale: 1.1 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.4 }}

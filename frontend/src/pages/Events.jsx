@@ -36,9 +36,18 @@ export default function Events() {
   const events = useMemo(() => eventsCtx.events || [], [eventsCtx.events, eventsCtx.version]);
 
   const filtered = useMemo(() => {
+    const today = new Date().setHours(0, 0, 0, 0);
+
+    const isPast = (dateStr) => {
+      const d = new Date(dateStr).setHours(0, 0, 0, 0);
+      return d < today;
+    };
+
     if (filter === "featured") return events.filter(e => e.featured);
-    if (filter === "past") return events.filter(e => e.status === "past");
-    return events.filter(e => e.status !== "past");
+    if (filter === "past") return events.filter(e => isPast(e.date));
+
+    // For "upcoming" (default), show anything NOT past
+    return events.filter(e => !isPast(e.date));
   }, [events, filter]);
 
   const filters = [
@@ -110,8 +119,9 @@ export default function Events() {
               transition={{ type: "spring", stiffness: 300 }}
             >
               {/* Status Badge */}
-              <div className={`eventStatus ${e.status}`}>
-                {e.status === "open" ? "Open" : e.status === "closed" ? "Closed" : "Past"}
+              <div className={`eventStatus ${new Date(e.date).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0) ? 'past' : e.status}`}>
+                {new Date(e.date).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0) ? "Past" :
+                  e.status === "open" ? "Open" : e.status === "closed" ? "Closed" : "Upcoming"}
               </div>
 
               <div className="eventInner">
@@ -227,8 +237,9 @@ export default function Events() {
               <div style={{ fontSize: "1.3rem", fontWeight: 800, color: "var(--text-main)" }}>
                 {selectedEvent.title}
               </div>
-              <span className={`eventStatus ${selectedEvent.status}`} style={{ position: "relative", top: 0, right: 0 }}>
-                {selectedEvent.status === "open" ? "Open" : selectedEvent.status === "closed" ? "Closed" : "Past"}
+              <span className={`eventStatus ${new Date(selectedEvent.date).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0) ? 'past' : selectedEvent.status}`} style={{ position: "relative", top: 0, right: 0 }}>
+                {new Date(selectedEvent.date).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0) ? "Past" :
+                  selectedEvent.status === "open" ? "Open" : selectedEvent.status === "closed" ? "Closed" : "Upcoming"}
               </span>
             </div>
 

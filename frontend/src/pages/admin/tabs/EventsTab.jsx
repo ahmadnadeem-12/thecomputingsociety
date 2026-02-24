@@ -23,15 +23,28 @@ export default function EventsTab({
             <div className="hr" />
             <div className="cardGrid">
                 {events.map(e => (
-                    <div key={e.id} className="card">
+                    <div key={e._id || e.id} className="card">
                         <div style={{ fontWeight: 900 }}>{e.title}</div>
                         <div className="sectionSubtitle" style={{ marginTop: ".25rem" }}>
                             {formatDate(e.date)} • {e.venue}
                         </div>
                         <div style={{ display: "flex", gap: ".35rem", flexWrap: "wrap", marginTop: ".5rem" }}>
                             {e.featured && <span className="pill pillRed">Featured</span>}
-                            <span className="pill">{e.status}</span>
+                            {new Date(e.date).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0) ? (
+                                <span className="pill pillPast">Past</span>
+                            ) : (
+                                <span className="pill">{e.status}</span>
+                            )}
                         </div>
+
+                        {/* Event Tags */}
+                        {e.tags && e.tags.length > 0 && (
+                            <div style={{ display: "flex", gap: ".25rem", flexWrap: "wrap", marginTop: ".5rem" }}>
+                                {e.tags.map(tag => (
+                                    <span key={tag} style={{ fontSize: ".7rem", color: "var(--accent-cyan)" }}>#{tag}</span>
+                                ))}
+                            </div>
+                        )}
                         <div style={{ display: "flex", gap: ".5rem", marginTop: ".75rem" }}>
                             <button
                                 className="btn btnGhost"
@@ -40,17 +53,17 @@ export default function EventsTab({
                             >
                                 Edit
                             </button>
-                            <button
+                             <button
                                 className="btn btnGhost"
-                                onClick={() => eventsCtx.remove(e.id)}
+                                onClick={() => eventsCtx.remove(e._id || e.id)}
                                 aria-label={`Delete ${e.title}`}
                             >
                                 Delete
                             </button>
-                            <button
+                             <button
                                 className="btn btnPrimary"
                                 style={{ fontSize: ".75rem", padding: ".4rem .7rem" }}
-                                onClick={() => eventsCtx.update(e.id, { featured: !e.featured })}
+                                onClick={() => eventsCtx.update(e._id || e.id, { featured: !e.featured })}
                                 aria-label={e.featured ? "Remove from featured" : "Add to featured"}
                             >
                                 {e.featured ? "Unfeature" : "Feature"}
