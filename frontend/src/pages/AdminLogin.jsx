@@ -14,8 +14,8 @@ export default function AdminLogin() {
     }
   }, [isAdmin, isAuthed, loading, nav]);
 
-  const [email, setEmail] = useState("admin@tcs.uaf");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
 
   const onSubmit = async (e) => {
@@ -43,11 +43,11 @@ export default function AdminLogin() {
       <form className="card" onSubmit={onSubmit} style={{ maxWidth: 560 }}>
         <div>
           <div className="label">Email</div>
-          <input type="email" className="input" value={email} onChange={e => setEmail(e.target.value)} />
+          <input type="email" className="input" value={email} onChange={e => setEmail(e.target.value)} required />
         </div>
         <div style={{ marginTop: ".7rem" }}>
           <div className="label">Password</div>
-          <input type="password" className="input" value={password} onChange={e => setPassword(e.target.value)} />
+          <input type="password" className="input" value={password} onChange={e => setPassword(e.target.value)} required />
         </div>
 
         {err && <div style={{ marginTop: ".7rem", color: "#ffd2d7" }}>{err}</div>}
@@ -55,11 +55,6 @@ export default function AdminLogin() {
         <div style={{ marginTop: "1rem", display: "flex", gap: ".6rem", flexWrap: "wrap" }}>
           <button className="btn btnPrimary" type="submit">Login</button>
           <button className="btn btnGhost" type="button" onClick={() => nav("/")}>Back</button>
-        </div>
-
-        <div className="hr" />
-        <div className="sectionSubtitle">
-          Demo creds prefilled. Later MERN: replace with real auth + JWT.
         </div>
       </form>
     </section>

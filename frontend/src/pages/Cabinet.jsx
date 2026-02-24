@@ -52,7 +52,7 @@ export default function Cabinet() {
       >
         <div className="sectionHeader">
           <div>
-            <div className="sectionTitle">Cabinet 2024-25</div>
+            <div className="sectionTitle">Cabinet 2025-26</div>
             <div className="sectionSubtitle">
               Meet our leadership team • Click on any card for full profile
             </div>

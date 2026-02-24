@@ -347,7 +347,7 @@ export default function Dashboard() {
       <div className="sectionHeader">
         <div>
           <div className="sectionTitle">Admin Dashboard</div>
-          <div className="sectionSubtitle">Manage all content (localStorage based)</div>
+          <div className="sectionSubtitle">Manage all society content and settings</div>
         </div>
         <motion.button
           className="btn btnGhost"
