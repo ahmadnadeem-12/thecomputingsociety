@@ -196,7 +196,12 @@ export default function Dashboard() {
   };
 
   const openPersonEdit = (item, type) => {
-    setEditing({ ...item });
+    // Convert arrays to strings for editing
+    const editingItem = { ...item };
+    if (type === "faculty" && Array.isArray(item.expertise)) {
+      editingItem.expertise = item.expertise.join(", ");
+    }
+    setEditing(editingItem);
     setModalType(type);
     setModalOpen(true);
   };
@@ -204,12 +209,19 @@ export default function Dashboard() {
   const savePerson = async () => {
     if (!editing?.name) return;
     const id = editing._id || editing.id;
+
+    // Process expertise string into array if it's faculty
+    let payload = { ...editing };
+    if (modalType === "faculty" && typeof payload.expertise === "string") {
+      payload.expertise = payload.expertise.split(",").map(s => s.trim()).filter(Boolean);
+    }
+
     if (modalType === "cabinet") {
-      if (id) await updateCabinetMember(id, editing);
-      else await createCabinetMember(editing);
+      if (id) await updateCabinetMember(id, payload);
+      else await createCabinetMember(payload);
     } else {
-      if (id) await updateFaculty(id, editing);
-      else await createFaculty(editing);
+      if (id) await updateFaculty(id, payload);
+      else await createFaculty(payload);
     }
     setModalOpen(false);
     refresh();
@@ -224,13 +236,13 @@ export default function Dashboard() {
 
   // Announcements
   const openAnnouncementCreate = () => {
-    setEditing({ title: "", body: "", date: new Date().toISOString().split("T")[0], priority: "normal", tags: [], link: "", linkText: "" });
+    setEditing({ title: "", body: "", date: new Date().toISOString().split("T")[0], priority: "normal", tags: "", link: "", linkText: "" });
     setModalType("announcement");
     setModalOpen(true);
   };
 
   const openAnnouncementEdit = (item) => {
-    setEditing({ ...item });
+    setEditing({ ...item, tags: (item.tags || []).join(", ") });
     setModalType("announcement");
     setModalOpen(true);
   };
@@ -238,21 +250,29 @@ export default function Dashboard() {
   const saveAnnouncement = async () => {
     if (!editing?.title) return;
     const id = editing._id || editing.id;
-    if (id) await updateAnnouncement(id, editing);
-    else await createAnnouncement(editing);
+
+    // Process tags string into array
+    const finalTags = typeof editing.tags === "string"
+      ? editing.tags.split(",").map(t => t.trim()).filter(Boolean)
+      : (editing.tags || []);
+
+    const payload = { ...editing, tags: finalTags };
+
+    if (id) await updateAnnouncement(id, payload);
+    else await createAnnouncement(payload);
     setModalOpen(false);
     refresh();
   };
 
   // Programs
   const openProgramCreate = () => {
-    setEditing({ title: "", type: "workshop", description: "", icon: "📚", duration: "", participants: 0, status: "upcoming", startDate: "", instructor: "", tags: [] });
+    setEditing({ title: "", type: "workshop", description: "", icon: "📚", duration: "", participants: 0, status: "upcoming", startDate: "", instructor: "", tags: "" });
     setModalType("program");
     setModalOpen(true);
   };
 
   const openProgramEdit = (item) => {
-    setEditing({ ...item });
+    setEditing({ ...item, tags: (item.tags || []).join(", ") });
     setModalType("program");
     setModalOpen(true);
   };
@@ -260,8 +280,16 @@ export default function Dashboard() {
   const saveProgram = async () => {
     if (!editing?.title) return;
     const id = editing._id || editing.id;
-    if (id) await updateProgram(id, editing);
-    else await createProgram(editing);
+
+    // Process tags string into array
+    const finalTags = typeof editing.tags === "string"
+      ? editing.tags.split(",").map(t => t.trim()).filter(Boolean)
+      : (editing.tags || []);
+
+    const payload = { ...editing, tags: finalTags };
+
+    if (id) await updateProgram(id, payload);
+    else await createProgram(payload);
     setModalOpen(false);
     refresh();
   };
@@ -482,7 +510,7 @@ export default function Dashboard() {
                   <div><div className="label">Experience Years</div><input type="number" className="input" value={editing.experienceYears} onChange={e => setEditing({ ...editing, experienceYears: +e.target.value })} aria-label="Experience years" /></div>
                 </div>
                 <div><div className="label">Education</div><input className="input" value={editing.education} onChange={e => setEditing({ ...editing, education: e.target.value })} aria-label="Education" /></div>
-                <div><div className="label">Expertise (comma sep)</div><input className="input" value={(editing.expertise || []).join(", ")} onChange={e => setEditing({ ...editing, expertise: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} aria-label="Expertise areas" /></div>
+                <div><div className="label">Expertise (comma sep)</div><input className="input" value={editing.expertise || ""} onChange={e => setEditing({ ...editing, expertise: e.target.value })} aria-label="Expertise areas" /></div>
               </>
             )}
             <div><div className="label">Summary</div><textarea className="input" style={{ minHeight: 70, borderRadius: 12 }} value={editing.summary} onChange={e => setEditing({ ...editing, summary: e.target.value })} aria-label="Summary" /></div>
@@ -506,7 +534,7 @@ export default function Dashboard() {
                 </select>
               </div>
             </div>
-            <div><div className="label">Tags (comma sep)</div><input className="input" value={(editing.tags || []).join(", ")} onChange={e => setEditing({ ...editing, tags: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} aria-label="Tags" /></div>
+            <div><div className="label">Tags (comma sep)</div><input className="input" value={editing.tags || ""} onChange={e => setEditing({ ...editing, tags: e.target.value })} aria-label="Tags" /></div>
             <div className="formRow">
               <div><div className="label">Link URL</div><input className="input" value={editing.link} onChange={e => setEditing({ ...editing, link: e.target.value })} aria-label="Link URL" /></div>
               <div><div className="label">Link Text</div><input className="input" value={editing.linkText} onChange={e => setEditing({ ...editing, linkText: e.target.value })} aria-label="Link text" /></div>
@@ -546,7 +574,7 @@ export default function Dashboard() {
               <div><div className="label">Start Date</div><input type="date" className="input" value={editing.startDate} onChange={e => setEditing({ ...editing, startDate: e.target.value })} aria-label="Start date" /></div>
               <div><div className="label">Instructor</div><input className="input" value={editing.instructor} onChange={e => setEditing({ ...editing, instructor: e.target.value })} aria-label="Instructor" /></div>
             </div>
-            <div><div className="label">Tags (comma sep)</div><input className="input" value={(editing.tags || []).join(", ")} onChange={e => setEditing({ ...editing, tags: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} aria-label="Tags" /></div>
+            <div><div className="label">Tags (comma sep)</div><input className="input" value={editing.tags || ""} onChange={e => setEditing({ ...editing, tags: e.target.value })} aria-label="Tags" /></div>
             <div style={{ display: "flex", gap: ".5rem", justifyContent: "flex-end" }}>
               <button className="btn btnGhost" onClick={() => setModalOpen(false)}>Cancel</button>
               <button className="btn btnPrimary" onClick={saveProgram}>Save</button>
