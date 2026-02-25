@@ -422,7 +422,7 @@ export function generateCertificatePDF(data) {
     doc.setFontSize(28);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(255, 255, 255);
-    doc.text(data.name || 'Participant Name', W / 2, y, { align: 'center' });
+    doc.text((data.name || 'Name').toUpperCase(), W / 2, y, { align: 'center' });
 
     y += 8;
 
@@ -515,11 +515,12 @@ export function generateCertificatePDF(data) {
     }
 
     // ---- FOOTER ----
-    doc.setFontSize(6.5);
+    doc.setFontSize(7);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(107, 95, 120);
-    doc.text('© The Computing Society — Department of Computer Science, University of Agriculture Faisalabad', W / 2, H - 22, { align: 'center' });
-    doc.text('This certificate is digitally generated and verifiable.', W / 2, H - 18, { align: 'center' });
+    doc.setTextColor(120, 110, 140);
+    doc.text('© The Computing Society — Department of Computer Science, University of Agriculture Faisalabad', W / 2, H - 15, { align: 'center' });
+    doc.setFontSize(6);
+    doc.text('This certificate is digitally generated and verifiable.', W / 2, H - 11, { align: 'center' });
 
     return doc;
 }
