@@ -46,21 +46,6 @@ const eventSchema = new mongoose.Schema(
             type: String,
             default: "",
         },
-        ticketPrice: {
-            type: Number,
-            default: 0, // 0 = free event
-            min: 0,
-        },
-        totalSeats: {
-            type: Number,
-            default: 0, // 0 = unlimited
-            min: 0,
-        },
-        soldTickets: {
-            type: Number,
-            default: 0,
-            min: 0,
-        },
     },
     {
         timestamps: true,
