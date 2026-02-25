@@ -244,10 +244,28 @@ export function generateTicketPDF(ticketData, qrCodeDataUrl) {
  * @returns {string} - File name
  */
 export function downloadTicketPDF(ticketData, qrCodeDataUrl) {
-    const doc = generateTicketPDF(ticketData, qrCodeDataUrl);
-    const fileName = `TCS-Ticket-${ticketData.agNo || 'ticket'}.pdf`;
-    doc.save(fileName);
-    return fileName;
+    try {
+        const doc = generateTicketPDF(ticketData, qrCodeDataUrl);
+        const fileName = `TCS_Ticket_${(ticketData.agNo || 'ticket')}.pdf`;
+
+        const blob = doc.output('blob');
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+
+        setTimeout(() => {
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }, 100);
+
+        return fileName;
+    } catch (err) {
+        console.error("Ticket download failed:", err);
+        return null;
+    }
 }
 
 /**
@@ -509,20 +527,29 @@ export function generateCertificatePDF(data) {
 export function downloadCertificatePDF(data) {
     try {
         const doc = generateCertificatePDF(data);
-        doc.setProperties({
-            title: 'TCS Certificate',
-            subject: 'Event Participation Certificate',
-            author: 'The Computing Society'
-        });
 
-        // Use a simple filename to avoid browser issues
-        const safeName = (data.name || 'Certificate').replace(/[^a-zA-Z0-9]/g, '_');
+        // Final filename
+        const safeName = (data.name || 'Participant').trim().replace(/[^a-zA-Z0-9]/g, '_');
         const fileName = `TCS_Certificate_${safeName}.pdf`;
 
-        doc.save(fileName);
+        // Manual download method (more robust for filename/extension)
+        const blob = doc.output('blob');
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+
+        // Cleanup
+        setTimeout(() => {
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }, 100);
+
         return fileName;
     } catch (err) {
-        console.error("PDF generation failed:", err);
+        console.error("Certificate download failed:", err);
         return null;
     }
 }
