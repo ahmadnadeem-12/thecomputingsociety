@@ -371,7 +371,7 @@ export function generateCertificatePDF(data) {
 
     // ---- "CERTIFICATE" heading ----
     doc.setFontSize(36);
-    doc.setFont('times', 'bolditalic');
+    doc.setFont('helvetica', 'bold');
     doc.setTextColor(212, 175, 55); // Gold
     doc.text('CERTIFICATE', W / 2, y, { align: 'center' });
 
@@ -402,7 +402,7 @@ export function generateCertificatePDF(data) {
 
     // ---- PARTICIPANT NAME (large elegant) ----
     doc.setFontSize(28);
-    doc.setFont('times', 'bolditalic');
+    doc.setFont('helvetica', 'bold');
     doc.setTextColor(255, 255, 255);
     doc.text(data.name || 'Participant Name', W / 2, y, { align: 'center' });
 
@@ -492,7 +492,7 @@ export function generateCertificatePDF(data) {
     if (data.organizer) {
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(11);
-        doc.setFont('times', 'italic');
+        doc.setFont('helvetica', 'normal');
         doc.text(data.organizer, sigRightX + sigWidth / 2, sigY + 3, { align: 'center' });
     }
 
@@ -506,14 +506,23 @@ export function generateCertificatePDF(data) {
     return doc;
 }
 
-/**
- * Generate and download certificate PDF
- * @param {Object} data - Certificate data
- * @returns {string} - File name
- */
 export function downloadCertificatePDF(data) {
-    const doc = generateCertificatePDF(data);
-    const fileName = `TCS-Certificate-${(data.agNo || data.name || 'cert').replace(/\s+/g, '-')}.pdf`;
-    doc.save(fileName);
-    return fileName;
+    try {
+        const doc = generateCertificatePDF(data);
+        doc.setProperties({
+            title: 'TCS Certificate',
+            subject: 'Event Participation Certificate',
+            author: 'The Computing Society'
+        });
+
+        // Use a simple filename to avoid browser issues
+        const safeName = (data.name || 'Certificate').replace(/[^a-zA-Z0-9]/g, '_');
+        const fileName = `TCS_Certificate_${safeName}.pdf`;
+
+        doc.save(fileName);
+        return fileName;
+    } catch (err) {
+        console.error("PDF generation failed:", err);
+        return null;
+    }
 }
