@@ -413,7 +413,13 @@ export default function Tickets() {
           <div style={{ fontWeight: 900, marginBottom: ".35rem" }}>My Tickets</div>
           <div style={{ display: "grid", gap: "1.5rem" }}>
             {myTickets.slice(0, 10).map((t) => {
-              const ev = (eventsCtx.events || []).find((e) => (e._id || e.id) === (t.eventId || t.event));
+              const eventId = t.eventId?._id || t.eventId || t.event;
+              const ev = (eventsCtx.events || []).find((e) => (e._id || e.id) === eventId);
+
+              // Use populated data if context lookup fails (sometimes relevant if event is past/archived)
+              const displayTitle = ev?.title || t.eventId?.title || "Event";
+              const displayDate = ev ? formatDate(ev.date) : (t.eventId?.date ? formatDate(t.eventId.date) : "TBA");
+              const displayTime = ev?.time || t.eventId?.time || "TBA";
 
               return (
                 <div key={t._id || t.id} className="expandableTicket expanded">
@@ -426,15 +432,15 @@ export default function Tickets() {
 
                     {/* Details - Center */}
                     <div className="ticketDetailsSection">
-                      <h3 className="ticketEventTitle">{ev?.title || "Event"}</h3>
+                      <h3 className="ticketEventTitle">{displayTitle}</h3>
                       <div className="ticketDetailsGrid">
                         <div className="ticketDetailItem">
                           <span className="detailLabel">Date</span>
-                          <span className="detailValue">{ev ? formatDate(ev.date) : "TBA"}</span>
+                          <span className="detailValue">{displayDate}</span>
                         </div>
                         <div className="ticketDetailItem">
                           <span className="detailLabel">Time</span>
-                          <span className="detailValue">{ev?.time || "TBA"}</span>
+                          <span className="detailValue">{displayTime}</span>
                         </div>
                         <div className="ticketDetailItem">
                           <span className="detailLabel">Department</span>

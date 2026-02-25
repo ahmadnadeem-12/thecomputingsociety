@@ -12,7 +12,7 @@ router.get("/", protect, async (req, res) => {
     if (req.user.role !== "admin") {
         query.userId = req.user._id.toString();
     }
-    const tickets = await Ticket.find(query).sort({ createdAt: -1 }).populate("eventId", "title date venue");
+    const tickets = await Ticket.find(query).sort({ createdAt: -1 }).populate("eventId", "title date time venue");
     res.json({ success: true, count: tickets.length, data: tickets });
 });
 

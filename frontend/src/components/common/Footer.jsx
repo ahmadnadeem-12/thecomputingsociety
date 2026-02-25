@@ -40,7 +40,7 @@ export default function Footer() {
           fontSize: "0.72rem",
           opacity: 0.5,
         }}>
-          <span>© 2024-25 Cabinet</span>
+          <span>© 2025-26 Cabinet</span>
           <span>•</span>
           <span>Dept. of Computer Science</span>
         </div>
