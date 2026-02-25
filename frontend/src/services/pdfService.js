@@ -319,146 +319,125 @@ export function generateCertificatePDF(data) {
     const H = doc.internal.pageSize.getHeight();   // 210
 
     // ---- BACKGROUND ----
-    // Dark gradient background
-    doc.setFillColor(15, 15, 26);
+    doc.setFillColor(20, 20, 22); // Charcoal / Almost Black
     doc.rect(0, 0, W, H, 'F');
 
-    // Subtle darker overlay for depth
-    doc.setFillColor(20, 10, 35);
-    doc.rect(0, 0, W, H * 0.6, 'F');
+    // ---- CORNER CURVES (Modern Red Design) ----
 
-    // ---- GOLD ACCENT CORNERS ----
-    // Top-left gold triangle
-    doc.setFillColor(212, 175, 55); // Gold #D4AF37
-    doc.triangle(0, 0, 55, 0, 0, 55, 'F');
-    // Darker inner triangle
-    doc.setFillColor(178, 134, 0);
-    doc.triangle(0, 0, 35, 0, 0, 35, 'F');
+    // 1. Bottom-Right Base (Dark Shadow Layer)
+    doc.setFillColor(40, 40, 45);
+    doc.moveTo(W, H);
+    doc.lineTo(W - 140, H);
+    doc.bezierCurveTo(W - 100, H - 70, W - 70, H - 100, W, H - 140);
+    doc.lineTo(W, H);
+    doc.fill();
 
-    // Top-right red accent
-    doc.setFillColor(180, 30, 50);
-    doc.triangle(W, 0, W - 55, 0, W, 55, 'F');
-    doc.setFillColor(140, 20, 40);
-    doc.triangle(W, 0, W - 35, 0, W, 35, 'F');
+    // 2. Bottom-Right Red Layer
+    doc.setFillColor(180, 20, 35); // Vibrant Red
+    doc.moveTo(W, H);
+    doc.lineTo(W - 120, H);
+    doc.bezierCurveTo(W - 80, H - 60, W - 60, H - 80, W, H - 120);
+    doc.lineTo(W, H);
+    doc.fill();
 
-    // Bottom-left small accent
-    doc.setFillColor(180, 30, 50);
-    doc.triangle(0, H, 30, H, 0, H - 30, 'F');
+    // 3. Top-Left Base (Dark Shadow Layer)
+    doc.setFillColor(40, 40, 45);
+    doc.moveTo(0, 0);
+    doc.lineTo(140, 0);
+    doc.bezierCurveTo(100, 70, 70, 100, 0, 140);
+    doc.lineTo(0, 0);
+    doc.fill();
 
-    // Bottom-right gold accent
+    // 4. Top-Left Red Layer
+    doc.setFillColor(180, 20, 35);
+    doc.moveTo(0, 0);
+    doc.lineTo(120, 0);
+    doc.bezierCurveTo(80, 60, 60, 80, 0, 120);
+    doc.lineTo(0, 0);
+    doc.fill();
+
+    // ---- GOLD SEAL / BADGE (Top Left) ----
+    const sealX = 45;
+    const sealY = 45;
+
+    // Ribbons
+    doc.setFillColor(212, 175, 55); // Gold
+    doc.triangle(sealX - 8, sealY + 10, sealX - 15, sealY + 35, sealX - 2, sealY + 25, 'F');
+    doc.triangle(sealX + 8, sealY + 10, sealX + 15, sealY + 35, sealX + 2, sealY + 25, 'F');
+
+    // Circle Badge
     doc.setFillColor(212, 175, 55);
-    doc.triangle(W, H, W - 55, H, W, H - 55, 'F');
-    doc.setFillColor(178, 134, 0);
-    doc.triangle(W, H, W - 35, H, W, H - 35, 'F');
-
-    // ---- GOLD ACCENT LINES ----
-    doc.setDrawColor(212, 175, 55);
-    doc.setLineWidth(0.8);
-    // Top sweeping line
-    doc.line(55, 0, 0, 55);
-    doc.line(W - 55, 0, W, 55);
-    // Bottom sweeping line
-    doc.line(0, H - 30, 30, H);
-    doc.line(W, H - 55, W - 55, H);
-
-    // ---- INNER BORDER ----
-    doc.setDrawColor(212, 175, 55);
-    doc.setLineWidth(0.4);
-    const bx = 18, by = 18;
-    doc.roundedRect(bx, by, W - bx * 2, H - by * 2, 3, 3, 'S');
-    // Inner double border
-    doc.setLineWidth(0.2);
-    doc.setDrawColor(212, 175, 55, 0.4);
-    doc.roundedRect(bx + 3, by + 3, W - (bx + 3) * 2, H - (by + 3) * 2, 2, 2, 'S');
-
-    // ---- TCS LOGO (top center) ----
-    const logoY = 32;
-    doc.setFillColor(212, 175, 55);
-    doc.circle(W / 2, logoY, 12, 'F');
-    doc.setFillColor(15, 15, 26);
-    doc.circle(W / 2, logoY, 10, 'F');
-    doc.setFillColor(212, 175, 55);
-    doc.circle(W / 2, logoY, 9, 'F');
-    // TCS Text inside badge
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(15, 15, 26);
-    doc.text('TCS', W / 2, logoY + 3.5, { align: 'center' });
-
-    let y = logoY + 20;
-
-    // ---- "CERTIFICATE" heading ----
-    doc.setFontSize(36);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(212, 175, 55); // Gold
-    doc.text('CERTIFICATE', W / 2, y, { align: 'center' });
-
-    y += 10;
-
-    // ---- "OF PARTICIPATION" ----
-    doc.setFontSize(13);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(200, 200, 210);
-    doc.text('OF PARTICIPATION', W / 2, y, { align: 'center' });
-
-    y += 10;
-
-    // ---- Gold divider ----
-    doc.setDrawColor(212, 175, 55);
+    doc.circle(sealX, sealY, 15, 'F');
+    doc.setDrawColor(180, 140, 40);
     doc.setLineWidth(0.5);
-    doc.line(W / 2 - 50, y, W / 2 + 50, y);
+    doc.circle(sealX, sealY, 13, 'S');
 
-    y += 10;
+    // TCS Text in Badge
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(20, 20, 22);
+    doc.text('TCS', sealX, sealY + 1, { align: 'center' });
+    doc.setFontSize(4);
+    doc.text('AWARD', sealX, sealY + 4, { align: 'center' });
 
-    // ---- "THIS CERTIFICATE IS PROUDLY PRESENTED TO" ----
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(154, 143, 166);
-    doc.text('THIS CERTIFICATE IS PROUDLY PRESENTED TO', W / 2, y, { align: 'center' });
+    // ---- MAIN TEXT CONTENT ----
+    let y = 60;
 
-    y += 12;
-
-    // ---- PARTICIPANT NAME (large elegant) ----
-    doc.setFontSize(28);
+    // "CERTIFICATE"
+    doc.setFontSize(48);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(255, 255, 255);
-    doc.text((data.name || 'Name').toUpperCase(), W / 2, y, { align: 'center' });
+    doc.text('CERTIFICATE', W / 2 + 20, y, { align: 'center' });
 
-    y += 8;
+    y += 12;
+    // "OF PARTICIPATION"
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'normal');
+    doc.text('OF PARTICIPATION', W / 2 + 20, y, { align: 'center', charSpace: 2 });
 
-    // ---- AG Number ----
+    y += 15;
+    // Gold Thin Line
+    doc.setDrawColor(212, 175, 55);
+    doc.setLineWidth(0.5);
+    doc.line(W / 2 - 50, y, W / 2 + 90, y);
+
+    y += 20;
+    // "PROUDLY PRESENTED TO"
+    doc.setFontSize(10);
+    doc.setTextColor(180, 180, 190);
+    doc.text('PROUDLY PRESENTED TO', W / 2 + 20, y, { align: 'center', charSpace: 1.5 });
+
+    y += 18;
+    // Participant Name (Elegant Script-like)
+    doc.setFontSize(42);
+    doc.setFont('times', 'bolditalic');
+    doc.setTextColor(212, 175, 55); // Gold
+    doc.text((data.name || 'Name').toUpperCase(), W / 2 + 20, y, { align: 'center' });
+
+    y += 12;
+    // AG No
     if (data.agNo) {
-        doc.setFontSize(10);
+        doc.setFontSize(12);
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(212, 175, 55);
-        doc.text(`AG No: ${data.agNo}`, W / 2, y, { align: 'center' });
-        y += 6;
+        doc.text(`AG No: ${data.agNo}`, W / 2 + 20, y, { align: 'center' });
     }
 
-    y += 4;
+    y += 15;
+    // Short Description
+    doc.setFontSize(9);
+    doc.setTextColor(160, 160, 170);
+    const descText = data.description || `For participating in "${data.eventTitle || 'TCS Event'}" organized by The Computing Society, University of Agriculture Faisalabad.`;
+    const descLines = doc.splitTextToSize(descText, 180);
+    doc.text(descLines, W / 2 + 20, y, { align: 'center' });
 
-    // ---- Event description text ----
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(180, 180, 190);
-
-    const descText = data.description
-        ? data.description
-        : `For participating in "${data.eventTitle || 'TCS Event'}" organized by The Computing Society, Department of Computer Science, University of Agriculture Faisalabad.`;
-
-    // Word wrap the description
-    const descLines = doc.splitTextToSize(descText, W - 100);
-    doc.text(descLines, W / 2, y, { align: 'center' });
-    y += descLines.length * 5 + 4;
-
-    // ---- Event Details Box ----
+    // ---- Event Details Box (Clean) ----
+    y += 18;
     const boxW = 160;
-    const boxX = (W - boxW) / 2;
-    doc.setFillColor(25, 18, 40);
-    doc.roundedRect(boxX, y, boxW, 16, 3, 3, 'F');
-    doc.setDrawColor(212, 175, 55);
-    doc.setLineWidth(0.3);
-    doc.roundedRect(boxX, y, boxW, 16, 3, 3, 'S');
+    const boxX = (W - boxW) / 2 + 20;
+    doc.setDrawColor(212, 175, 55, 0.5);
+    doc.setLineWidth(0.2);
+    doc.roundedRect(boxX, y, boxW, 18, 2, 2, 'S');
 
     doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
@@ -466,61 +445,43 @@ export function generateCertificatePDF(data) {
     const col1 = boxX + 10;
     const col2 = boxX + boxW / 3 + 5;
     const col3 = boxX + (boxW * 2) / 3 + 5;
-    const detY = y + 6;
-
-    doc.text('EVENT', col1, detY);
-    doc.text('DATE', col2, detY);
-    doc.text('VENUE', col3, detY);
+    doc.text('EVENT', col1, y + 6);
+    doc.text('DATE', col2, y + 6);
+    doc.text('VENUE', col3, y + 6);
 
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(255, 255, 255);
-    doc.text(data.eventTitle || 'TCS Event', col1, detY + 5);
-    doc.text(data.eventDate || 'TBA', col2, detY + 5);
-    doc.text(data.venue || 'UAF', col3, detY + 5);
+    doc.text(data.eventTitle || 'TCS Event', col1, y + 12);
+    doc.text(data.eventDate || 'TBA', col2, y + 12);
+    doc.text(data.venue || 'UAF', col3, y + 12);
 
-    y += 26;
+    // ---- SIGNATURES ----
+    y += 35;
+    const sigWidth = 60;
+    const leftSigX = W / 2 - 50;
+    const rightSigX = W / 2 + 60;
 
-    // ---- SIGNATURE SECTION ----
-    const sigY = y;
-    const sigLeftX = W / 2 - 60;
-    const sigRightX = W / 2 + 20;
-    const sigWidth = 65;
-
-    // Date (left side)
+    // Left: Date
     doc.setDrawColor(212, 175, 55);
-    doc.setLineWidth(0.3);
-    doc.line(sigLeftX, sigY + 5, sigLeftX + sigWidth, sigY + 5);
+    doc.line(leftSigX - sigWidth / 2, y, leftSigX + sigWidth / 2, y);
     doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(154, 143, 166);
-    doc.text('Date', sigLeftX + sigWidth / 2, sigY + 10, { align: 'center' });
+    doc.setTextColor(150, 150, 160);
+    doc.text('DATE', leftSigX, y + 5, { align: 'center' });
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(9);
-    doc.text(data.eventDate || new Date().toLocaleDateString(), sigLeftX + sigWidth / 2, sigY + 3, { align: 'center' });
+    doc.text(data.eventDate || new Date().toLocaleDateString(), leftSigX, y - 3, { align: 'center' });
 
-    // Organizer Signature (right side)
-    doc.setDrawColor(212, 175, 55);
-    doc.line(sigRightX, sigY + 5, sigRightX + sigWidth, sigY + 5);
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(154, 143, 166);
-    doc.text("Organizer's Signature", sigRightX + sigWidth / 2, sigY + 10, { align: 'center' });
-    // Organizer name
-    if (data.organizer) {
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'normal');
-        doc.text(data.organizer, sigRightX + sigWidth / 2, sigY + 3, { align: 'center' });
-    }
+    // Right: Signature
+    doc.line(rightSigX - sigWidth / 2, y, rightSigX + sigWidth / 2, y);
+    doc.setTextColor(150, 150, 160);
+    doc.text('SIGNATURE', rightSigX, y + 5, { align: 'center' });
+    doc.setTextColor(255, 255, 255);
+    doc.text(data.organizer || 'The Computing Society', rightSigX, y - 3, { align: 'center' });
 
     // ---- FOOTER ----
     doc.setFontSize(7);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(120, 110, 140);
-    doc.text('© The Computing Society — Department of Computer Science, University of Agriculture Faisalabad', W / 2, H - 15, { align: 'center' });
-    doc.setFontSize(6);
-    doc.text('This certificate is digitally generated and verifiable.', W / 2, H - 11, { align: 'center' });
+    doc.setTextColor(100, 100, 110);
+    doc.text('© The Computing Society — Department of Computer Science, University of Agriculture Faisalabad', W / 2, H - 10, { align: 'center' });
 
     return doc;
 }
