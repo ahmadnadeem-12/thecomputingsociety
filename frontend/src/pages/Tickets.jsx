@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { EventContext } from "../context/EventContext";
 import { createTicket, listTickets } from "../services/ticketService";
+import { initiatePayment, getMyPaidTickets } from "../services/paymentService";
 import { downloadTicketPDF } from "../services/pdfService";
 import { sendTicketEmail } from "../services/emailService";
 import { formatDate } from "../utils/helpers";
@@ -61,6 +62,7 @@ export default function Tickets() {
   }, [showSuccess]);
 
   const selectedEvent = events.find((e) => e.id === form.eventId);
+  const isPaidEvent = selectedEvent && selectedEvent.ticketPrice > 0;
 
   const [myTickets, setMyTickets] = useState([]);
   useEffect(() => {
@@ -143,7 +145,39 @@ export default function Tickets() {
         throw new Error("AG No format must be YYYY-AG-XXXX or YYYY-AG-XXXXX (digits).");
       if (!form.eventId) throw new Error("Event is required.");
 
-      // Server handles duplicate checks
+      // ---- PAID EVENT: JazzCash redirect ----
+      if (isPaidEvent) {
+        const ag = form.agNo.trim().toUpperCase();
+        const result = await initiatePayment({
+          eventId: form.eventId,
+          name: form.fullName.trim(),
+          email: form.email.trim(),
+          agNo: ag,
+          department: form.department,
+          semester: form.semester,
+        });
+
+        if (result.success && result.formData && result.actionUrl) {
+          // Create a hidden form and submit to JazzCash
+          const form = document.createElement("form");
+          form.method = "POST";
+          form.action = result.actionUrl;
+          Object.entries(result.formData).forEach(([key, value]) => {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = key;
+            input.value = value;
+            form.appendChild(input);
+          });
+          document.body.appendChild(form);
+          form.submit();
+          return; // Page will redirect
+        } else {
+          throw new Error(result.message || "Failed to initiate payment.");
+        }
+      }
+
+      // ---- FREE EVENT: Original flow ----
       const ag = form.agNo.trim().toUpperCase();
 
       const t = await createTicket({
@@ -341,7 +375,7 @@ export default function Tickets() {
               onClick={onGenerate}
               disabled={isLoading}
             >
-              {isLoading ? "⏳ Generating..." : "Get Ticket"}
+              {isLoading ? "⏳ Processing..." : isPaidEvent ? `💳 Buy Ticket (₨ ${selectedEvent.ticketPrice})` : "Get Ticket"}
             </button>
             <div className="sectionSubtitle">
               Logged in as: <b>{user.email}</b>

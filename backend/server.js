@@ -44,6 +44,16 @@ const limiter = rateLimit({
 });
 app.use("/api/", limiter);
 
+// Stricter rate limiting for payment routes (10 requests per minute)
+const paymentLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 10,
+    message: { success: false, message: "Too many payment requests, please wait" },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+app.use("/api/payments", paymentLimiter);
+
 // ========================
 // Body Parsing & Logging
 // ========================
@@ -71,6 +81,8 @@ app.use("/api/gallery", require("./routes/gallery"));
 app.use("/api/programs", require("./routes/programs"));
 app.use("/api/degrees", require("./routes/degrees"));
 app.use("/api/home", require("./routes/home"));
+app.use("/api/payments", require("./routes/payments"));
+app.use("/api/analytics", require("./routes/analytics"));
 
 // ========================
 // Health Check

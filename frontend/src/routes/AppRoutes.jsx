@@ -19,6 +19,8 @@ const Register = lazy(() => import("../pages/Register"));
 const AdminLogin = lazy(() => import("../pages/AdminLogin"));
 const Dashboard = lazy(() => import("../pages/Dashboard"));
 const AdminTickets = lazy(() => import("../pages/admin/AdminTickets"));
+const PaymentReturn = lazy(() => import("../pages/PaymentReturn"));
+const AdminAnalytics = lazy(() => import("../pages/AdminAnalytics"));
 const NotFound = lazy(() => import("../pages/NotFound"));
 
 // Loading fallback component
@@ -40,6 +42,7 @@ export default function AppRoutes() {
         <Route path="/programs" element={<Programs />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/tickets" element={<Tickets />} />
+        <Route path="/payment/return" element={<PaymentReturn />} />
 
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
@@ -62,6 +65,14 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute requireAdmin={true} redirectTo="/admin/login">
               <AdminTickets />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/analytics"
+          element={
+            <ProtectedRoute requireAdmin={true} redirectTo="/admin/login">
+              <AdminAnalytics />
             </ProtectedRoute>
           }
         />
