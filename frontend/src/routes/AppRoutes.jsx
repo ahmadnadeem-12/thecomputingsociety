@@ -19,6 +19,8 @@ const Register = lazy(() => import("../pages/Register"));
 const AdminLogin = lazy(() => import("../pages/AdminLogin"));
 const Dashboard = lazy(() => import("../pages/Dashboard"));
 const AdminTickets = lazy(() => import("../pages/admin/AdminTickets"));
+const ForgotPassword = lazy(() => import("../pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("../pages/ResetPassword"));
 const NotFound = lazy(() => import("../pages/NotFound"));
 
 // Loading fallback component
@@ -44,6 +46,8 @@ export default function AppRoutes() {
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />

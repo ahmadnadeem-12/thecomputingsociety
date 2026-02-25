@@ -41,15 +41,19 @@ export default function Login() {
           <div className="label">Password</div>
           <input type="password" className="input" value={password} onChange={e => setPassword(e.target.value)} />
         </div>
+        <div style={{ marginTop: ".4rem", textAlign: "right" }}>
+          <button
+            type="button"
+            onClick={() => nav("/forgot-password")}
+            style={{ background: "none", border: "none", color: "var(--accent-cyan)", cursor: "pointer", fontSize: ".82rem", fontWeight: 600, padding: 0 }}
+          >
+            Forgot Password?
+          </button>
+        </div>
         {err && <div style={{ marginTop: ".7rem", color: "#ffd2d7" }}>{err}</div>}
         <div style={{ marginTop: "1rem", display: "flex", gap: ".6rem", flexWrap: "wrap" }}>
           <button className="btn btnPrimary" type="submit">Login</button>
           <button className="btn btnGhost" type="button" onClick={() => nav("/register")}>Create account</button>
-        </div>
-
-        <div className="hr" />
-        <div className="sectionSubtitle">
-          Admin demo login: <b>admin@tcs.uaf</b> / <b>admin123</b>
         </div>
       </form>
     </section>

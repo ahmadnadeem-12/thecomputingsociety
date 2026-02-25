@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { EventContext } from "../context/EventContext";
 import { createTicket, listTickets } from "../services/ticketService";
-import { downloadTicketPDF } from "../services/pdfService";
+import { downloadTicketPDF, downloadCertificatePDF } from "../services/pdfService";
 import { sendTicketEmail } from "../services/emailService";
 import { formatDate } from "../utils/helpers";
 import "../assets/styles/pages/tickets.css";
@@ -488,6 +488,26 @@ export default function Tickets() {
                       >
                         📥 Download PDF
                       </button>
+                      {t.checkedIn && (
+                        <button
+                          className="btn btnGhost downloadBtn"
+                          style={{ marginTop: ".4rem", fontSize: ".78rem" }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            downloadCertificatePDF({
+                              name: t.name,
+                              agNo: t.agNo,
+                              eventTitle: displayTitle,
+                              eventDate: displayDate,
+                              eventTime: displayTime,
+                              venue: ev?.venue || t.eventId?.venue || "UAF",
+                              organizer: "The Computing Society",
+                            });
+                          }}
+                        >
+                          📜 Certificate
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>

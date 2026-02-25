@@ -57,4 +57,11 @@ userSchema.methods.getSignedJwtToken = function () {
     });
 };
 
+// Generate reset password token (15 min expiry)
+userSchema.methods.getResetPasswordToken = function () {
+    return jwt.sign({ id: this._id, purpose: "reset" }, process.env.JWT_SECRET, {
+        expiresIn: "15m",
+    });
+};
+
 module.exports = mongoose.model("User", userSchema);
