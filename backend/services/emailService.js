@@ -3,25 +3,66 @@
  * Email Service — Nodemailer
  * ============================================
  * Sends styled HTML emails for password reset.
- * Uses Gmail SMTP with App Password.
+ * 
+ * MODES:
+ *  1. Gmail SMTP — Set SMTP_USER & SMTP_PASS in .env
+ *  2. Ethereal (Test) — Auto-creates test account if
+ *     SMTP_USER/SMTP_PASS are empty. Preview emails
+ *     at the URL logged in the console.
  * ============================================
  */
 
 const nodemailer = require("nodemailer");
 
+// Cache the transporter so we only create it once
+let cachedTransporter = null;
+
 /**
  * Create reusable transporter
+ * Falls back to Ethereal test account when no SMTP creds
  */
-function createTransporter() {
-    return nodemailer.createTransport({
-        host: process.env.SMTP_HOST || "smtp.gmail.com",
-        port: parseInt(process.env.SMTP_PORT) || 587,
-        secure: false, // true for 465, false for other ports
+async function getTransporter() {
+    // Return cached if available
+    if (cachedTransporter) return cachedTransporter;
+
+    // If real SMTP credentials are set, use them (Gmail etc.)
+    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+        cachedTransporter = nodemailer.createTransport({
+            host: process.env.SMTP_HOST || "smtp.gmail.com",
+            port: parseInt(process.env.SMTP_PORT) || 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASS,
+            },
+        });
+
+        console.log("📧 Email: Using Gmail SMTP");
+        return cachedTransporter;
+    }
+
+    // No credentials — create Ethereal test account automatically
+    console.log("📧 Email: No SMTP credentials found — creating Ethereal test account...");
+
+    const testAccount = await nodemailer.createTestAccount();
+
+    cachedTransporter = nodemailer.createTransport({
+        host: "smtp.ethereal.email",
+        port: 587,
+        secure: false,
         auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS,
+            user: testAccount.user,
+            pass: testAccount.pass,
         },
     });
+
+    console.log("✅ Ethereal test account created:");
+    console.log(`   📧 User: ${testAccount.user}`);
+    console.log(`   🔑 Pass: ${testAccount.pass}`);
+    console.log("   🌐 Preview emails at: https://ethereal.email/login");
+    console.log("");
+
+    return cachedTransporter;
 }
 
 /**
@@ -31,7 +72,7 @@ function createTransporter() {
  * @param {string} userName - User's name for personalization
  */
 async function sendResetEmail(toEmail, resetUrl, userName) {
-    const transporter = createTransporter();
+    const transporter = await getTransporter();
 
     const html = `
     <!DOCTYPE html>
@@ -75,7 +116,7 @@ async function sendResetEmail(toEmail, resetUrl, userName) {
                 </div>
             </div>
             <div class="footer">
-                © The Computing Society — UAF<br/>
+                &copy; The Computing Society — UAF<br/>
                 This is an automated email. Please do not reply.
             </div>
         </div>
@@ -84,13 +125,30 @@ async function sendResetEmail(toEmail, resetUrl, userName) {
     `;
 
     const mailOptions = {
-        from: `"The Computing Society" <${process.env.SMTP_USER || process.env.FROM_EMAIL || "noreply@tcs.uaf"}>`,
+        from: `"The Computing Society" <${process.env.SMTP_USER || "noreply@tcs.uaf"}>`,
         to: toEmail,
         subject: "🔐 Reset Your Password — TCS",
         html,
     };
 
-    await transporter.sendMail(mailOptions);
+    const info = await transporter.sendMail(mailOptions);
+
+    // If using Ethereal, log the preview URL
+    const previewUrl = nodemailer.getTestMessageUrl(info);
+    if (previewUrl) {
+        console.log("");
+        console.log("============================================");
+        console.log("  📬 EMAIL SENT (Ethereal Test Mode)");
+        console.log("============================================");
+        console.log(`  👤 To:      ${toEmail}`);
+        console.log(`  🔗 Preview: ${previewUrl}`);
+        console.log("============================================");
+        console.log("");
+    } else {
+        console.log(`📧 Reset email sent to: ${toEmail}`);
+    }
+
+    return info;
 }
 
 module.exports = { sendResetEmail };

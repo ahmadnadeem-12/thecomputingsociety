@@ -45,7 +45,7 @@ export default function EventsTab({
                                 ))}
                             </div>
                         )}
-                        <div style={{ display: "flex", gap: ".5rem", marginTop: ".75rem" }}>
+                        <div style={{ display: "flex", gap: ".5rem", marginTop: ".75rem", flexWrap: "wrap" }}>
                             <button
                                 className="btn btnGhost"
                                 onClick={() => openEventEdit(e)}
@@ -53,16 +53,16 @@ export default function EventsTab({
                             >
                                 Edit
                             </button>
-                             <button
+                            <button
                                 className="btn btnGhost"
                                 onClick={() => eventsCtx.remove(e._id || e.id)}
                                 aria-label={`Delete ${e.title}`}
                             >
                                 Delete
                             </button>
-                             <button
+                            <button
                                 className="btn btnPrimary"
-                                style={{ fontSize: ".75rem", padding: ".4rem .7rem" }}
+                                style={{ flex: 1, minWidth: "fit-content" }}
                                 onClick={() => eventsCtx.update(e._id || e.id, { featured: !e.featured })}
                                 aria-label={e.featured ? "Remove from featured" : "Add to featured"}
                             >

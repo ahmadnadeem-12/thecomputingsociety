@@ -1,0 +1,105 @@
+{
+  "_id": "69ab00462d80182d64447600",
+  "heroTitle": {
+    "line1": "THE",
+    "line2": "COMPUTING",
+    "line3": "SOCIETY"
+  },
+  "heroBadge": "Official Society • Dept. of Computer Science • UAF",
+  "heroDescription": "Connecting students, faculty, and industry through workshops, competitions, talks, hackathons, and social nights. Building the next generation of tech leaders at UAF.",
+  "stats": [
+    {
+      "number": "25+",
+      "label": "Events / Year",
+      "_id": "69ab00462d80182d64447601"
+    },
+    {
+      "number": "600+",
+      "label": "Active Members",
+      "_id": "69ab00462d80182d64447602"
+    },
+    {
+      "number": "10+",
+      "label": "Faculty Mentors",
+      "_id": "69ab00462d80182d64447603"
+    }
+  ],
+  "notices": [
+    {
+      "title": "Latest Announcement",
+      "meta": "Midterm schedule uploaded • PDF",
+      "icon": "📢",
+      "gradient": "linear-gradient(135deg, #dc2743, #c234a5)",
+      "_id": "69ab00462d80182d64447604"
+    },
+    {
+      "title": "Upcoming Event",
+      "meta": "Tech & Entrepreneurship Summit 4.0",
+      "icon": "🎤",
+      "gradient": "linear-gradient(135deg, #9b59b6, #00d9ff)",
+      "_id": "69ab00462d80182d64447605"
+    },
+    {
+      "title": "Tickets Open",
+      "meta": "Generate QR ticket in seconds",
+      "icon": "🎟️",
+      "gradient": "linear-gradient(135deg, #00d9ff, #00ff88)",
+      "_id": "69ab00462d80182d64447606"
+    }
+  ],
+  "features": [
+    {
+      "icon": "🚀",
+      "title": "Workshops",
+      "desc": "Hands-on learning sessions",
+      "_id": "69ab00462d80182d64447607"
+    },
+    {
+      "icon": "🏆",
+      "title": "Competitions",
+      "desc": "Showcase your skills",
+      "_id": "69ab00462d80182d64447608"
+    },
+    {
+      "icon": "💡",
+      "title": "Hackathons",
+      "desc": "48-hour innovation sprints",
+      "_id": "69ab00462d80182d64447609"
+    },
+    {
+      "icon": "🎯",
+      "title": "Bootcamps",
+      "desc": "Intensive skill training",
+      "_id": "69ab00462d80182d6444760a"
+    }
+  ],
+  "quickLinks": [
+    {
+      "label": "Meet the Cabinet",
+      "path": "/cabinet",
+      "icon": "👥",
+      "_id": "69ab00462d80182d6444760b"
+    },
+    {
+      "label": "Our Faculty",
+      "path": "/faculty",
+      "icon": "👨‍🏫",
+      "_id": "69ab00462d80182d6444760c"
+    },
+    {
+      "label": "Gallery",
+      "path": "/gallery",
+      "icon": "📸",
+      "_id": "69ab00462d80182d6444760d"
+    },
+    {
+      "label": "Admin Portal",
+      "path": "/admin/login",
+      "icon": "🔐",
+      "_id": "69ab00462d80182d6444760e"
+    }
+  ],
+  "createdAt": "2026-03-06T16:26:46.447Z",
+  "updatedAt": "2026-03-06T16:26:46.447Z",
+  "__v": 0
+}

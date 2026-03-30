@@ -137,7 +137,7 @@ export default function Dashboard() {
 
   // Events
   const openEventCreate = () => {
-    setEditing({ title: "", date: "2025-12-31", time: "18:00", venue: "", status: "open", featured: false, capacity: 100, seatsRemaining: 100, tags: "", description: "" });
+    setEditing({ title: "", date: "2025-12-31", time: "18:00", venue: "", status: "open", featured: false, capacity: 100, seatsRemaining: 100, tags: "", description: "", certificateDescription: "" });
     setModalType("event");
     setModalOpen(true);
   };
@@ -145,7 +145,8 @@ export default function Dashboard() {
   const openEventEdit = (e) => {
     setEditing({
       ...e,
-      tags: Array.isArray(e.tags) ? e.tags.join(", ") : (e.tags || "")
+      tags: Array.isArray(e.tags) ? e.tags.join(", ") : (e.tags || ""),
+      certificateDescription: e.certificateDescription || ""
     });
     setModalType("event");
     setModalOpen(true);
@@ -467,6 +468,7 @@ export default function Dashboard() {
             </div>
             <div><div className="label">Tags (comma separated)</div><input className="input" value={editing.tags || ""} onChange={e => setEditing({ ...editing, tags: e.target.value })} aria-label="Event tags" placeholder="e.g. Workshop, Tech, Social" /></div>
             <div><div className="label">Description</div><textarea className="input" style={{ minHeight: 80, borderRadius: 12 }} value={editing.description} onChange={e => setEditing({ ...editing, description: e.target.value })} aria-label="Event description" /></div>
+            <div><div className="label">Certificate Description (Appears on certificates only)</div><textarea className="input" style={{ minHeight: 80, borderRadius: 12 }} value={editing.certificateDescription} onChange={e => setEditing({ ...editing, certificateDescription: e.target.value })} aria-label="Certificate description" placeholder="For participating in..." /></div>
             <div style={{ display: "flex", gap: ".5rem", justifyContent: "flex-end" }}>
               <button className="btn btnGhost" onClick={() => setModalOpen(false)}>Cancel</button>
               <button className="btn btnPrimary" onClick={saveEvent}>Save</button>

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema(
     {
@@ -30,6 +31,18 @@ const userSchema = new mongoose.Schema(
             enum: ["student", "admin"],
             default: "student",
         },
+
+        // ========================
+        // Password Reset Fields
+        // ========================
+        resetToken: {
+            type: String,
+            default: undefined,
+        },
+        resetTokenExpire: {
+            type: Date,
+            default: undefined,
+        },
     },
     {
         timestamps: true,
@@ -57,11 +70,33 @@ userSchema.methods.getSignedJwtToken = function () {
     });
 };
 
-// Generate reset password token (15 min expiry)
+/**
+ * Generate crypto-based reset token
+ * - Creates a random 32-byte hex token
+ * - Hashes it (SHA-256) before saving to DB for security
+ * - Returns the UNHASHED token (sent to user via email)
+ * - Token expires in 15 minutes
+ */
 userSchema.methods.getResetPasswordToken = function () {
-    return jwt.sign({ id: this._id, purpose: "reset" }, process.env.JWT_SECRET, {
-        expiresIn: "15m",
-    });
+    // Generate random token
+    const rawToken = crypto.randomBytes(32).toString("hex");
+
+    // Hash token and save to database (never store raw tokens in DB)
+    this.resetToken = crypto.createHash("sha256").update(rawToken).digest("hex");
+
+    // Set expiry — 15 minutes from now
+    this.resetTokenExpire = Date.now() + 15 * 60 * 1000;
+
+    // Return the UNHASHED token (this goes in the email link)
+    return rawToken;
+};
+
+/**
+ * Clear reset token fields after successful reset
+ */
+userSchema.methods.clearResetToken = function () {
+    this.resetToken = undefined;
+    this.resetTokenExpire = undefined;
 };
 
 module.exports = mongoose.model("User", userSchema);

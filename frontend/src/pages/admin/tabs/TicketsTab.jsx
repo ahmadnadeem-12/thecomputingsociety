@@ -15,6 +15,7 @@ export default function TicketsTab({
     const [searchQuery, setSearchQuery] = useState("");
     const scannerRef = useRef(null);
     const html5QrCodeRef = useRef(null);
+    const isProcessingRef = useRef(false);
 
     // Filter tickets based on search
     const filteredTickets = tickets.filter(t => {
@@ -82,28 +83,63 @@ export default function TicketsTab({
         setScannerActive(false);
     };
 
+    // Play a beep sound for scan feedback
+    const playBeep = (success) => {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = success ? 880 : 330;
+            gain.gain.value = 0.3;
+            osc.start();
+            osc.stop(ctx.currentTime + (success ? 0.15 : 0.3));
+        } catch (e) { /* audio not available */ }
+    };
+
     // Handle QR code scan result
-    const handleScan = (qrCode) => {
-        // Check-in the ticket
-        const result = checkInByQrCode(qrCode);
-        setScanResult(result);
+    const handleScan = async (qrCode) => {
+        // Prevent duplicate scans while processing
+        if (isProcessingRef.current) return;
+        isProcessingRef.current = true;
 
-        // Add to scan history
-        const historyEntry = {
-            id: Date.now(),
-            qrCode,
-            ...result,
-            time: new Date().toLocaleTimeString()
-        };
-        setScanHistory(prev => [historyEntry, ...prev.slice(0, 19)]); // Keep last 20
+        try {
+            // Check-in the ticket (NOW properly awaited!)
+            const result = await checkInByQrCode(qrCode);
+            setScanResult(result);
 
-        // Refresh tickets list
-        refresh();
+            // Audio feedback
+            playBeep(result.success && result.isNewCheckIn);
 
-        // Auto-clear result after 3 seconds to continue scanning
-        setTimeout(() => {
-            setScanResult(null);
-        }, 3000);
+            // Add to scan history
+            const historyEntry = {
+                id: Date.now(),
+                qrCode,
+                ...result,
+                time: new Date().toLocaleTimeString()
+            };
+            setScanHistory(prev => [historyEntry, ...prev.slice(0, 19)]);
+
+            // Refresh tickets list
+            refresh();
+
+            // Auto-clear result after 2 seconds to continue scanning
+            setTimeout(() => {
+                setScanResult(null);
+                isProcessingRef.current = false;
+            }, 2000);
+        } catch (err) {
+            setScanResult({
+                success: false,
+                message: "❌ Network error — try again",
+                isNewCheckIn: false
+            });
+            setTimeout(() => {
+                setScanResult(null);
+                isProcessingRef.current = false;
+            }, 2000);
+        }
     };
 
     // Cleanup on unmount

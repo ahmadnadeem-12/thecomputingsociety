@@ -322,39 +322,28 @@ export function generateCertificatePDF(data) {
     doc.setFillColor(20, 20, 22); // Charcoal / Almost Black
     doc.rect(0, 0, W, H, 'F');
 
-    // ---- CORNER CURVES (Modern Red Design) ----
+    // ---- CORNER CURVES (Using large circles for smooth curves) ----
 
-    // 1. Bottom-Right Base (Dark Shadow Layer)
-    doc.setFillColor(40, 40, 45);
-    doc.moveTo(W, H);
-    doc.lineTo(W - 140, H);
-    doc.bezierCurveTo(W - 100, H - 70, W - 70, H - 100, W, H - 140);
-    doc.lineTo(W, H);
-    doc.fill();
-
-    // 2. Bottom-Right Red Layer
+    // 1. Top-Left Red Curve Area
+    // Dark Shadow Layer
+    doc.setFillColor(35, 35, 40);
+    doc.circle(-20, -20, 110, 'F');
+    // Red Layer
     doc.setFillColor(180, 20, 35); // Vibrant Red
-    doc.moveTo(W, H);
-    doc.lineTo(W - 120, H);
-    doc.bezierCurveTo(W - 80, H - 60, W - 60, H - 80, W, H - 120);
-    doc.lineTo(W, H);
-    doc.fill();
+    doc.circle(-20, -20, 100, 'F');
 
-    // 3. Top-Left Base (Dark Shadow Layer)
-    doc.setFillColor(40, 40, 45);
-    doc.moveTo(0, 0);
-    doc.lineTo(140, 0);
-    doc.bezierCurveTo(100, 70, 70, 100, 0, 140);
-    doc.lineTo(0, 0);
-    doc.fill();
-
-    // 4. Top-Left Red Layer
+    // 2. Bottom-Right Red Curve Area
+    // Dark Shadow Layer
+    doc.setFillColor(35, 35, 40);
+    doc.circle(W + 20, H + 20, 110, 'F');
+    // Red Layer
     doc.setFillColor(180, 20, 35);
-    doc.moveTo(0, 0);
-    doc.lineTo(120, 0);
-    doc.bezierCurveTo(80, 60, 60, 80, 0, 120);
-    doc.lineTo(0, 0);
-    doc.fill();
+    doc.circle(W + 20, H + 20, 100, 'F');
+
+    // Add some sharp accent triangles for depth (Standard methods)
+    doc.setFillColor(140, 15, 30);
+    doc.triangle(0, 0, 50, 0, 0, 50, 'F');
+    doc.triangle(W, H, W - 50, H, W, H - 50, 'F');
 
     // ---- GOLD SEAL / BADGE (Top Left) ----
     const sealX = 45;
@@ -391,21 +380,21 @@ export function generateCertificatePDF(data) {
 
     y += 12;
     // "OF PARTICIPATION"
-    doc.setFontSize(18);
+    doc.setFontSize(16);
     doc.setFont('helvetica', 'normal');
-    doc.text('OF PARTICIPATION', W / 2 + 20, y, { align: 'center', charSpace: 2 });
+    doc.text('OF PARTICIPATION', W / 2 + 15, y, { align: 'center' });
 
     y += 15;
     // Gold Thin Line
     doc.setDrawColor(212, 175, 55);
     doc.setLineWidth(0.5);
-    doc.line(W / 2 - 50, y, W / 2 + 90, y);
+    doc.line(W / 2 - 50, y, W / 2 + 80, y);
 
     y += 20;
     // "PROUDLY PRESENTED TO"
     doc.setFontSize(10);
     doc.setTextColor(180, 180, 190);
-    doc.text('PROUDLY PRESENTED TO', W / 2 + 20, y, { align: 'center', charSpace: 1.5 });
+    doc.text('PROUDLY PRESENTED TO', W / 2 + 15, y, { align: 'center' });
 
     y += 18;
     // Participant Name (Elegant Script-like)
@@ -424,11 +413,11 @@ export function generateCertificatePDF(data) {
     }
 
     y += 15;
-    // Short Description
-    doc.setFontSize(9);
+    // Short Description (Enlarged)
+    doc.setFontSize(11);
     doc.setTextColor(160, 160, 170);
-    const descText = data.description || `For participating in "${data.eventTitle || 'TCS Event'}" organized by The Computing Society, University of Agriculture Faisalabad.`;
-    const descLines = doc.splitTextToSize(descText, 180);
+    const descText = data.certificateDescription || data.description || `For participating in "${data.eventTitle || 'TCS Event'}" organized by The Computing Society, University of Agriculture Faisalabad.`;
+    const descLines = doc.splitTextToSize(descText, 170);
     doc.text(descLines, W / 2 + 20, y, { align: 'center' });
 
     // ---- Event Details Box (Clean) ----
@@ -439,25 +428,22 @@ export function generateCertificatePDF(data) {
     doc.setLineWidth(0.2);
     doc.roundedRect(boxX, y, boxW, 18, 2, 2, 'S');
 
-    doc.setFontSize(8);
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(212, 175, 55);
-    const col1 = boxX + 10;
-    const col2 = boxX + boxW / 3 + 5;
-    const col3 = boxX + (boxW * 2) / 3 + 5;
-    doc.text('EVENT', col1, y + 6);
-    doc.text('DATE', col2, y + 6);
-    doc.text('VENUE', col3, y + 6);
+    const col1 = boxX + boxW / 4;
+    const col2 = boxX + (boxW * 3) / 4;
+    doc.text('EVENT', col1, y + 6, { align: 'center' });
+    doc.text('DATE', col2, y + 6, { align: 'center' });
 
-    doc.setFontSize(8);
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(255, 255, 255);
-    doc.text(data.eventTitle || 'TCS Event', col1, y + 12);
-    doc.text(data.eventDate || 'TBA', col2, y + 12);
-    doc.text(data.venue || 'UAF', col3, y + 12);
+    doc.text(data.eventTitle || 'TCS Event', col1, y + 13, { align: 'center' });
+    doc.text(data.eventDate || 'TBA', col2, y + 13, { align: 'center' });
 
     // ---- SIGNATURES ----
-    y += 35;
+    y += 28; // Reduced from 35 to prevent overlap with footer at bottom
     const sigWidth = 60;
     const leftSigX = W / 2 - 50;
     const rightSigX = W / 2 + 60;

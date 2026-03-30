@@ -73,8 +73,20 @@ app.use("/api/degrees", require("./routes/degrees"));
 app.use("/api/home", require("./routes/home"));
 
 // ========================
-// Health Check
+// API Root & Health Check
 // ========================
+app.get("/api", (req, res) => {
+    res.json({
+        success: true,
+        message: "👋 Welcome to THE COMPUTING SOCIETY API",
+        endpoints: {
+            auth: "/api/auth",
+            events: "/api/events",
+            health: "/api/health",
+        },
+    });
+});
+
 app.get("/api/health", (req, res) => {
     res.json({
         success: true,

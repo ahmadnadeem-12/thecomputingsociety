@@ -46,6 +46,12 @@ const eventSchema = new mongoose.Schema(
             type: String,
             default: "",
         },
+        certificateDescription: {
+            type: String,
+            default: "",
+            trim: true,
+            maxlength: [500, "Certificate description cannot exceed 500 characters"],
+        },
     },
     {
         timestamps: true,

@@ -39,10 +39,17 @@ const ADMIN_USER = {
     role: "admin",
 };
 
+const STUDENT_USER = {
+    name: "Ahmad Nadeem",
+    email: "student@tcs.uaf",
+    password: "student123",
+    role: "student",
+};
+
 const EVENTS = [
     {
         title: "Tech & Entrepreneurship Summit 4.0",
-        date: "2025-10-28",
+        date: "2026-10-28",
         time: "18:00",
         venue: "D-Ground (UAF)",
         status: "open",
@@ -54,7 +61,7 @@ const EVENTS = [
     },
     {
         title: "Programming in Big Data – Seminar",
-        date: "2025-10-17",
+        date: "2026-10-17",
         time: "11:00",
         venue: "Lecture Theatre, CS Dept.",
         status: "open",
@@ -67,9 +74,9 @@ const EVENTS = [
 ];
 
 const ANNOUNCEMENTS = [
-    { title: "Midterm Exam Schedule Released", body: "The midterm examination schedule for Fall 2024 has been released. Please check your student portal for detailed date and time slots. Make sure to prepare accordingly.", date: "2024-12-28", priority: "important", tags: ["Academic", "Exams"], link: "", linkText: "" },
-    { title: "Tech & Entrepreneurship Summit 4.0", body: "Join us for the biggest tech event of the year! Register now to secure your spot. Limited seats available. The summit will feature industry leaders, workshops, and networking sessions.", date: "2024-12-25", priority: "urgent", tags: ["Event", "Summit"], link: "/events", linkText: "Register Now" },
-    { title: "New Library Resources Available", body: "The department library has acquired new books and digital resources. Visit the library to explore the latest additions to our collection.", date: "2024-12-20", priority: "normal", tags: ["Library", "Resources"], link: "", linkText: "" },
+    { title: "Midterm Exam Schedule Released", body: "The midterm examination schedule for Fall 2026 has been released. Please check your student portal for detailed date and time slots. Make sure to prepare accordingly.", date: "2026-12-28", priority: "important", tags: ["Academic", "Exams"], link: "", linkText: "" },
+    { title: "Tech & Entrepreneurship Summit 4.0", body: "Join us for the biggest tech event of the year! Register now to secure your spot. Limited seats available. The summit will feature industry leaders, workshops, and networking sessions.", date: "2026-12-25", priority: "urgent", tags: ["Event", "Summit"], link: "/events", linkText: "Register Now" },
+    { title: "New Library Resources Available", body: "The department library has acquired new books and digital resources. Visit the library to explore the latest additions to our collection.", date: "2026-12-20", priority: "normal", tags: ["Library", "Resources"], link: "", linkText: "" },
 ];
 
 const CABINET = [
@@ -92,10 +99,10 @@ const GALLERY = [
 ];
 
 const PROGRAMS = [
-    { title: "Web Development Bootcamp", type: "bootcamp", description: "Intensive 6-week bootcamp covering HTML, CSS, JavaScript, React, and Node.js. Build real-world projects and get job-ready skills.", icon: "💻", duration: "6 Weeks", participants: 50, status: "upcoming", startDate: "2025-01-15", instructor: "Dr. Ahmed Khan", tags: ["Web", "Frontend", "Backend"] },
-    { title: "AI & Machine Learning Workshop", type: "workshop", description: "Learn the fundamentals of AI and ML with hands-on Python exercises. Covers supervised learning, neural networks, and real applications.", icon: "🤖", duration: "3 Days", participants: 40, status: "open", startDate: "2025-01-20", instructor: "Prof. Sarah Ali", tags: ["AI", "ML", "Python"] },
-    { title: "Competitive Programming Contest", type: "competition", description: "Test your algorithmic skills in our annual coding competition. Win prizes and recognition!", icon: "🏆", duration: "8 Hours", participants: 100, status: "open", startDate: "2025-02-01", instructor: "ACM Chapter", tags: ["Algorithms", "DSA", "Contest"] },
-    { title: "Industry Expert Talk Series", type: "talk", description: "Monthly sessions with industry professionals sharing insights on tech careers, trends, and best practices.", icon: "🎤", duration: "2 Hours", participants: 200, status: "ongoing", startDate: "2025-01-10", instructor: "Various Speakers", tags: ["Career", "Industry", "Networking"] },
+    { title: "Web Development Bootcamp", type: "bootcamp", description: "Intensive 6-week bootcamp covering HTML, CSS, JavaScript, React, and Node.js. Build real-world projects and get job-ready skills.", icon: "💻", duration: "6 Weeks", participants: 50, status: "upcoming", startDate: "2026-01-15", instructor: "Dr. Ahmed Khan", tags: ["Web", "Frontend", "Backend"] },
+    { title: "AI & Machine Learning Workshop", type: "workshop", description: "Learn the fundamentals of AI and ML with hands-on Python exercises. Covers supervised learning, neural networks, and real applications.", icon: "🤖", duration: "3 Days", participants: 40, status: "open", startDate: "2026-01-20", instructor: "Prof. Sarah Ali", tags: ["AI", "ML", "Python"] },
+    { title: "Competitive Programming Contest", type: "competition", description: "Test your algorithmic skills in our annual coding competition. Win prizes and recognition!", icon: "🏆", duration: "8 Hours", participants: 100, status: "open", startDate: "2026-02-01", instructor: "ACM Chapter", tags: ["Algorithms", "DSA", "Contest"] },
+    { title: "Industry Expert Talk Series", type: "talk", description: "Monthly sessions with industry professionals sharing insights on tech careers, trends, and best practices.", icon: "🎤", duration: "2 Hours", participants: 200, status: "ongoing", startDate: "2026-01-10", instructor: "Various Speakers", tags: ["Career", "Industry", "Networking"] },
 ];
 
 const DEGREES = [
@@ -163,12 +170,44 @@ async function seed() {
             console.log("👤 Admin user already exists");
         }
 
+        // Seed Student User
+        let studentUser = await User.findOne({ email: STUDENT_USER.email });
+        if (!studentUser) {
+            studentUser = await User.create(STUDENT_USER);
+            console.log("🎓 Student user created (student@tcs.uaf / student123)");
+        } else {
+            console.log("🎓 Student user already exists");
+        }
+
         // Seed Events
         if ((await Event.countDocuments()) === 0) {
             await Event.insertMany(EVENTS);
             console.log(`📅 ${EVENTS.length} events seeded`);
         } else {
             console.log("📅 Events already exist");
+        }
+
+        // Seed a pre-checked-in ticket for the student
+        if ((await Ticket.countDocuments()) === 0) {
+            const firstEvent = await Event.findOne();
+            if (firstEvent && studentUser) {
+                const ts = new Date().toISOString().replace(/[-:.TZ]/g, "");
+                const rand = Math.floor(1000 + Math.random() * 9000);
+                await Ticket.create({
+                    publicTicketId: `ahmad-nadeem-2022-AG-9800-${ts}-${rand}`,
+                    userId: studentUser._id.toString(),
+                    eventId: firstEvent._id,
+                    name: STUDENT_USER.name,
+                    agNo: "2022-AG-9800",
+                    email: STUDENT_USER.email,
+                    department: "CS",
+                    semester: "6",
+                    checkedIn: true,
+                });
+                console.log("🎟️  Pre-checked-in ticket created for student");
+            }
+        } else {
+            console.log("🎟️  Tickets already exist");
         }
 
         // Seed Announcements

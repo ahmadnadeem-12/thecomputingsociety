@@ -1,6 +1,7 @@
 
-import React, { useEffect, useMemo, useState } from "react";
-import { listTickets, setTicketCheckedIn, deleteTicket } from "../../services/ticketService";
+import React, { useEffect, useMemo, useState, useRef } from "react";
+import { Html5Qrcode } from "html5-qrcode";
+import { listTickets, setTicketCheckedIn, deleteTicket, checkInByQrCode } from "../../services/ticketService";
 import { listEvents } from "../../services/eventService";
 import "../../assets/styles/pages/adminTickets.css";
 
@@ -112,64 +113,107 @@ export default function AdminTickets() {
     }
   };
 
-  // QR Scan (best-effort): uses BarcodeDetector if available
+  // QR Scan using html5-qrcode (reliable cross-browser)
   const [scanError, setScanError] = useState("");
   const [scanning, setScanning] = useState(false);
+  const [scanResult, setScanResult] = useState(null);
+  const html5QrRef = useRef(null);
+  const isProcessingRef = useRef(false);
+
+  // Audio beep for scan feedback
+  const playBeep = (success) => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = success ? 880 : 330;
+      gain.gain.value = 0.3;
+      osc.start();
+      osc.stop(ctx.currentTime + (success ? 0.15 : 0.3));
+    } catch (e) { /* audio not available */ }
+  };
 
   const startScan = async () => {
     setScanError("");
-    if (!("BarcodeDetector" in window)) {
-      setScanError("QR scanner not supported in this browser. Use Chrome / Edge on mobile.");
-      return;
-    }
-    try {
-      setScanning(true);
-      const video = document.getElementById("qrVideo");
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-      video.srcObject = stream;
-      await video.play();
+    setScanResult(null);
+    setScanning(true);
 
-      const detector = new window.BarcodeDetector({ formats: ["qr_code"] });
-      const loop = async () => {
-        if (!scanning) return;
-        try {
-          const codes = await detector.detect(video);
-          if (codes?.length) {
-            const rawValue = (codes[0].rawValue || "").trim();
-            let agNo = rawValue;
+    setTimeout(async () => {
+      if (!document.getElementById("admin-qr-reader")) return;
 
-            // Try to parse as JSON if it's the full ticket payload
+      try {
+        const html5QrCode = new Html5Qrcode("admin-qr-reader");
+        html5QrRef.current = html5QrCode;
+
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          { fps: 15, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 },
+          async (decodedText) => {
+            // Prevent duplicate processing
+            if (isProcessingRef.current) return;
+            isProcessingRef.current = true;
+
             try {
-              const data = JSON.parse(rawValue);
-              if (data.agNo) agNo = data.agNo;
+              const result = await checkInByQrCode(decodedText);
+              setScanResult(result);
+              playBeep(result.success && result.isNewCheckIn);
+
+              if (result.success && result.isNewCheckIn) {
+                setCheckMsg(`✅ ${result.ticket?.name || "Student"} checked-in!`);
+              } else if (result.ticket?.checkedIn) {
+                setCheckMsg(`⚠️ ${result.ticket?.name || "Student"} already checked-in.`);
+              } else {
+                setCheckMsg(result.message || "❌ Invalid QR code.");
+              }
+
+              setRefresh(x => x + 1);
+
+              // Reset after 2 seconds for continuous scanning
+              setTimeout(() => {
+                setScanResult(null);
+                isProcessingRef.current = false;
+              }, 2000);
             } catch (err) {
-              // Not JSON, use raw value (fallback for simple strings)
+              setScanResult({ success: false, message: "❌ Network error" });
+              setTimeout(() => {
+                setScanResult(null);
+                isProcessingRef.current = false;
+              }, 2000);
             }
-
-            setCheckAg(agNo);
-            setCheckMsg(`✅ Scanned: ${agNo}. Select event & Check-in.`);
-            stopScan();
-            return;
-          }
-        } catch (e) { }
-        requestAnimationFrame(loop);
-      };
-      requestAnimationFrame(loop);
-    } catch (e) {
-      setScanError("Camera access denied or unavailable.");
-      setScanning(false);
-    }
+          },
+          () => { /* ignore no-QR-in-frame errors */ }
+        );
+      } catch (err) {
+        console.error("Camera error:", err);
+        setScanError("📷 Camera access denied or not available.");
+        setScanning(false);
+      }
+    }, 200);
   };
 
-  const stopScan = () => {
+  const stopScan = async () => {
+    if (html5QrRef.current) {
+      try {
+        await html5QrRef.current.stop();
+        html5QrRef.current.clear();
+      } catch (err) { /* already stopped */ }
+      html5QrRef.current = null;
+    }
     setScanning(false);
-    const video = document.getElementById("qrVideo");
-    const stream = video?.srcObject;
-    if (stream) {
-      stream.getTracks().forEach(t => t.stop());
-      video.srcObject = null;
-    }
+    setScanResult(null);
+    isProcessingRef.current = false;
   };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (html5QrRef.current) {
+        html5QrRef.current.stop().catch(() => { });
+      }
+    };
+  }, []);
 
   const quickCheckIn = async () => {
     setCheckMsg("");
@@ -193,7 +237,7 @@ export default function AdminTickets() {
       setRefresh(x => x + 1);
       setCheckMsg(`✅ ${ag} Checked-in successfully!`);
       setQ(ag);
-      setCheckAg(""); // Clear after success
+      setCheckAg("");
     } catch (err) {
       setCheckMsg(`❌ Error: ${err.response?.data?.message || "Failed to check-in"}`);
     }
@@ -235,14 +279,48 @@ export default function AdminTickets() {
 
           <div className="scanRow">
             {!scanning ? (
-              <button className="btn btnGhost" onClick={startScan}>Start QR Scan</button>
+              <button className="btn btnGhost" onClick={startScan}>🎥 Start QR Scan</button>
             ) : (
-              <button className="btn btnGhost" onClick={stopScan}>Stop</button>
+              <button className="btn btnGhost" onClick={stopScan}>✕ Stop Scanner</button>
             )}
             <span className="sectionSubtitle">{scanError || checkMsg}</span>
           </div>
 
-          <video id="qrVideo" className={`qrVideo ${scanning ? "show" : ""}`} playsInline />
+          {scanning && (
+            <div className="cameraContainer" style={{
+              marginTop: '0.75rem',
+              border: scanResult ? (scanResult.success ? '4px solid #00ff88' : '4px solid #ff4d6d') : '2px solid var(--glass-border)',
+              borderRadius: '12px',
+              overflow: 'hidden',
+              position: 'relative',
+              maxWidth: '400px',
+            }}>
+              <div id="admin-qr-reader" style={{ width: '100%' }} />
+              {scanResult && (
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(0,0,0,0.7)',
+                  zIndex: 10,
+                  color: '#fff',
+                  fontSize: '1.1rem',
+                  fontWeight: 700,
+                }}>
+                  <div style={{ fontSize: '2rem' }}>{scanResult.success ? '✅' : '❌'}</div>
+                  <div>{scanResult.message}</div>
+                  {scanResult.ticket && (
+                    <div style={{ fontSize: '0.85rem', opacity: 0.8, marginTop: '0.3rem' }}>
+                      {scanResult.ticket.name} • {scanResult.ticket.agNo}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

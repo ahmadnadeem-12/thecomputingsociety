@@ -39,6 +39,7 @@ router.get("/", async (req, res) => {
     if (!content) {
         content = await HomeContent.create(DEFAULT_HOME);
     }
+    console.log("DEBUG: Sending home content, stats count:", content.stats?.length || 0);
     res.json({ success: true, data: content });
 });
 

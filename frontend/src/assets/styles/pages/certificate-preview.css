@@ -1,0 +1,368 @@
+/* =========================================================
+   CERTIFICATE PREVIEW PAGE
+   ========================================================= */
+
+.certPreviewPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.certPreviewHeader {
+    text-align: center;
+}
+
+.certPreviewHeader .sectionTitle {
+    margin-bottom: 0.5rem;
+}
+
+/* ---------- Certificate Card ---------- */
+.certificateCard {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    aspect-ratio: 297 / 210;
+    background: #141416;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.7),
+        0 0 60px rgba(180, 20, 35, 0.15),
+        0 0 120px rgba(212, 175, 55, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+/* Certificate background image */
+.certificateCard .certBgImage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+/* Overlay content on top of image */
+.certOverlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 3rem 4rem;
+}
+
+/* Corner curves */
+.certCornerTL,
+.certCornerBR {
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.certCornerTL {
+    top: -30px;
+    left: -30px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(180, 20, 35, 0.85) 0%, rgba(140, 15, 30, 0.4) 50%, transparent 70%);
+}
+
+.certCornerBR {
+    bottom: -30px;
+    right: -30px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(180, 20, 35, 0.85) 0%, rgba(140, 15, 30, 0.4) 50%, transparent 70%);
+}
+
+/* Gold Seal Badge */
+.certSeal {
+    position: absolute;
+    top: 30px;
+    left: 35px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.certSealCircle {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #d4af37, #b8941e);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+        0 4px 15px rgba(212, 175, 55, 0.5),
+        inset 0 1px 2px rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(180, 140, 40, 0.6);
+}
+
+.certSealCircle span:first-child {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #141416;
+    letter-spacing: 0.08em;
+}
+
+.certSealCircle span:last-child {
+    font-size: 0.4rem;
+    font-weight: 700;
+    color: #141416;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.certSealRibbon {
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 14px solid #d4af37;
+    margin-top: -2px;
+}
+
+/* ---------- Certificate Typography ---------- */
+.certTitle {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin: 0;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.certOfText {
+    font-size: 1rem;
+    font-weight: 400;
+    color: #e0e0e5;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-top: 0.2rem;
+}
+
+.certGoldLine {
+    width: 180px;
+    height: 1.5px;
+    background: linear-gradient(90deg, transparent, #d4af37, transparent);
+    margin: 0.8rem auto;
+}
+
+.certPresentedTo {
+    font-size: 0.7rem;
+    color: #b4b4be;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.certName {
+    font-family: 'Times New Roman', 'Georgia', serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    font-style: italic;
+    color: #d4af37;
+    text-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+    margin: 0.3rem 0;
+}
+
+.certAgNo {
+    font-size: 0.85rem;
+    color: #d4af37;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.6rem;
+}
+
+.certDescription {
+    font-size: 0.85rem;
+    color: #a0a0aa;
+    text-align: center;
+    max-width: 520px;
+    line-height: 1.7;
+    margin-bottom: 0.8rem;
+}
+
+/* Event Details Box — Event & Date side by side */
+.certEventBox {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    padding: 0.6rem 2rem;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    min-width: 280px;
+}
+
+.certEventCol {
+    text-align: center;
+}
+
+.certEventCol .certEventLabel {
+    display: block;
+    font-size: 0.5rem;
+    font-weight: 700;
+    color: #d4af37;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.2rem;
+}
+
+.certEventCol .certEventValue {
+    display: block;
+    font-size: 0.6rem;
+    color: #ffffff;
+}
+
+/* Signatures */
+.certSignatures {
+    display: flex;
+    gap: 4rem;
+    margin-top: 0.5rem;
+}
+
+.certSigBlock {
+    text-align: center;
+    min-width: 120px;
+}
+
+.certSigLine {
+    width: 100%;
+    height: 1px;
+    background: #d4af37;
+    margin-bottom: 0.3rem;
+}
+
+.certSigLabel {
+    font-size: 0.5rem;
+    color: #9696a0;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.certSigValue {
+    font-size: 0.55rem;
+    color: #ffffff;
+    margin-bottom: 0.2rem;
+}
+
+/* Footer — direct child of certificateCard, pinned at very bottom */
+.certFooter {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 0.45rem;
+    color: #888890;
+    z-index: 10;
+    padding: 8px 0 4px;
+    background: linear-gradient(to top, rgba(15, 15, 18, 0.9) 30%, transparent);
+}
+
+/* ---------- Actions ---------- */
+.certActions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* ---------- Info Section ---------- */
+.certInfoSection {
+    width: 100%;
+    max-width: 900px;
+}
+
+.certInfoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.certInfoCard {
+    background: var(--bg-card);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    transition: all var(--transition-normal);
+}
+
+.certInfoCard:hover {
+    border-color: rgba(212, 175, 55, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.certInfoCard h4 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #d4af37;
+    margin: 0 0 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.certInfoCard p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+    .certOverlay {
+        padding: 1.5rem 1.5rem;
+    }
+
+    .certTitle {
+        font-size: 1.6rem;
+    }
+
+    .certName {
+        font-size: 1.4rem;
+    }
+
+    .certCornerTL,
+    .certCornerBR {
+        width: 120px;
+        height: 120px;
+    }
+
+    .certSeal {
+        top: 15px;
+        left: 15px;
+    }
+
+    .certSealCircle {
+        width: 36px;
+        height: 36px;
+    }
+
+    .certSealCircle span:first-child {
+        font-size: 0.45rem;
+    }
+
+    .certSealCircle span:last-child {
+        font-size: 0.3rem;
+    }
+
+    .certSignatures {
+        gap: 2rem;
+    }
+}

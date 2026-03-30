@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const crypto = require("crypto");
 const User = require("../models/User");
 const { protect, adminOnly } = require("../middleware/auth");
 
@@ -97,8 +98,11 @@ router.post("/logout", (req, res) => {
     res.json({ success: true, message: "Logged out successfully" });
 });
 
+// ============================================
+// FORGOT PASSWORD — Send reset link via email
+// ============================================
 // @route   POST /api/auth/forgot-password
-// @desc    Send password reset email
+// @desc    Generate crypto reset token, save to DB, send email
 // @access  Public
 router.post("/forgot-password", async (req, res) => {
     const { email } = req.body;
@@ -109,15 +113,18 @@ router.post("/forgot-password", async (req, res) => {
 
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
-        // Don't reveal if email exists (security)
+        // Don't reveal if email exists or not (security best practice)
         return res.json({ success: true, message: "If an account with that email exists, a reset link has been sent." });
     }
 
-    // Generate reset token
+    // Generate crypto reset token (returns raw unhashed token)
     const resetToken = user.getResetPasswordToken();
 
+    // Save the hashed token + expiry to database
+    await user.save({ validateBeforeSave: false });
+
     // Build reset URL (frontend URL)
-    const frontendUrl = process.env.CORS_ORIGIN || "http://localhost:5173";
+    const frontendUrl = (process.env.CORS_ORIGIN || "http://localhost:5173").split(",")[0];
     const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
 
     try {
@@ -126,13 +133,20 @@ router.post("/forgot-password", async (req, res) => {
 
         res.json({ success: true, message: "If an account with that email exists, a reset link has been sent." });
     } catch (error) {
+        // If email fails, clear the token from DB so user can try again
+        user.clearResetToken();
+        await user.save({ validateBeforeSave: false });
+
         console.error("Email send error:", error.message);
         res.status(500).json({ success: false, message: "Failed to send reset email. Please try again later." });
     }
 });
 
+// ============================================
+// RESET PASSWORD — Validate token & update password
+// ============================================
 // @route   POST /api/auth/reset-password
-// @desc    Reset password using token
+// @desc    Validate crypto token from DB, hash new password, update user
 // @access  Public
 router.post("/reset-password", async (req, res) => {
     const { token, newPassword } = req.body;
@@ -145,31 +159,29 @@ router.post("/reset-password", async (req, res) => {
         return res.status(400).json({ success: false, message: "Password must be at least 6 characters" });
     }
 
-    try {
-        const jwt = require("jsonwebtoken");
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // Hash the incoming token to compare with DB (we stored hashed version)
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-        // Ensure this is a reset token
-        if (decoded.purpose !== "reset") {
-            return res.status(400).json({ success: false, message: "Invalid reset token" });
-        }
+    // Find user by hashed token AND ensure token hasn't expired
+    const user = await User.findOne({
+        resetToken: hashedToken,
+        resetTokenExpire: { $gt: Date.now() }, // Token expiry must be in the future
+    }).select("+password");
 
-        const user = await User.findById(decoded.id).select("+password");
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
-        }
-
-        // Update password (pre-save hook will hash it)
-        user.password = newPassword;
-        await user.save();
-
-        res.json({ success: true, message: "Password has been reset successfully. You can now login." });
-    } catch (error) {
-        if (error.name === "TokenExpiredError") {
-            return res.status(400).json({ success: false, message: "Reset link has expired. Please request a new one." });
-        }
-        return res.status(400).json({ success: false, message: "Invalid or expired reset token." });
+    if (!user) {
+        return res.status(400).json({ success: false, message: "Invalid or expired reset token. Please request a new link." });
     }
+
+    // Update password (pre-save hook will hash it with bcrypt)
+    user.password = newPassword;
+
+    // Clear reset token fields from database
+    user.clearResetToken();
+
+    // Save user (triggers password hashing)
+    await user.save();
+
+    res.json({ success: true, message: "Password has been reset successfully. You can now login with your new password." });
 });
 
 module.exports = router;

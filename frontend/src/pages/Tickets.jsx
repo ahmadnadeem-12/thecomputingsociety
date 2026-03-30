@@ -22,7 +22,7 @@ function slug(s) {
 }
 
 export default function Tickets() {
-  const { user, isAuthed } = useAuth();
+  const { user, isAuthed, logout } = useAuth();
   const nav = useNavigate();
   const eventsCtx = useContext(EventContext);
   const qrRef = useRef(null);
@@ -241,7 +241,17 @@ export default function Tickets() {
             Required fields shown with <b className="reqStar">*</b> • 1 ticket = 1 event
           </div>
         </div>
-        <div className="pill pillRed">QR Ticket</div>
+        <div style={{ display: "flex", alignItems: "center", gap: ".6rem" }}>
+          <div className="pill pillRed">QR Ticket</div>
+          <button
+            className="btn btnGhost"
+            onClick={() => { logout(); nav("/"); }}
+            aria-label="Logout"
+            style={{ fontSize: ".82rem", padding: ".45rem .9rem" }}
+          >
+            🚪 Logout
+          </button>
+        </div>
       </div>
 
       <div className="ticketsGrid">
@@ -343,8 +353,15 @@ export default function Tickets() {
             >
               {isLoading ? "⏳ Generating..." : "Get Ticket"}
             </button>
-            <div className="sectionSubtitle">
+            <div className="sectionSubtitle" style={{ display: "flex", alignItems: "center", gap: ".5rem", flexWrap: "wrap" }}>
               Logged in as: <b>{user.email}</b>
+              <button
+                type="button"
+                onClick={() => { logout(); nav("/login"); }}
+                style={{ background: "none", border: "none", color: "var(--accent-cyan)", cursor: "pointer", fontSize: ".78rem", fontWeight: 600, padding: 0, textDecoration: "underline" }}
+              >
+                Switch Account
+              </button>
             </div>
           </div>
         </div>
@@ -500,7 +517,7 @@ export default function Tickets() {
                               eventTitle: displayTitle,
                               eventDate: displayDate,
                               eventTime: displayTime,
-                              venue: ev?.venue || t.eventId?.venue || "UAF",
+                              certificateDescription: ev?.certificateDescription || t.eventId?.certificateDescription,
                               organizer: "The Computing Society",
                             });
                           }}
