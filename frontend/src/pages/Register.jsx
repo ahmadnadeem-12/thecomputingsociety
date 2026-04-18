@@ -9,6 +9,7 @@ export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [err, setErr] = useState("");
 
   const onSubmit = async (e) => {
@@ -43,7 +44,37 @@ export default function Register() {
         </div>
         <div style={{ marginTop: ".7rem" }}>
           <div className="label">Password</div>
-          <input type="password" className="input" value={password} onChange={e => setPassword(e.target.value)} />
+          <div style={{ position: "relative" }}>
+            <input 
+              type={showPassword ? "text" : "password"} 
+              className="input" 
+              value={password} 
+              onChange={e => setPassword(e.target.value)} 
+              placeholder="At least 6 characters"
+              style={{ paddingRight: "2.5rem" }}
+              required 
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{ 
+                position: "absolute", 
+                right: "10px", 
+                top: "50%", 
+                transform: "translateY(-50%)", 
+                background: "none", 
+                border: "none", 
+                cursor: "pointer", 
+                fontSize: "1.1rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+              title={showPassword ? "Hide Password" : "Show Password"}
+            >
+              {showPassword ? "👁️" : "🙈"}
+            </button>
+          </div>
         </div>
 
         {err && <div style={{ marginTop: ".7rem", color: "#ffd2d7" }}>{err}</div>}

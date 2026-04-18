@@ -14,13 +14,13 @@ const Announcements = lazy(() => import("../pages/Announcements"));
 const Programs = lazy(() => import("../pages/Programs"));
 const Gallery = lazy(() => import("../pages/Gallery"));
 const Tickets = lazy(() => import("../pages/Tickets"));
-const Login = lazy(() => import("../pages/Login"));
-const Register = lazy(() => import("../pages/Register"));
-const AdminLogin = lazy(() => import("../pages/AdminLogin"));
+import Login from "../pages/Login";
+import Register from "../pages/Register";
+import ForgotPassword from "../pages/ForgotPassword";
+import ResetPassword from "../pages/ResetPassword";
 const Dashboard = lazy(() => import("../pages/Dashboard"));
 const AdminTickets = lazy(() => import("../pages/admin/AdminTickets"));
-const ForgotPassword = lazy(() => import("../pages/ForgotPassword"));
-const ResetPassword = lazy(() => import("../pages/ResetPassword"));
+const AdminLogin = lazy(() => import("../pages/AdminLogin"));
 const CertificatePreview = lazy(() => import("../pages/CertificatePreview"));
 const NotFound = lazy(() => import("../pages/NotFound"));
 
@@ -49,7 +49,7 @@ export default function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />

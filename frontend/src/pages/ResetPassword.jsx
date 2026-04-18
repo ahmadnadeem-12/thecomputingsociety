@@ -1,12 +1,11 @@
 
 import React, { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../services/api";
 
 export default function ResetPassword() {
     const nav = useNavigate();
-    const [params] = useSearchParams();
-    const token = params.get("token") || "";
+    const { token } = useParams();
 
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");

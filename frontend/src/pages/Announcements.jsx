@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Skeleton, SkeletonTitle, SkeletonText, SkeletonPill } from "../components/ui/Skeleton";
 import { listAnnouncements } from "../services/announcementService";
 import "../assets/styles/pages/announcements.css";
 
@@ -17,9 +18,19 @@ const cardVariants = {
 
 export default function Announcements() {
   const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    listAnnouncements().then(data => setItems(data || [])).catch(() => setItems([]));
+    setLoading(true);
+    listAnnouncements()
+      .then(data => {
+        setItems(data || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setItems([]);
+        setLoading(false);
+      });
   }, []);
 
   return (
@@ -40,58 +51,80 @@ export default function Announcements() {
         </div>
       </motion.div>
 
-      <motion.div
-        className="announcementsGrid"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {items.map((a) => (
-          <motion.div
-            key={a._id || a.id}
-            className={`announcementCard ${a.priority}`}
-            variants={cardVariants}
-            whileHover={{ x: 8 }}
-          >
-            <div className="announcementHeader">
-              <div className="announcementTitle">{a.title}</div>
-              <div className="announcementDate">{a.date}</div>
-            </div>
-
-            <div className="announcementBody">{a.body}</div>
-
-            {(a.tags || []).length > 0 && (
-              <div className="announcementTags">
-                {a.tags.map(t => (
-                  <span key={t} className="announcementTag">{t}</span>
-                ))}
-                <span className={`announcementTag ${a.priority === "urgent" ? "pill pillRed" : ""}`} style={{ marginLeft: "auto" }}>
-                  {a.priority}
-                </span>
+      {loading ? (
+        <div className="announcementsGrid">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="announcementCard">
+              <div className="announcementHeader">
+                <SkeletonTitle style={{ height: "1.2rem", width: "60%" }} />
+                <Skeleton style={{ height: "0.8rem", width: "80px" }} />
               </div>
-            )}
-
-            {a.link && (
               <div style={{ marginTop: "1rem" }}>
-                <Link to={a.link} className="btn btnPrimary" style={{ padding: ".5rem 1rem", fontSize: ".8rem" }}>
-                  {a.linkText || "Learn More"}
-                </Link>
+                <SkeletonText lines={3} />
               </div>
-            )}
-          </motion.div>
-        ))}
-      </motion.div>
+              <div style={{ display: "flex", gap: "10px", marginTop: "1rem" }}>
+                <SkeletonPill />
+                <SkeletonPill />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <>
+          <motion.div
+            className="announcementsGrid"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            {items.map((a) => (
+              <motion.div
+                key={a._id || a.id}
+                className={`announcementCard ${a.priority}`}
+                variants={cardVariants}
+                whileHover={{ x: 8 }}
+              >
+                <div className="announcementHeader">
+                  <div className="announcementTitle">{a.title}</div>
+                  <div className="announcementDate">{a.date}</div>
+                </div>
 
-      {items.length === 0 && (
-        <motion.div
-          className="emptyState"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          <div className="emptyIcon">📢</div>
-          <div className="emptyTitle">No Announcements</div>
-          <div className="emptyText">Check back later for updates</div>
-        </motion.div>
+                <div className="announcementBody">{a.body}</div>
+
+                {(a.tags || []).length > 0 && (
+                  <div className="announcementTags">
+                    {a.tags.map(t => (
+                      <span key={t} className="announcementTag">{t}</span>
+                    ))}
+                    <span className={`announcementTag ${a.priority === "urgent" ? "pill pillRed" : ""}`} style={{ marginLeft: "auto" }}>
+                      {a.priority}
+                    </span>
+                  </div>
+                )}
+
+                {a.link && (
+                  <div style={{ marginTop: "1rem" }}>
+                    <Link to={a.link} className="btn btnPrimary" style={{ padding: ".5rem 1rem", fontSize: ".8rem" }}>
+                      {a.linkText || "Learn More"}
+                    </Link>
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {items.length === 0 && (
+            <motion.div
+              className="emptyState"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <div className="emptyIcon">📢</div>
+              <div className="emptyTitle">No Announcements</div>
+              <div className="emptyText">Check back later for updates</div>
+            </motion.div>
+          )}
+        </>
       )}
     </section>
   );

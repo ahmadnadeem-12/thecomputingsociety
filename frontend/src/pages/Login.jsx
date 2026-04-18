@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 export default function Login() {
@@ -8,6 +8,7 @@ export default function Login() {
   const nav = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [err, setErr] = useState("");
 
   const onSubmit = async (e) => {
@@ -35,20 +36,49 @@ export default function Login() {
       <form className="card" onSubmit={onSubmit} style={{ maxWidth: 560 }}>
         <div>
           <div className="label">Email</div>
-          <input type="email" className="input" value={email} onChange={e => setEmail(e.target.value)} />
+          <input type="email" className="input" value={email} onChange={e => setEmail(e.target.value)} placeholder="Enter your email" required />
         </div>
         <div style={{ marginTop: ".7rem" }}>
           <div className="label">Password</div>
-          <input type="password" className="input" value={password} onChange={e => setPassword(e.target.value)} />
-        </div>
-        <div style={{ marginTop: ".4rem", textAlign: "right" }}>
-          <button
-            type="button"
-            onClick={() => nav("/forgot-password")}
-            style={{ background: "none", border: "none", color: "var(--accent-cyan)", cursor: "pointer", fontSize: ".82rem", fontWeight: 600, padding: 0 }}
-          >
-            Forgot Password?
-          </button>
+          <div style={{ position: "relative" }}>
+            <input
+              type={showPassword ? "text" : "password"}
+              className="input"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              style={{ paddingRight: "2.5rem" }}
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: "absolute",
+                right: "10px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "1.1rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+              title={showPassword ? "Hide Password" : "Show Password"}
+            >
+              {showPassword ? "👁️" : "🙈"}
+            </button>
+          </div>
+          <div style={{ textAlign: "right", marginTop: "0.3rem" }}>
+            <Link
+              to="/forgot-password"
+              className="link-cyan"
+            >
+              Forgot Password?
+            </Link>
+          </div>
         </div>
         {err && <div style={{ marginTop: ".7rem", color: "#ffd2d7" }}>{err}</div>}
         <div style={{ marginTop: "1rem", display: "flex", gap: ".6rem", flexWrap: "wrap" }}>
@@ -56,6 +86,7 @@ export default function Login() {
           <button className="btn btnGhost" type="button" onClick={() => nav("/register")}>Create account</button>
         </div>
       </form>
+
     </section>
   );
 }

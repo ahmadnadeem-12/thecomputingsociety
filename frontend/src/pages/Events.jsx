@@ -6,6 +6,7 @@ import { EventContext } from "../context/EventContext";
 import { formatDate } from "../utils/helpers";
 import { Button } from "../components/ui/Button";
 import { Modal } from "../components/ui/Modal";
+import { Skeleton, SkeletonTitle, SkeletonText, SkeletonPill } from "../components/ui/Skeleton";
 import "../assets/styles/pages/events.css";
 
 const containerVariants = {
@@ -29,6 +30,7 @@ const cardVariants = {
 
 export default function Events() {
   const eventsCtx = useContext(EventContext);
+  const { loading } = eventsCtx;
   const [filter, setFilter] = useState("upcoming");
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -100,16 +102,40 @@ export default function Events() {
         ))}
       </motion.div>
 
-      {/* Events Grid */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={filter}
-          className="eventsGrid"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          exit={{ opacity: 0 }}
-        >
+      {loading ? (
+        <div className="eventsGrid">
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <div key={i} className="eventCard">
+              <div className="eventInner">
+                <SkeletonTitle style={{ height: "1.2rem", width: "80%", marginBottom: "0.75rem" }} />
+                <div style={{ display: "flex", gap: "10px", marginBottom: "1rem" }}>
+                  <Skeleton style={{ height: "0.8rem", width: "30%" }} />
+                  <Skeleton style={{ height: "0.8rem", width: "30%" }} />
+                </div>
+                <SkeletonText lines={2} />
+                <div style={{ display: "flex", gap: "8px", marginTop: "1rem" }}>
+                  <SkeletonPill />
+                  <SkeletonPill />
+                </div>
+                <div style={{ display: "flex", gap: "10px", marginTop: "1.5rem" }}>
+                  <Skeleton style={{ height: "35px", width: "100px", borderRadius: "20px" }} />
+                  <Skeleton style={{ height: "35px", width: "100px", borderRadius: "20px" }} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <>
+          <AnimatePresence mode="wait">
+          <motion.div
+            key={filter}
+            className="eventsGrid"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            exit={{ opacity: 0 }}
+          >
           {filtered.map((e, index) => (
             <motion.div
               key={e.id}
@@ -204,23 +230,25 @@ export default function Events() {
       </AnimatePresence>
 
       {/* Empty State */}
-      {filtered.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="emptyState"
-          style={{ textAlign: "center", padding: "3rem 1rem" }}
-        >
-          <div style={{ fontSize: "4rem", marginBottom: "1rem", opacity: 0.4 }}>
-            {filter === "featured" ? "⭐" : filter === "past" ? "📜" : "📅"}
-          </div>
-          <div style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--text-main)" }}>
-            No {filter} events
-          </div>
-          <div style={{ fontSize: "0.9rem", color: "var(--text-muted)", marginTop: "0.35rem" }}>
-            Check back later for updates
-          </div>
-        </motion.div>
+          {filtered.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="emptyState"
+              style={{ textAlign: "center", padding: "3rem 1rem" }}
+            >
+              <div style={{ fontSize: "4rem", marginBottom: "1rem", opacity: 0.4 }}>
+                {filter === "featured" ? "⭐" : filter === "past" ? "📜" : "📅"}
+              </div>
+              <div style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--text-main)" }}>
+                No {filter} events
+              </div>
+              <div style={{ fontSize: "0.9rem", color: "var(--text-muted)", marginTop: "0.35rem" }}>
+                Check back later for updates
+              </div>
+            </motion.div>
+          )}
+        </>
       )}
 
       {/* Event Detail Modal */}

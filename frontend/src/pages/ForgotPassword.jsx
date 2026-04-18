@@ -10,6 +10,10 @@ export default function ForgotPassword() {
     const [err, setErr] = useState("");
     const [loading, setLoading] = useState(false);
 
+    React.useEffect(() => {
+        console.log("ForgotPassword component mounted");
+    }, []);
+
     const onSubmit = async (e) => {
         e.preventDefault();
         setErr("");

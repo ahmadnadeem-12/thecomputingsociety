@@ -126,8 +126,7 @@ const startServer = async () => {
             console.log("============================================");
             console.log(`  🚀 Mode:    ${process.env.NODE_ENV || "development"}`);
             console.log(`  🌐 Port:    ${PORT}`);
-            console.log(`  📡 API:     http://localhost:${PORT}/api`);
-            console.log(`  💚 Health:  http://localhost:${PORT}/api/health`);
+            console.log(`  📡 Health:  /api/health`);
             console.log("============================================");
             console.log("");
         });

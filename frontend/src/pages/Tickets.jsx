@@ -1,14 +1,16 @@
 
 import React, { useContext, useMemo, useState, useRef, useEffect } from "react";
 import { QRCodeCanvas } from "qrcode.react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { EventContext } from "../context/EventContext";
 import { createTicket, listTickets } from "../services/ticketService";
 import { downloadTicketPDF, downloadCertificatePDF } from "../services/pdfService";
 import { sendTicketEmail } from "../services/emailService";
 import { formatDate } from "../utils/helpers";
+import { Skeleton, SkeletonTitle, SkeletonText, SkeletonPill } from "../components/ui/Skeleton";
 import "../assets/styles/pages/tickets.css";
+
 
 const DEPARTMENTS = ["CS", "SE", "Data Science", "AI", "IT", "Bioinformatics"];
 const AG_REGEX = /^\d{4}-AG-\d{4,5}$/;
@@ -63,17 +65,34 @@ export default function Tickets() {
   const selectedEvent = events.find((e) => e.id === form.eventId);
 
   const [myTickets, setMyTickets] = useState([]);
+  const [loadingTickets, setLoadingTickets] = useState(false);
+
   useEffect(() => {
     if (!user) { setMyTickets([]); return; }
-    listTickets().then(data => setMyTickets((data || []).filter(t => t.userId === (user?.id || user?._id)))).catch(() => setMyTickets([]));
+    setLoadingTickets(true);
+    listTickets()
+      .then(data => {
+        setMyTickets((data || []).filter(t => t.userId === (user?.id || user?._id)));
+      })
+      .catch(() => setMyTickets([]))
+      .finally(() => setLoadingTickets(false));
   }, [user, ticket]);
 
   // Get QR code as data URL
   const getQRCodeDataUrl = () => {
+    // Generate high-resolution QR for PDF (uses the hidden high-res canvas)
+    const highResRef = document.getElementById('high-res-qr-hidden');
+    if (highResRef) {
+      const canvas = highResRef.querySelector('canvas');
+      if (canvas) {
+        return canvas.toDataURL('image/png', 1.0);
+      }
+    }
+    // Fallback
     if (qrRef.current) {
       const canvas = qrRef.current.querySelector('canvas');
       if (canvas) {
-        return canvas.toDataURL('image/png');
+        return canvas.toDataURL('image/png', 1.0);
       }
     }
     return null;
@@ -122,7 +141,7 @@ export default function Tickets() {
         <div className="sectionSubtitle" style={{ marginTop: ".35rem" }}>
           Student must login first to register & generate QR ticket.
         </div>
-        <div style={{ marginTop: ".9rem", display: "flex", gap: ".6rem", flexWrap: "wrap" }}>
+        <div style={{ marginTop: ".9rem", display: "flex", gap: ".6rem", flexWrap: "wrap", alignItems: "center" }}>
           <button className="btn btnPrimary" onClick={() => nav("/login")}>Login</button>
           <button className="btn btnGhost" onClick={() => nav("/register")}>Register</button>
         </div>
@@ -174,28 +193,11 @@ export default function Tickets() {
     }
   };
 
-  const qrPayload = ticket
-    ? JSON.stringify({
-      ticketId: ticket._id || ticket.id,
-      publicTicketId: ticket.publicTicketId,
-      userId: ticket.userId || ticket.user,
-      eventId: ticket.eventId,
-      agNo: ticket.agNo,
-      email: ticket.email,
-      department: ticket.department,
-      semester: ticket.semester,
-    })
-    : "";
+  // Super Short QR Payload (only the 24-char unique ID to keep QR clean and not messy)
+  const qrPayload = ticket ? (ticket._id || ticket.id) : "";
 
-  // Helper function to get QR payload for any ticket
-  const getQrPayload = (t) => JSON.stringify({
-    ticketId: t._id || t.id,
-    publicTicketId: t.publicTicketId,
-    userId: t.userId || t.user,
-    eventId: t.eventId || t.event,
-    agNo: t.agNo,
-    email: t.email,
-  });
+  // Helper function to get the shortest QR payload for any ticket
+  const getQrPayload = (t) => (t._id || t.id);
 
   return (
     <section className="section">
@@ -245,7 +247,7 @@ export default function Tickets() {
           <div className="pill pillRed">QR Ticket</div>
           <button
             className="btn btnGhost"
-            onClick={() => { logout(); nav("/"); }}
+            onClick={() => { logout(); nav("/login"); }}
             aria-label="Logout"
             style={{ fontSize: ".82rem", padding: ".45rem .9rem" }}
           >
@@ -353,15 +355,8 @@ export default function Tickets() {
             >
               {isLoading ? "⏳ Generating..." : "Get Ticket"}
             </button>
-            <div className="sectionSubtitle" style={{ display: "flex", alignItems: "center", gap: ".5rem", flexWrap: "wrap" }}>
+            <div className="sectionSubtitle">
               Logged in as: <b>{user.email}</b>
-              <button
-                type="button"
-                onClick={() => { logout(); nav("/login"); }}
-                style={{ background: "none", border: "none", color: "var(--accent-cyan)", cursor: "pointer", fontSize: ".78rem", fontWeight: 600, padding: 0, textDecoration: "underline" }}
-              >
-                Switch Account
-              </button>
             </div>
           </div>
         </div>
@@ -373,7 +368,15 @@ export default function Tickets() {
             <div className="horizontalTicket">
               {/* QR Code - Left */}
               <div className="ticketQrSection" ref={qrRef}>
-                <QRCodeCanvas value={qrPayload || ticket.id} size={140} includeMargin={true} />
+                <div className="qrWrapper">
+                  <QRCodeCanvas 
+                    value={qrPayload} 
+                    size={170} 
+                    level="H" 
+                    includeMargin={true}
+                    marginSize={2}
+                  />
+                </div>
                 <div className="qrScanLabel">Scan at Entry</div>
               </div>
 
@@ -429,110 +432,150 @@ export default function Tickets() {
           <div className="hr" />
           <div style={{ fontWeight: 900, marginBottom: ".35rem" }}>My Tickets</div>
           <div style={{ display: "grid", gap: "1.5rem" }}>
-            {myTickets.slice(0, 10).map((t) => {
-              const eventId = t.eventId?._id || t.eventId || t.event;
-              const ev = (eventsCtx.events || []).find((e) => (e._id || e.id) === eventId);
-
-              // Use populated data if context lookup fails (sometimes relevant if event is past/archived)
-              const displayTitle = ev?.title || t.eventId?.title || "Event";
-              const displayDate = ev ? formatDate(ev.date) : (t.eventId?.date ? formatDate(t.eventId.date) : "TBA");
-              const displayTime = ev?.time || t.eventId?.time || "TBA";
-
-              return (
-                <div key={t._id || t.id} className="expandableTicket expanded">
-                  <div className="horizontalTicket expandedHorizontal">
-                    {/* QR Code - Left */}
-                    <div className="ticketQrSection">
-                      <QRCodeCanvas value={getQrPayload(t)} size={120} includeMargin={true} />
-                      <div className="qrScanLabel">Scan at Entry</div>
-                    </div>
-
-                    {/* Details - Center */}
-                    <div className="ticketDetailsSection">
-                      <h3 className="ticketEventTitle">{displayTitle}</h3>
-                      <div className="ticketDetailsGrid">
-                        <div className="ticketDetailItem">
-                          <span className="detailLabel">Date</span>
-                          <span className="detailValue">{displayDate}</span>
-                        </div>
-                        <div className="ticketDetailItem">
-                          <span className="detailLabel">Time</span>
-                          <span className="detailValue">{displayTime}</span>
-                        </div>
-                        <div className="ticketDetailItem">
-                          <span className="detailLabel">Department</span>
-                          <span className="detailValue">{t.department}</span>
-                        </div>
-                        <div className="ticketDetailItem">
-                          <span className="detailLabel">Semester</span>
-                          <span className="detailValue">{t.semester}</span>
-                        </div>
-                        <div className="ticketDetailItem">
-                          <span className="detailLabel">AG No</span>
-                          <span className="detailValue">{t.agNo}</span>
-                        </div>
-                        <div className="ticketDetailItem">
-                          <span className="detailLabel">Email</span>
-                          <span className="detailValue">{t.email}</span>
-                        </div>
+            {loadingTickets ? (
+              [1, 2].map(i => (
+                <div key={i} className="expandableTicket" style={{ border: "1px solid rgba(255,255,255,0.05)", padding: "1.5rem", borderRadius: "1.5rem" }}>
+                  <div style={{ display: "flex", gap: "1.5rem" }}>
+                    <Skeleton style={{ width: "130px", height: "130px", borderRadius: "12px" }} />
+                    <div style={{ flex: 1 }}>
+                      <SkeletonTitle style={{ height: "1.5rem", width: "60%" }} />
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginTop: "1rem" }}>
+                        <Skeleton style={{ height: "0.8rem" }} />
+                        <Skeleton style={{ height: "0.8rem" }} />
+                        <Skeleton style={{ height: "0.8rem" }} />
+                        <Skeleton style={{ height: "0.8rem" }} />
                       </div>
-                      <div className="ticketIssuedTo">
-                        Issued to: <strong>{t.name}</strong>
-                      </div>
-                      <div className="ticketIdDisplay">
-                        Ticket ID: <code>{t.publicTicketId || (t._id || t.id)}</code>
-                      </div>
-                    </div>
-
-                    {/* Download Button - Right */}
-                    <div className="ticketActionSection">
-                      <button
-                        className="btn btnPrimary downloadBtn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const ticketData = {
-                            ...t,
-                            eventTitle: ev?.title || 'TCS Event',
-                            eventDate: ev ? formatDate(ev.date) : 'TBA',
-                            eventTime: ev?.time || 'TBA',
-                          };
-                          const expandedTicket = e.target.closest('.expandableTicket');
-                          const canvas = expandedTicket?.querySelector('.ticketQrSection canvas');
-                          if (canvas) {
-                            downloadTicketPDF(ticketData, canvas.toDataURL('image/png'));
-                          }
-                        }}
-                      >
-                        📥 Download PDF
-                      </button>
-                      {t.checkedIn && (
-                        <button
-                          className="btn btnGhost downloadBtn"
-                          style={{ marginTop: ".4rem", fontSize: ".78rem" }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            downloadCertificatePDF({
-                              name: t.name,
-                              agNo: t.agNo,
-                              eventTitle: displayTitle,
-                              eventDate: displayDate,
-                              eventTime: displayTime,
-                              certificateDescription: ev?.certificateDescription || t.eventId?.certificateDescription,
-                              organizer: "The Computing Society",
-                            });
-                          }}
-                        >
-                          📜 Certificate
-                        </button>
-                      )}
                     </div>
                   </div>
                 </div>
-              );
-            })}
-            {myTickets.length === 0 && <div className="sectionSubtitle">No tickets yet.</div>}
+              ))
+            ) : (
+              myTickets.slice(0, 10).map((t) => {
+                const eventId = t.eventId?._id || t.eventId || t.event;
+                const ev = (eventsCtx.events || []).find((e) => (e._id || e.id) === eventId);
+
+                // Use populated data if context lookup fails (sometimes relevant if event is past/archived)
+                const displayTitle = ev?.title || t.eventId?.title || "Event";
+                const displayDate = ev ? formatDate(ev.date) : (t.eventId?.date ? formatDate(t.eventId.date) : "TBA");
+                const displayTime = ev?.time || t.eventId?.time || "TBA";
+
+                return (
+                  <div key={t._id || t.id} className="expandableTicket expanded">
+                    <div className="horizontalTicket expandedHorizontal">
+                      {/* QR Code - Left */}
+                      <div className="ticketQrSection">
+                        <div className="qrWrapper">
+                          <QRCodeCanvas 
+                            value={getQrPayload(t)} 
+                            size={130} 
+                            level="H" 
+                            includeMargin={true}
+                            marginSize={2}
+                          />
+                        </div>
+                        <div className="qrScanLabel">Scan at Entry</div>
+                      </div>
+
+                      {/* Details - Center */}
+                      <div className="ticketDetailsSection">
+                        <h3 className="ticketEventTitle">{displayTitle}</h3>
+                        <div className="ticketDetailsGrid">
+                          <div className="ticketDetailItem">
+                            <span className="detailLabel">Date</span>
+                            <span className="detailValue">{displayDate}</span>
+                          </div>
+                          <div className="ticketDetailItem">
+                            <span className="detailLabel">Time</span>
+                            <span className="detailValue">{displayTime}</span>
+                          </div>
+                          <div className="ticketDetailItem">
+                            <span className="detailLabel">Department</span>
+                            <span className="detailValue">{t.department}</span>
+                          </div>
+                          <div className="ticketDetailItem">
+                            <span className="detailLabel">Semester</span>
+                            <span className="detailValue">{t.semester}</span>
+                          </div>
+                          <div className="ticketDetailItem">
+                            <span className="detailLabel">AG No</span>
+                            <span className="detailValue">{t.agNo}</span>
+                          </div>
+                          <div className="ticketDetailItem">
+                            <span className="detailLabel">Email</span>
+                            <span className="detailValue">{t.email}</span>
+                          </div>
+                        </div>
+                        <div className="ticketIssuedTo">
+                          Issued to: <strong>{t.name}</strong>
+                        </div>
+                        <div className="ticketIdDisplay">
+                          Ticket ID: <code>{t.publicTicketId || (t._id || t.id)}</code>
+                        </div>
+                      </div>
+
+                      {/* Download Button - Right */}
+                      <div className="ticketActionSection">
+                        <button
+                          className="btn btnPrimary downloadBtn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const ticketData = {
+                              ...t,
+                              eventTitle: ev?.title || 'TCS Event',
+                              eventDate: ev ? formatDate(ev.date) : 'TBA',
+                              eventTime: ev?.time || 'TBA',
+                            };
+                            const expandedTicket = e.target.closest('.expandableTicket');
+                            const canvas = expandedTicket?.querySelector('.ticketQrSection canvas');
+                            if (canvas) {
+                              downloadTicketPDF(ticketData, canvas.toDataURL('image/png'));
+                            }
+                          }}
+                        >
+                          📥 Download PDF
+                        </button>
+                        {t.checkedIn && (
+                          <button
+                            className="btn btnGhost downloadBtn"
+                            style={{ marginTop: ".4rem", fontSize: ".78rem" }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              downloadCertificatePDF({
+                                name: t.name,
+                                agNo: t.agNo,
+                                eventTitle: displayTitle,
+                                eventDate: displayDate,
+                                eventTime: displayTime,
+                                certificateDescription: ev?.certificateDescription || t.eventId?.certificateDescription,
+                                organizer: "The Computing Society",
+                              });
+                            }}
+                          >
+                            📜 Certificate
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+            {!loadingTickets && myTickets.length === 0 && <div className="sectionSubtitle">No tickets yet.</div>}
           </div>
         </div>
+      </div>
+
+      {/* Hidden High-Resolution QR Generator for PDF Export */}
+      <div id="high-res-qr-hidden" style={{ display: 'none' }}>
+        {ticket && (
+          <QRCodeCanvas 
+            value={qrPayload} 
+            size={512} 
+            level="H" 
+            includeMargin={true}
+            marginSize={4}
+          />
+        )}
       </div>
     </section>
   );

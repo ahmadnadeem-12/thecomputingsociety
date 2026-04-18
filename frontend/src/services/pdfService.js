@@ -189,30 +189,39 @@ export function generateTicketPDF(ticketData, qrCodeDataUrl) {
     });
 
     y = boxY + boxHeight + 15;
-
-    // QR Code Section
-    doc.setFontSize(11);
+    
+    // QR Code Section - High Definition Layout
+    const qrBoxSize = 90; // mm
+    const qrBoxX = (pageWidth - qrBoxSize) / 2;
+    const qrBoxY = y;
+    
+    // 1. Off-White Background Container (#f8f8f8 as requested)
+    doc.setFillColor(248, 248, 248);
+    doc.roundedRect(qrBoxX + 5, qrBoxY, qrBoxSize - 10, qrBoxSize + 5, 4, 4, 'F');
+    
+    // 2. High Contrast "SCAN AT ENTRY" Label
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(255, 77, 109);
-    doc.text('SCAN QR CODE AT ENTRY', pageWidth / 2, y, { align: 'center' });
+    doc.setTextColor(15, 10, 25); // Minimal dark color
+    doc.text('SCAN AT ENTRY', pageWidth / 2, qrBoxY + 8, { align: 'center' });
 
-    y += 8;
-
-    // QR Code
+    // 3. High-Resolution QR Code (Minimal Padding)
     if (qrCodeDataUrl) {
-        const qrSize = 45;
+        const qrSize = 76; // Nearly fills the box space
         const qrX = (pageWidth - qrSize) / 2;
-        doc.addImage(qrCodeDataUrl, 'PNG', qrX, y, qrSize, qrSize);
-        y += qrSize + 8;
+        const qrY = qrBoxY + 11;
+        doc.addImage(qrCodeDataUrl, 'PNG', qrX, qrY, qrSize, qrSize, undefined, 'FAST');
     }
+    
+    y = qrBoxY + qrBoxSize + 25;
 
-    // Ticket ID
-    doc.setFontSize(7);
+    // 4. Full Ticket ID Display (Reverted as per requirement)
+    doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(154, 143, 166);
-    doc.text('Ticket ID:', pageWidth / 2, y, { align: 'center' });
-    y += 4;
-    doc.setFontSize(9);
+    doc.text('TICKET ID:', pageWidth / 2, y, { align: 'center' });
+    y += 5;
+    doc.setFontSize(10);
     doc.setTextColor(0, 217, 255);
     doc.text(ticketData.publicTicketId || ticketData.id, pageWidth / 2, y, { align: 'center' });
 

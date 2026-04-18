@@ -61,26 +61,36 @@ export default function DegreesTab({ refreshKey, onRefresh }) {
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         const data = {
             ...form,
             semesters: parseInt(form.semesters) || 8,
             courses: form.courses.split(",").map(c => c.trim()).filter(Boolean)
         };
 
-        if (editingId) {
-            updateDegree(editingId, data);
-        } else {
-            createDegree(data);
+        try {
+            if (editingId) {
+                await updateDegree(editingId, data);
+            } else {
+                await createDegree(data);
+            }
+            resetForm();
+            onRefresh?.();
+        } catch (err) {
+            console.error("Save error:", err);
+            alert("Failed to save. Please try again.");
         }
-        resetForm();
-        onRefresh?.();
     };
 
-    const handleDelete = (id) => {
+    const handleDelete = async (id) => {
         if (window.confirm("Delete this degree program?")) {
-            deleteDegree(id);
-            onRefresh?.();
+            try {
+                await deleteDegree(id);
+                onRefresh?.();
+            } catch (err) {
+                console.error("Delete error:", err);
+                alert("Failed to delete.");
+            }
         }
     };
 
@@ -214,21 +224,52 @@ export default function DegreesTab({ refreshKey, onRefresh }) {
                         </label>
 
                         {form.pdfUrl && (
-                            <div style={{ marginTop: "0.75rem", color: "var(--text-secondary)", fontSize: "0.85rem" }}>
-                                ✅ PDF uploaded: {form.pdfName || "File ready"}
-                                <button
-                                    type="button"
-                                    onClick={() => setForm({ ...form, pdfUrl: "", pdfName: "" })}
+                            <div 
+                                key={form.pdfUrl}
+                                style={{ 
+                                    marginTop: "1rem", 
+                                    padding: "0.5rem",
+                                    background: "rgba(255, 77, 109, 0.1)",
+                                    borderRadius: "8px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: "0.5rem",
+                                    color: "var(--text-secondary)",
+                                    fontSize: "0.85rem",
+                                    border: "1px solid rgba(255, 77, 109, 0.2)"
+                                }}
+                            >
+                                <span style={{ color: "#4ade80" }}>✅</span> 
+                                <span style={{ textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", maxWidth: "200px" }}>
+                                    {form.pdfName || "File ready"}
+                                </span>
+                                <span
+                                    onClickCapture={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        console.log("Forced remove triggered");
+                                        setForm(prev => ({ ...prev, pdfUrl: "", pdfName: "" }));
+                                        const input = document.getElementById('pdfUpload');
+                                        if (input) input.value = '';
+                                    }}
                                     style={{
-                                        marginLeft: "0.5rem",
-                                        color: "#ff6b6b",
-                                        background: "none",
-                                        border: "none",
-                                        cursor: "pointer"
+                                        marginLeft: "10px",
+                                        color: "#ff4d6d",
+                                        fontWeight: "800",
+                                        cursor: "pointer",
+                                        padding: "4px 10px",
+                                        background: "rgba(255, 77, 109, 0.2)",
+                                        borderRadius: "4px",
+                                        fontSize: "0.7rem",
+                                        border: "1px solid #ff4d6d",
+                                        display: "inline-block",
+                                        pointerEvents: "auto",
+                                        zIndex: 10
                                     }}
                                 >
-                                    ✕ Remove
-                                </button>
+                                    ✕ REMOVE
+                                </span>
                             </div>
                         )}
 

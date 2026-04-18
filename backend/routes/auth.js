@@ -113,8 +113,7 @@ router.post("/forgot-password", async (req, res) => {
 
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
-        // Don't reveal if email exists or not (security best practice)
-        return res.json({ success: true, message: "If an account with that email exists, a reset link has been sent." });
+        return res.status(404).json({ success: false, message: "No account found with that email address." });
     }
 
     // Generate crypto reset token (returns raw unhashed token)
@@ -124,8 +123,8 @@ router.post("/forgot-password", async (req, res) => {
     await user.save({ validateBeforeSave: false });
 
     // Build reset URL (frontend URL)
-    const frontendUrl = (process.env.CORS_ORIGIN || "http://localhost:5173").split(",")[0];
-    const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
 
     try {
         const { sendResetEmail } = require("../services/emailService");
@@ -166,7 +165,7 @@ router.post("/reset-password", async (req, res) => {
     const user = await User.findOne({
         resetToken: hashedToken,
         resetTokenExpire: { $gt: Date.now() }, // Token expiry must be in the future
-    }).select("+password");
+    }).select("+password +resetToken +resetTokenExpire");
 
     if (!user) {
         return res.status(400).json({ success: false, message: "Invalid or expired reset token. Please request a new link." });

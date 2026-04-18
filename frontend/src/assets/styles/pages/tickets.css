@@ -321,34 +321,60 @@
 .horizontalTicket {
   display: grid;
   grid-template-columns: auto 1fr auto;
-  gap: 1.5rem;
+  gap: 2rem;
   align-items: center;
-  padding: 1.25rem;
-  border-radius: 16px;
-  background: linear-gradient(145deg, rgba(25, 15, 40, 0.8) 0%, rgba(12, 8, 20, 0.9) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  margin-top: 0.75rem;
+  padding: 1.5rem;
+  border-radius: 20px;
+  background: linear-gradient(165deg, rgba(30, 20, 50, 0.85) 0%, rgba(15, 10, 25, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  margin-top: 1rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
 }
 
-/* QR Section - Left */
+.horizontalTicket::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--gradient-main);
+}
+
 .ticketQrSection {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  padding: 0.5rem;
+}
+
+.qrWrapper {
+  background: #f8f8f8;
+  padding: 0.3rem;
+  border-radius: 12px;
+  box-shadow: 
+    0 8px 20px rgba(0, 0, 0, 0.4),
+    0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .ticketQrSection canvas {
-  border-radius: 10px;
-  background: white;
+  display: block;
 }
 
 .qrScanLabel {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 600;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  opacity: 0.8;
 }
 
 /* Details Section - Center */
@@ -360,20 +386,22 @@
 
 .ticketEventTitle {
   font-family: 'Outfit', sans-serif;
-  font-size: 1.15rem;
+  font-size: 1.4rem;
   font-weight: 800;
   color: #fff;
   margin: 0;
-  background: linear-gradient(90deg, #ff4d6d, #c77dff);
+  background: linear-gradient(90deg, #ff4d6d, #c77dff, #00d9ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  letter-spacing: -0.01em;
 }
 
 .ticketDetailsGrid {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 1.25rem;
+  gap: 0.75rem 1.5rem;
+  margin: 0.5rem 0;
 }
 
 .ticketDetailItem {
@@ -397,8 +425,9 @@
 }
 
 .ticketIssuedTo {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.7);
+  margin-top: 0.25rem;
 }
 
 .ticketIssuedTo strong {
@@ -412,12 +441,14 @@
 
 .ticketIdDisplay code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--accent-cyan);
-  background: rgba(0, 217, 255, 0.1);
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  margin-left: 0.25rem;
+  background: rgba(0, 217, 255, 0.08);
+  padding: 0.35rem 0.7rem;
+  border-radius: 8px;
+  margin-left: 0.4rem;
+  border: 1px solid rgba(0, 217, 255, 0.15);
+  text-transform: uppercase;
 }
 
 /* Action Section - Right */

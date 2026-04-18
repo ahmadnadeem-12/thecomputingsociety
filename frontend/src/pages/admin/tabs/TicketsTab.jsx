@@ -16,6 +16,9 @@ export default function TicketsTab({
     const scannerRef = useRef(null);
     const html5QrCodeRef = useRef(null);
     const isProcessingRef = useRef(false);
+    const [torchSupported, setTorchSupported] = useState(false);
+    const [torchActive, setTorchActive] = useState(false);
+    const [errorMsg, setErrorMsg] = useState("");
 
     // Filter tickets based on search
     const filteredTickets = tickets.filter(t => {
@@ -39,16 +42,20 @@ export default function TicketsTab({
         setTimeout(async () => {
             if (!document.getElementById("qr-reader")) return;
 
+            setErrorMsg("");
             try {
                 const html5QrCode = new Html5Qrcode("qr-reader");
                 html5QrCodeRef.current = html5QrCode;
 
+                const qrboxSize = (window.innerWidth < 600) ? 230 : 250;
+
                 await html5QrCode.start(
                     { facingMode: "environment" },
                     {
-                        fps: 10,
-                        qrbox: { width: 250, height: 250 },
-                        aspectRatio: 1.0
+                        fps: 15,
+                        qrbox: { width: qrboxSize, height: qrboxSize },
+                        aspectRatio: 1.0,
+                        showTorchButtonIfSupported: false, // We'll handle it custom
                     },
                     (decodedText) => {
                         handleScan(decodedText);
@@ -57,23 +64,36 @@ export default function TicketsTab({
                         // Ignore scan errors (no QR in frame)
                     }
                 );
+
+                // Check for torch support after camera starts
+                const state = html5QrCode.getState();
+                if (state === 2) { // 2 = SCANNING
+                    const cameraCaps = html5QrCode.getRunningTrackCapabilities();
+                    setTorchSupported(!!cameraCaps.torch);
+                }
+
             } catch (err) {
                 console.error("Camera error:", err);
-                setScanResult({
-                    success: false,
-                    message: "📷 Camera access denied or not available. Please allow camera permission.",
-                    isNewCheckIn: false
-                });
+                let msg = "📷 Camera access denied or not available.";
+                if (err.name === "NotAllowedError") msg = "🚨 Camera permission required! Please allow access in browser settings.";
+                if (err.name === "NotFoundError") msg = "❌ No camera found on this device.";
+                
+                setErrorMsg(msg);
+                setScanResult({ success: false, message: msg, isNewCheckIn: false });
                 setScannerActive(false);
             }
-        }, 200);
+        }, 300);
     };
 
     // Stop QR Scanner
     const stopScanner = async () => {
+        setTorchActive(false);
+        setTorchSupported(false);
         if (html5QrCodeRef.current) {
             try {
-                await html5QrCodeRef.current.stop();
+                if (html5QrCodeRef.current.isScanning) {
+                    await html5QrCodeRef.current.stop();
+                }
                 html5QrCodeRef.current.clear();
             } catch (err) {
                 console.log("Stop error:", err);
@@ -81,6 +101,20 @@ export default function TicketsTab({
             html5QrCodeRef.current = null;
         }
         setScannerActive(false);
+    };
+
+    // Toggle Flashlight/Torch
+    const toggleTorch = async () => {
+        if (!html5QrCodeRef.current) return;
+        try {
+            const newState = !torchActive;
+            await html5QrCodeRef.current.applyVideoConstraints({
+                advanced: [{ torch: newState }]
+            });
+            setTorchActive(newState);
+        } catch (err) {
+            console.error("Torch error:", err);
+        }
     };
 
     // Play a beep sound for scan feedback
@@ -100,19 +134,19 @@ export default function TicketsTab({
 
     // Handle QR code scan result
     const handleScan = async (qrCode) => {
-        // Prevent duplicate scans while processing
         if (isProcessingRef.current) return;
+        
+        // Pause detection while processing
         isProcessingRef.current = true;
+        if (html5QrCodeRef.current) {
+            try { html5QrCodeRef.current.pause(true); } catch(e){}
+        }
 
         try {
-            // Check-in the ticket (NOW properly awaited!)
             const result = await checkInByQrCode(qrCode);
             setScanResult(result);
-
-            // Audio feedback
             playBeep(result.success && result.isNewCheckIn);
 
-            // Add to scan history
             const historyEntry = {
                 id: Date.now(),
                 qrCode,
@@ -120,15 +154,16 @@ export default function TicketsTab({
                 time: new Date().toLocaleTimeString()
             };
             setScanHistory(prev => [historyEntry, ...prev.slice(0, 19)]);
-
-            // Refresh tickets list
             refresh();
 
-            // Auto-clear result after 2 seconds to continue scanning
+            // Success feedback delay then resume
             setTimeout(() => {
                 setScanResult(null);
                 isProcessingRef.current = false;
-            }, 2000);
+                if (html5QrCodeRef.current) {
+                    try { html5QrCodeRef.current.resume(); } catch(e){}
+                }
+            }, 2500);
         } catch (err) {
             setScanResult({
                 success: false,
@@ -138,7 +173,10 @@ export default function TicketsTab({
             setTimeout(() => {
                 setScanResult(null);
                 isProcessingRef.current = false;
-            }, 2000);
+                if (html5QrCodeRef.current) {
+                    try { html5QrCodeRef.current.resume(); } catch(e){}
+                }
+            }, 2500);
         }
     };
 
@@ -199,6 +237,15 @@ export default function TicketsTab({
                 <div className="scannerHeader">
                     <h3 className="scannerTitle">📷 QR Code Scanner</h3>
                     <div className="scannerControls">
+                        {scannerActive && torchSupported && (
+                            <button
+                                className={`btn torchBtn ${torchActive ? 'active' : ''}`}
+                                onClick={toggleTorch}
+                                title="Toggle Flashlight"
+                            >
+                                {torchActive ? '🔦 ON' : '🔦 OFF'}
+                            </button>
+                        )}
                         {!scannerActive ? (
                             <button
                                 className="btn btnPrimary scanBtn"

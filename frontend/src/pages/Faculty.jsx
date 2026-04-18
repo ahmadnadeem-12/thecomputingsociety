@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Modal } from "../components/ui/Modal";
+import { Skeleton, SkeletonCircle, SkeletonTitle, SkeletonText, SkeletonPill } from "../components/ui/Skeleton";
 import { listFaculty } from "../services/facultyService";
 import "../assets/styles/pages/faculty.css";
 
@@ -33,11 +34,21 @@ function getRoleBadge(role) {
 
 export default function Faculty() {
   const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
-    listFaculty().then(data => setItems(data || [])).catch(() => setItems([]));
+    setLoading(true);
+    listFaculty()
+      .then(data => {
+        setItems(data || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setItems([]);
+        setLoading(false);
+      });
   }, []);
 
   // Sort: Chairman first
@@ -67,76 +78,106 @@ export default function Faculty() {
         </div>
       </motion.div>
 
-      <motion.div
-        className="facultyGrid"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {sortedItems.map((f, index) => {
-          const roleType = getRoleBadge(f.departmentRole);
-          const isChairman = roleType === "chairman";
-
-          return (
-            <motion.div
-              key={f._id || f.id}
-              className={`facultyCard ${isChairman ? "chairman" : ""}`}
-              variants={cardVariants}
-              whileHover={{ scale: 1.02, y: -8 }}
-              onClick={() => { setSelected(f); setOpen(true); }}
-              style={{ cursor: "pointer" }}
-            >
+      {loading ? (
+        <div className="facultyGrid">
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <div key={i} className="facultyCard" style={{ cursor: "default" }}>
               <div className="facultyHeader">
                 <div className="facultyPhoto">
-                  <motion.div
-                    className="dpWrap"
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <div className="dpInner">
-                      <img src={f.avatar} alt={f.name} />
+                  <div className="dpWrap">
+                    <SkeletonCircle size="100%" />
+                  </div>
+                  <Skeleton style={{ height: "18px", width: "80px", position: "absolute", bottom: "-5px", left: "50%", transform: "translateX(-50%)", borderRadius: "10px" }} />
+                </div>
+                <div className="facultyInfo" style={{ width: "100%" }}>
+                  <SkeletonTitle style={{ height: "1rem", width: "80%", marginBottom: "0.5rem" }} />
+                  <Skeleton style={{ height: "0.8rem", width: "60%" }} />
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: "8px", marginTop: "1rem" }}>
+                <SkeletonPill />
+                <SkeletonPill />
+              </div>
+              <div className="facultyStats" style={{ marginTop: "1rem" }}>
+                <div className="facultyStat"><Skeleton style={{ height: "1.5rem", width: "2rem" }} /></div>
+                <div className="facultyStat"><Skeleton style={{ height: "1.5rem", width: "2rem" }} /></div>
+                <div className="facultyStat"><Skeleton style={{ height: "1.5rem", width: "2rem" }} /></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <motion.div
+          className="facultyGrid"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          {sortedItems.map((f, index) => {
+            const roleType = getRoleBadge(f.departmentRole);
+            const isChairman = roleType === "chairman";
+
+            return (
+              <motion.div
+                key={f._id || f.id}
+                className={`facultyCard ${isChairman ? "chairman" : ""}`}
+                variants={cardVariants}
+                whileHover={{ scale: 1.02, y: -8 }}
+                onClick={() => { setSelected(f); setOpen(true); }}
+                style={{ cursor: "pointer" }}
+              >
+                <div className="facultyHeader">
+                  <div className="facultyPhoto">
+                    <motion.div
+                      className="dpWrap"
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      <div className="dpInner">
+                        <img src={f.avatar} alt={f.name} />
+                      </div>
+                    </motion.div>
+                    <div className={`facultyRoleBadge ${roleType}`}>
+                      {f.departmentRole}
                     </div>
-                  </motion.div>
-                  <div className={`facultyRoleBadge ${roleType}`}>
-                    {f.departmentRole}
+                  </div>
+
+                  <div className="facultyInfo">
+                    <div className="facultyName">{f.name}</div>
+                    {f.education && (
+                      <div className="facultyEducation">{f.education}</div>
+                    )}
                   </div>
                 </div>
 
-                <div className="facultyInfo">
-                  <div className="facultyName">{f.name}</div>
-                  {f.education && (
-                    <div className="facultyEducation">{f.education}</div>
-                  )}
-                </div>
-              </div>
+                {/* Expertise Tags */}
+                {(f.expertise || []).length > 0 && (
+                  <div className="expertiseTags">
+                    {(f.expertise || []).slice(0, 3).map((exp) => (
+                      <span key={exp} className="expertiseTag">{exp}</span>
+                    ))}
+                  </div>
+                )}
 
-              {/* Expertise Tags */}
-              {(f.expertise || []).length > 0 && (
-                <div className="expertiseTags">
-                  {(f.expertise || []).slice(0, 3).map((exp) => (
-                    <span key={exp} className="expertiseTag">{exp}</span>
-                  ))}
+                {/* Stats */}
+                <div className="facultyStats">
+                  <div className="facultyStat">
+                    <div className="facultyStatNumber">{f.experienceYears || 0}+</div>
+                    <div className="facultyStatLabel">Years Exp.</div>
+                  </div>
+                  <div className="facultyStat">
+                    <div className="facultyStatNumber">{(f.courses || []).length}</div>
+                    <div className="facultyStatLabel">Courses</div>
+                  </div>
+                  <div className="facultyStat">
+                    <div className="facultyStatNumber">{(f.expertise || []).length}</div>
+                    <div className="facultyStatLabel">Specializations</div>
+                  </div>
                 </div>
-              )}
-
-              {/* Stats */}
-              <div className="facultyStats">
-                <div className="facultyStat">
-                  <div className="facultyStatNumber">{f.experienceYears || 0}+</div>
-                  <div className="facultyStatLabel">Years Exp.</div>
-                </div>
-                <div className="facultyStat">
-                  <div className="facultyStatNumber">{(f.courses || []).length}</div>
-                  <div className="facultyStatLabel">Courses</div>
-                </div>
-                <div className="facultyStat">
-                  <div className="facultyStatNumber">{(f.expertise || []).length}</div>
-                  <div className="facultyStatLabel">Specializations</div>
-                </div>
-              </div>
-            </motion.div>
-          );
-        })}
-      </motion.div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      )}
 
       {/* Detail Modal */}
       <Modal

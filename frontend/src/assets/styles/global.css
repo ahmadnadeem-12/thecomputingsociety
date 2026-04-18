@@ -63,6 +63,28 @@
   --btn-hover: #c234a5;
 }
 
+.link-cyan {
+  background: none;
+  border: none;
+  color: var(--accent-cyan);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer !important;
+  padding: 2px 4px;
+  margin: -2px -4px;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  user-select: none;
+  vertical-align: middle;
+  text-decoration: none;
+}
+
+.link-cyan:hover {
+  text-decoration: underline;
+}
+
 *,
 *::before,
 *::after {
@@ -1509,4 +1531,65 @@ select optgroup {
   .heroButtons .btn {
     width: 100% !important;
   }
+}
+
+/* =========================================================
+   SKELETON LOADERS
+   ========================================================= */
+@keyframes shimmer {
+  0% {
+    background-position: -800px 0;
+  }
+  100% {
+    background-position: 800px 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.03) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  border-radius: var(--radius-md);
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.skeleton-text {
+  height: 1rem;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-title {
+  height: 2.5rem;
+  width: 70%;
+  margin-bottom: 1rem;
+}
+
+.skeleton-circle {
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+}
+
+.skeleton-card {
+  height: 200px;
+  width: 100%;
+  border: 1px solid var(--border-soft);
+}
+
+.skeleton-btn {
+  height: 40px;
+  width: 120px;
+  border-radius: var(--radius-full);
+}
+
+.skeleton-pill {
+  height: 24px;
+  width: 100px;
+  border-radius: var(--radius-full);
 }

@@ -37,6 +37,7 @@ const userSchema = new mongoose.Schema(
         // ========================
         resetToken: {
             type: String,
+            select: false, // Don't return this in normal queries
             default: undefined,
         },
         resetTokenExpire: {

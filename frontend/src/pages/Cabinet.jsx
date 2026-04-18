@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Modal } from "../components/ui/Modal";
+import { Skeleton, SkeletonCircle, SkeletonTitle, SkeletonText } from "../components/ui/Skeleton";
 import { listCabinet } from "../services/cabinetService";
 import "../assets/styles/pages/cabinet.css";
 
@@ -31,11 +32,21 @@ const cardVariants = {
 
 export default function Cabinet() {
   const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
-    listCabinet().then(data => setMembers(data || [])).catch(() => setMembers([]));
+    setLoading(true);
+    listCabinet()
+      .then(data => {
+        setMembers(data || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setMembers([]);
+        setLoading(false);
+      });
   }, []);
 
   const onOpen = (m) => {
@@ -61,76 +72,95 @@ export default function Cabinet() {
         </div>
       </motion.div>
 
-      <motion.div
-        className="cabinetGrid"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {members.map((m, index) => (
-          <motion.button
-            key={m._id || m.id}
-            className="profileCard"
-            variants={cardVariants}
-            whileHover={{ scale: 1.03, y: -8 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => onOpen(m)}
-          >
-            {/* Hover Glow Overlay */}
-            <div className="glowOverlay" />
-
-            {/* Profile Photo */}
-            <div className="dpWrap">
-              <div className="dpInner">
-                <img src={m.avatar} alt={m.name} />
+      {loading ? (
+        <div className="cabinetGrid">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+            <div key={i} className="profileCard" style={{ cursor: "default" }}>
+              <div className="dpWrap">
+                <SkeletonCircle size="100%" />
+              </div>
+              <SkeletonTitle style={{ height: "1rem", width: "70%", margin: "1rem auto 0.5rem" }} />
+              <Skeleton style={{ height: "0.8rem", width: "50%", margin: "0 auto 1rem" }} />
+              <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+                <SkeletonCircle size="30px" />
+                <SkeletonCircle size="30px" />
+                <SkeletonCircle size="30px" />
               </div>
             </div>
+          ))}
+        </div>
+      ) : (
+        <motion.div
+          className="cabinetGrid"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          {members.map((m, index) => (
+            <motion.button
+              key={m._id || m.id}
+              className="profileCard"
+              variants={cardVariants}
+              whileHover={{ scale: 1.03, y: -8 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => onOpen(m)}
+            >
+              {/* Hover Glow Overlay */}
+              <div className="glowOverlay" />
 
-            {/* Name & Role */}
-            <div className="cardName">{m.name}</div>
-            <div className="cardRole">{m.role}</div>
-
-            {/* Degree Badge */}
-            {m.degree && (
-              <div className="pill" style={{ marginTop: "0.75rem", fontSize: "0.7rem" }}>
-                {m.degree}
+              {/* Profile Photo */}
+              <div className="dpWrap">
+                <div className="dpInner">
+                  <img src={m.avatar} alt={m.name} />
+                </div>
               </div>
-            )}
 
-            {/* Social Icons */}
-            <div className="socialRow">
-              {socials.map((s) =>
-                m.socials?.[s.key] ? (
-                  <motion.a
-                    key={s.key}
-                    className="socialIcon"
-                    href={m.socials[s.key]}
-                    onClick={(e) => e.stopPropagation()}
-                    target="_blank"
-                    rel="noreferrer"
-                    whileHover={{
-                      scale: 1.15,
-                      backgroundColor: s.color,
-                      borderColor: s.color,
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <span style={{ fontWeight: 900 }}>{s.label}</span>
-                  </motion.a>
-                ) : (
-                  <span
-                    key={s.key}
-                    className="socialIcon"
-                    style={{ opacity: 0.3, cursor: "default" }}
-                  >
-                    <span style={{ fontWeight: 900 }}>{s.label}</span>
-                  </span>
-                )
+              {/* Name & Role */}
+              <div className="cardName">{m.name}</div>
+              <div className="cardRole">{m.role}</div>
+
+              {/* Degree Badge */}
+              {m.degree && (
+                <div className="pill" style={{ marginTop: "0.75rem", fontSize: "0.7rem" }}>
+                  {m.degree}
+                </div>
               )}
-            </div>
-          </motion.button>
-        ))}
-      </motion.div>
+
+              {/* Social Icons */}
+              <div className="socialRow">
+                {socials.map((s) =>
+                  m.socials?.[s.key] ? (
+                    <motion.a
+                      key={s.key}
+                      className="socialIcon"
+                      href={m.socials[s.key]}
+                      onClick={(e) => e.stopPropagation()}
+                      target="_blank"
+                      rel="noreferrer"
+                      whileHover={{
+                        scale: 1.15,
+                        backgroundColor: s.color,
+                        borderColor: s.color,
+                      }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <span style={{ fontWeight: 900 }}>{s.label}</span>
+                    </motion.a>
+                  ) : (
+                    <span
+                      key={s.key}
+                      className="socialIcon"
+                      style={{ opacity: 0.3, cursor: "default" }}
+                    >
+                      <span style={{ fontWeight: 900 }}>{s.label}</span>
+                    </span>
+                  )
+                )}
+              </div>
+            </motion.button>
+          ))}
+        </motion.div>
+      )}
 
       {/* Detail Modal */}
       <Modal

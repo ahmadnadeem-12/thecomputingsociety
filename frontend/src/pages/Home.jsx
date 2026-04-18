@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "../components/ui/Button";
 import { CountUp } from "../components/ui/CountUp";
 import { getHomeContent } from "../services/homeService";
+import { Skeleton, SkeletonText, SkeletonTitle, SkeletonCard, SkeletonButton, SkeletonPill } from "../components/ui/Skeleton";
 import SEOHead from "../components/common/SEOHead";
 import "../assets/styles/pages/home.css";
 
@@ -16,14 +17,70 @@ const fadeIn = {
 
 export default function Home() {
   const [content, setContent] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
-    getHomeContent().then(data => { if (!cancelled) setContent(data || {}); }).catch(() => { });
+    setLoading(true);
+    getHomeContent()
+      .then(data => {
+        if (!cancelled) {
+          setContent(data || {});
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setLoading(false);
+      });
     return () => { cancelled = true; };
   }, []);
 
   const { heroTitle, heroBadge, heroDescription, stats, notices, features, quickLinks } = content;
+
+  if (loading) {
+    return (
+      <section className="section" style={{ position: "relative" }}>
+        <SEOHead title="Loading... | THE COMPUTING SOCIETY" />
+        <div className="welcomeBanner">
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <SkeletonPill style={{ marginBottom: "1rem" }} />
+            <div style={{ marginBottom: "1rem" }}>
+              <SkeletonTitle style={{ height: "3.5rem", width: "80%" }} />
+              <SkeletonTitle style={{ height: "3.5rem", width: "60%" }} />
+            </div>
+            <div style={{ maxWidth: 650, marginTop: "1rem" }}>
+              <SkeletonText lines={3} />
+            </div>
+            <div className="heroButtons">
+              <SkeletonButton />
+              <SkeletonButton />
+              <SkeletonButton />
+            </div>
+            <div className="heroStats">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="statItem">
+                  <Skeleton style={{ height: "2.5rem", width: "4rem", marginBottom: "0.5rem" }} />
+                  <Skeleton style={{ height: "1rem", width: "5rem" }} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="hr" />
+        <div className="noticeGrid">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="noticeCard">
+              <div className="noticeInner">
+                <Skeleton style={{ width: "50px", height: "50px", borderRadius: "12px", marginBottom: "1rem" }} />
+                <SkeletonTitle style={{ height: "1.5rem", width: "90%" }} />
+                <SkeletonText lines={2} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="section" style={{ position: "relative" }}>
