@@ -162,6 +162,12 @@ export default function Tickets() {
         throw new Error("AG No format must be YYYY-AG-XXXX or YYYY-AG-XXXXX (digits).");
       if (!form.eventId) throw new Error("Event is required.");
 
+      // Capacity check on frontend for extra UX
+      const currentEvent = events.find(e => e.id === form.eventId);
+      if (currentEvent && currentEvent.capacity > 0 && currentEvent.seatsRemaining <= 0) {
+        throw new Error("This event is sold out! Please select another event.");
+      }
+
       // Server handles duplicate checks
       const ag = form.agNo.trim().toUpperCase();
 
@@ -176,6 +182,9 @@ export default function Tickets() {
       });
 
       setTicket(t);
+
+      // Refresh events context to update capacity on all pages
+      eventsCtx.refresh?.();
 
       // Show success popup
       setShowSuccess(true);
@@ -306,8 +315,12 @@ export default function Tickets() {
                 onChange={(e) => setForm({ ...form, eventId: e.target.value })}
               >
                 {events.map((e) => (
-                  <option key={e.id} value={e.id}>
-                    {e.title}
+                  <option 
+                    key={e.id} 
+                    value={e.id} 
+                    disabled={e.capacity > 0 && e.seatsRemaining <= 0}
+                  >
+                    {e.title} {e.capacity > 0 && e.seatsRemaining <= 0 ? " (SOLD OUT)" : ""}
                   </option>
                 ))}
               </select>

@@ -40,6 +40,20 @@ router.post("/", protect, async (req, res) => {
         return res.status(400).json({ success: false, message: "You already generated a ticket for this event" });
     }
 
+    // Check if event has capacity
+    const event = await Event.findById(eventId);
+    if (!event) {
+        return res.status(404).json({ success: false, message: "Event not found" });
+    }
+
+    // Only check capacity if it's set (> 0)
+    if (event.capacity > 0 && event.seatsRemaining <= 0) {
+        return res.status(400).json({ 
+            success: false, 
+            message: "Sorry, this event is fully booked! No seats remaining." 
+        });
+    }
+
     // Generate public ticket ID
     const safeName = (name || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
     const ts = new Date().toISOString().replace(/[-:.TZ]/g, "");
@@ -56,6 +70,12 @@ router.post("/", protect, async (req, res) => {
         department: department || "",
         semester: semester || "",
     });
+
+    // Decrement seats remaining if successful
+    if (event.capacity > 0) {
+        event.seatsRemaining = Math.max(0, event.seatsRemaining - 1);
+        await event.save();
+    }
 
     res.status(201).json({ success: true, data: ticket });
 });
@@ -147,6 +167,14 @@ router.delete("/:id", protect, adminOnly, async (req, res) => {
     if (!ticket) {
         return res.status(404).json({ success: false, message: "Ticket not found" });
     }
+
+    // Increment seats remaining
+    const event = await Event.findById(ticket.eventId);
+    if (event && event.capacity > 0) {
+        event.seatsRemaining = Math.min(event.capacity, event.seatsRemaining + 1);
+        await event.save();
+    }
+
     res.json({ success: true, message: "Ticket deleted" });
 });
 
@@ -160,6 +188,13 @@ router.delete("/by-ag/:agNo/:eventId", protect, adminOnly, async (req, res) => {
 
     if (!ticket) {
         return res.status(404).json({ success: false, message: "Ticket not found for this AG No and Event" });
+    }
+
+    // Increment seats remaining
+    const event = await Event.findById(req.params.eventId);
+    if (event && event.capacity > 0) {
+        event.seatsRemaining = Math.min(event.capacity, event.seatsRemaining + 1);
+        await event.save();
     }
 
     res.json({ success: true, message: "Ticket deleted" });

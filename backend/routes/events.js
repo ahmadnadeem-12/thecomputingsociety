@@ -26,7 +26,12 @@ router.get("/:id", async (req, res) => {
 // @desc    Create event
 // @access  Admin
 router.post("/", protect, adminOnly, async (req, res) => {
-    const event = await Event.create(req.body);
+    const data = { ...req.body };
+    // If capacity is set, initialize seatsRemaining
+    if (data.capacity && data.capacity > 0) {
+        data.seatsRemaining = data.capacity;
+    }
+    const event = await Event.create(data);
     res.status(201).json({ success: true, data: event });
 });
 
@@ -34,13 +39,23 @@ router.post("/", protect, adminOnly, async (req, res) => {
 // @desc    Update event
 // @access  Admin
 router.put("/:id", protect, adminOnly, async (req, res) => {
-    const event = await Event.findByIdAndUpdate(req.params.id, req.body, {
+    const oldEvent = await Event.findById(req.params.id);
+    if (!oldEvent) {
+        return res.status(404).json({ success: false, message: "Event not found" });
+    }
+
+    const data = { ...req.body };
+
+    // If capacity is being updated, adjust seatsRemaining logically
+    if (data.capacity !== undefined && data.capacity !== oldEvent.capacity) {
+        const diff = data.capacity - oldEvent.capacity;
+        data.seatsRemaining = Math.max(0, (oldEvent.seatsRemaining || 0) + diff);
+    }
+
+    const event = await Event.findByIdAndUpdate(req.params.id, data, {
         new: true,
         runValidators: true,
     });
-    if (!event) {
-        return res.status(404).json({ success: false, message: "Event not found" });
-    }
     res.json({ success: true, data: event });
 });
 
