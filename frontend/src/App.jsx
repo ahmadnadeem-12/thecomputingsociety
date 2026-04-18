@@ -12,6 +12,11 @@ export default function App() {
   const [booting, setBooting] = useState(true);
   const location = useLocation();
 
+  const isAuthPage = location.pathname.includes("/login") || 
+                     location.pathname.includes("/register") || 
+                     location.pathname.includes("/forgot-password") || 
+                     location.pathname.includes("/reset-password");
+
   // Preloader time = 2 seconds
   useEffect(() => {
     const t = setTimeout(() => setBooting(false), 2000);
@@ -22,7 +27,7 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <div className="layout">
+      <div className={`layout ${isAuthPage ? "auth-responsive" : ""}`}>
         <Navbar />
         <main className="main" role="main">
           {/* Animated route transitions */}

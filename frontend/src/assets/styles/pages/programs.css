@@ -4,7 +4,7 @@
 
 .programsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.5rem;
 }
 
@@ -175,7 +175,7 @@
 
 .degreesGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 1.25rem;
   margin-bottom: 1rem;
 }

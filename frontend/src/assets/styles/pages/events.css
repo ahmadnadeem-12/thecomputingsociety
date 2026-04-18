@@ -4,7 +4,7 @@
 
 .eventsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.5rem;
 }
 
@@ -261,32 +261,15 @@
   box-shadow: 0 8px 25px rgba(220, 39, 67, 0.3);
 }
 
-/* Responsive - Tablet */
-@media (max-width: 768px) {
+/* Responsive */
+@media (max-width: 640px) {
   .eventsGrid {
     grid-template-columns: 1fr;
     gap: 1.25rem;
   }
 
-  .eventMeta {
-    font-size: 0.8rem;
-  }
-
-  .filterPill {
-    padding: 0.45rem 0.85rem;
-    font-size: 0.78rem;
-  }
-
-  .capacityLabel {
-    font-size: 0.7rem;
-  }
-}
-
-/* Responsive - Mobile */
-@media (max-width: 640px) {
   .eventInner {
-    padding: 1.15rem;
-    padding-top: 2.25rem;
+    padding: 1.25rem;
   }
 
   .eventActions {
@@ -295,11 +278,5 @@
 
   .eventActions .btn {
     width: 100%;
-    text-align: center;
-  }
-
-  .eventStatus {
-    padding: 0.25rem 0.65rem;
-    font-size: 0.65rem;
   }
 }
