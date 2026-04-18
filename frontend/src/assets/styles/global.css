@@ -92,8 +92,8 @@
 }
 
 html {
-  /* Minimum width ensures desktop layout shows when "Request Desktop Site" is used on mobile */
-  min-width: 1024px;
+  /* Allow the layout to be fully fluid on all screen sizes */
+  min-width: 0;
 }
 
 html,
@@ -154,6 +154,7 @@ textarea {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1.5rem;
+  width: 100%;
 }
 
 .layout {
@@ -665,11 +666,19 @@ body.mobileMenuOpen {
   min-height: 100vh;
   padding: 2rem 2.5rem;
   overflow: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 @media (max-width: 768px) {
   .main {
-    padding: 1.5rem 1.25rem 2rem;
+    padding: 1.25rem 1rem 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .main {
+    padding: 1rem 0.75rem 1.5rem;
   }
 }
 
@@ -846,7 +855,7 @@ body.mobileMenuOpen {
    ========================================================= */
 .cardGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
   gap: 1.25rem;
 }
 
@@ -1031,9 +1040,10 @@ select optgroup {
 .formRow {
   display: grid;
   gap: 0.75rem;
+  grid-template-columns: 1fr;
 }
 
-@media (min-width: 720px) {
+@media (min-width: 640px) {
   .formRow {
     grid-template-columns: 1fr 1fr;
   }
@@ -1163,7 +1173,7 @@ select optgroup {
    ========================================================= */
 .noticeGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
   gap: 1.25rem;
 }
 
@@ -1273,7 +1283,8 @@ select optgroup {
   }
 
   .sectionTitle {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+    letter-spacing: 0.05em;
   }
 
   .card {
@@ -1281,13 +1292,14 @@ select optgroup {
     border-radius: var(--radius-md);
   }
 
-  .btn {
-    width: 100%;
-    justify-content: center;
-  }
-
   .formRow {
     grid-template-columns: 1fr !important;
+  }
+
+  .sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 }
 
@@ -1457,6 +1469,7 @@ select optgroup {
 
   .sectionTitle {
     font-size: 1.35rem !important;
+    letter-spacing: 0.05em !important;
   }
 
   /* Card Grid */
@@ -1465,7 +1478,7 @@ select optgroup {
     gap: 1rem !important;
   }
 
-  /* Buttons */
+  /* Buttons — keep them proportional, not full-width by default */
   .btn {
     padding: 0.55rem 1rem !important;
     font-size: 0.78rem !important;
@@ -1491,28 +1504,63 @@ select optgroup {
     width: 100% !important;
     justify-content: center !important;
   }
+
+  /* Inputs — mobile-friendly font to prevent zoom */
+  .input, select.input, select, textarea {
+    font-size: 16px !important; /* Prevents iOS zoom on focus */
+  }
+
+  /* Ensure the ticketsGrid stacks on mobile */
+  .ticketsGrid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Admin grids */
+  .adminTools {
+    grid-template-columns: 1fr !important;
+  }
+
+  .checkRow {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Toast */
+  .toast {
+    right: 10px !important;
+    left: 10px !important;
+    max-width: none !important;
+  }
 }
 
 /* Very small screens */
 @media (max-width: 420px) {
   .main {
-    padding: 1rem !important;
+    padding: 0.75rem !important;
   }
 
   .section {
-    padding: 1rem !important;
+    padding: 0.85rem !important;
+    border-radius: var(--radius-sm) !important;
   }
 
   .sectionHeader {
     gap: 0.5rem !important;
   }
 
+  .sectionTitle {
+    font-size: 1.15rem !important;
+  }
+
+  .sectionSubtitle {
+    font-size: 0.78rem !important;
+  }
+
   .welcomeBanner {
-    padding: 1.5rem 1rem !important;
+    padding: 1.25rem 0.85rem !important;
   }
 
   .welcomeTitle {
-    font-size: 1.6rem !important;
+    font-size: 1.5rem !important;
   }
 
   .heroStats {
@@ -1530,6 +1578,23 @@ select optgroup {
 
   .heroButtons .btn {
     width: 100% !important;
+  }
+
+  .pill {
+    font-size: 0.65rem !important;
+    padding: 0.3rem 0.6rem !important;
+  }
+
+  .card {
+    padding: 0.85rem !important;
+  }
+
+  .modalOverlay {
+    padding: 0.5rem !important;
+  }
+
+  .modalContent {
+    border-radius: 14px !important;
   }
 }
 

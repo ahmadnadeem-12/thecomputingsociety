@@ -3,6 +3,18 @@
    ========================================================= */
 
 /* Ticket Container */
+.ticketsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .ticketsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .ticketsContainer {
   display: grid;
   gap: 2rem;
@@ -470,10 +482,17 @@
   .horizontalTicket {
     grid-template-columns: 1fr;
     text-align: center;
+    gap: 1rem;
+    padding: 1.25rem;
   }
 
   .ticketQrSection {
     order: 1;
+  }
+
+  .ticketQrSection canvas {
+    max-width: 150px;
+    max-height: 150px;
   }
 
   .ticketDetailsSection {
@@ -481,12 +500,22 @@
     align-items: center;
   }
 
+  .ticketEventTitle {
+    font-size: 1.15rem;
+  }
+
   .ticketDetailsGrid {
     justify-content: center;
+    gap: 0.5rem 1rem;
   }
 
   .ticketActionSection {
     order: 3;
+    width: 100%;
+  }
+
+  .downloadBtn {
+    width: 100% !important;
   }
 
   .ticketPreview {
@@ -505,6 +534,32 @@
   .myTicketCard {
     flex-direction: column;
     text-align: center;
+  }
+
+  .ticketIdDisplay code {
+    font-size: 0.6rem;
+    word-break: break-all;
+    display: inline-block;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .horizontalTicket {
+    padding: 1rem;
+    border-radius: 14px;
+  }
+
+  .ticketEventTitle {
+    font-size: 1rem;
+  }
+
+  .ticketDetailItem .detailValue {
+    font-size: 0.78rem;
+  }
+
+  .ticketIssuedTo {
+    font-size: 0.82rem;
   }
 }
 

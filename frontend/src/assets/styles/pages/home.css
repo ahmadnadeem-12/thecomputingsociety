@@ -45,7 +45,7 @@
 /* Notice Cards with Premium Animation */
 .noticeGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   gap: 1.5rem;
 }
 
@@ -107,7 +107,7 @@
 /* Feature Highlights */
 .featureGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
   gap: 1.25rem;
   margin-top: 2rem;
 }
@@ -252,8 +252,16 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  .welcomeBanner {
+    padding: 2rem 1.25rem;
+  }
+
   .welcomeTitle {
-    font-size: 2rem;
+    font-size: 1.8rem;
+  }
+
+  .welcomeSubtitle {
+    font-size: 0.9rem;
   }
 
   .statNumber {
@@ -266,5 +274,47 @@
 
   .noticeGrid {
     grid-template-columns: 1fr;
+  }
+
+  .featureGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .noticeInner {
+    padding: 1.25rem;
+  }
+
+  .noticeIcon {
+    width: 44px;
+    height: 44px;
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcomeTitle {
+    font-size: 1.5rem;
+  }
+
+  .statNumber {
+    font-size: 1.6rem;
+  }
+
+  .heroStats {
+    gap: 1rem;
+  }
+
+  .featureGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .featureCard {
+    padding: 1.15rem;
+  }
+
+  .quickLink {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.82rem;
   }
 }
