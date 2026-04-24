@@ -9,7 +9,6 @@ const programSchema = new mongoose.Schema(
         },
         type: {
             type: String,
-            enum: ["bootcamp", "workshop", "competition", "talk", "seminar", "other"],
             default: "workshop",
         },
         description: {
@@ -25,6 +24,14 @@ const programSchema = new mongoose.Schema(
             default: "",
         },
         participants: {
+            type: Number,
+            default: 0,
+        },
+        capacity: {
+            type: Number,
+            default: 0,
+        },
+        seatsRemaining: {
             type: Number,
             default: 0,
         },

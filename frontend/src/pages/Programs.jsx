@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { listPrograms } from "../services/programService";
 import { listDegrees } from "../services/degreeService";
@@ -188,12 +189,26 @@ export default function Programs() {
 
                 {/* Status & Action */}
                 <div className="programActions">
-                  <span className={`pill ${p.status === "open" || p.status === "ongoing" ? "pillRed" : ""}`}>
-                    {p.status}
-                  </span>
-                  <button className="btn btnPrimary" style={{ padding: ".45rem .9rem", fontSize: ".78rem" }}>
-                    Register
-                  </button>
+                  {p.status === "upcoming" ? (
+                    <span className="statusBadge upcoming">
+                      ⏳ Upcoming
+                    </span>
+                  ) : p.status === "open" ? (
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", width: "100%" }}>
+                      <span className="statusBadge open">
+                        ● Open
+                      </span>
+                      <Link to={`/tickets?programId=${p.id || p._id}`} style={{ flex: 1 }}>
+                        <button className="btn btnPrimary" style={{ width: "100%", padding: ".55rem", fontSize: ".82rem" }}>
+                          Register Now
+                        </button>
+                      </Link>
+                    </div>
+                  ) : (
+                    <span className={`statusBadge ${p.status}`}>
+                      {p.status}
+                    </span>
+                  )}
                 </div>
               </div>
             </motion.div>

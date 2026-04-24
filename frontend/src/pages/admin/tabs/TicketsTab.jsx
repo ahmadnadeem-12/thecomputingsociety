@@ -7,6 +7,7 @@ import "../../../assets/styles/pages/adminTickets.css";
 export default function TicketsTab({
     tickets,
     events,
+    programs,
     refresh
 }) {
     const [scannerActive, setScannerActive] = useState(false);
@@ -393,14 +394,21 @@ export default function TicketsTab({
             </div>
             <div className="ticketsList">
                 {filteredTickets.map(t => {
-                    const ev = events.find(e => e.id === t.eventId);
+                    const eventId = t.eventId?._id || t.eventId;
+                    const programId = t.programId?._id || t.programId;
+                    
+                    const ev = events.find((e) => (e.id || e._id) === eventId);
+                    const pr = (programs || []).find((p) => (p.id || p._id) === programId);
+                    
+                    const displayTitle = ev?.title || pr?.title || t.eventId?.title || t.programId?.title || "Ticket";
+
                     return (
                         <div
                             key={t.id}
                             className={`ticketCard ${t.checkedIn ? 'checkedIn' : ''}`}
                         >
                             <div className="ticketInfo">
-                                <div className="ticketEventName">{ev?.title || "Event"}</div>
+                                <div className="ticketEventName">{displayTitle}</div>
                                 <div className="ticketStudentInfo">
                                     <strong>{t.name}</strong> • {t.agNo} • {t.email}
                                 </div>

@@ -14,7 +14,12 @@ const ticketSchema = new mongoose.Schema(
         eventId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Event",
-            required: [true, "Event ID is required"],
+            required: false,
+        },
+        programId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Program",
+            required: false,
         },
         name: {
             type: String,
@@ -49,7 +54,7 @@ const ticketSchema = new mongoose.Schema(
     }
 );
 
-// Prevent duplicate ticket per event per student (AG No)
-ticketSchema.index({ eventId: 1, agNo: 1 }, { unique: true });
+// Prevent duplicate ticket per event/program per student (AG No)
+ticketSchema.index({ eventId: 1, agNo: 1, programId: 1 }, { unique: true });
 
 module.exports = mongoose.model("Ticket", ticketSchema);

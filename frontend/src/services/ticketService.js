@@ -10,9 +10,10 @@ export async function listTickets() {
   }
 }
 
-export async function createTicket({ userId, eventId, name, agNo, email, department, semester }) {
+export async function createTicket({ userId, eventId, programId, name, agNo, email, department, semester }) {
   const { data } = await api.post("/tickets", {
     eventId,
+    programId,
     name,
     agNo,
     email,
@@ -40,9 +41,9 @@ export async function deleteTicket(ticketId) {
   }
 }
 
-export async function deleteTicketByAgNo(agNo, eventId) {
+export async function deleteTicketByAgNo(agNo, targetId) {
   try {
-    await api.delete(`/tickets/by-ag/${encodeURIComponent(agNo)}/${eventId}`);
+    await api.delete(`/tickets/by-ag/${encodeURIComponent(agNo)}/${targetId}`);
     return true;
   } catch {
     return false;

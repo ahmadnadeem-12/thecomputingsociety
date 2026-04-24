@@ -267,7 +267,7 @@ export default function Dashboard() {
 
   // Programs
   const openProgramCreate = () => {
-    setEditing({ title: "", type: "workshop", description: "", icon: "📚", duration: "", participants: 0, status: "upcoming", startDate: "", instructor: "", tags: "" });
+    setEditing({ title: "", type: "workshop", description: "", icon: "📚", duration: "", participants: 0, capacity: 0, seatsRemaining: 0, status: "upcoming", startDate: "", instructor: "", tags: "" });
     setModalType("program");
     setModalOpen(true);
   };
@@ -279,20 +279,38 @@ export default function Dashboard() {
   };
 
   const saveProgram = async () => {
-    if (!editing?.title) return;
-    const id = editing._id || editing.id;
+    try {
+      if (!editing?.title) {
+        alert("Please enter a title");
+        return;
+      }
+      
+      const id = editing._id || editing.id;
+      
+      // Clean up payload
+      const { _id, id: sid, createdAt, updatedAt, __v, ...data } = editing;
 
-    // Process tags string into array
-    const finalTags = typeof editing.tags === "string"
-      ? editing.tags.split(",").map(t => t.trim()).filter(Boolean)
-      : (editing.tags || []);
+      // Process tags string into array
+      const finalTags = typeof data.tags === "string"
+        ? data.tags.split(",").map(t => t.trim()).filter(Boolean)
+        : (data.tags || []);
 
-    const payload = { ...editing, tags: finalTags };
+      const payload = { ...data, tags: finalTags };
 
-    if (id) await updateProgram(id, payload);
-    else await createProgram(payload);
-    setModalOpen(false);
-    refresh();
+      if (id) {
+        await updateProgram(id, payload);
+      } else {
+        await createProgram(payload);
+      }
+      
+      setModalOpen(false);
+      setEditing(null);
+      refresh();
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || "Failed to save program";
+      console.error("Save Program Failed:", msg, err);
+      alert(`Error: ${msg}`);
+    }
   };
 
   // Gallery
@@ -437,7 +455,7 @@ export default function Dashboard() {
           <GalleryTab gallery={gallery} openAlbumCreate={openAlbumCreate} openAlbumEdit={openAlbumEdit} handleAddImage={handleAddImage} refresh={refresh} />
         )}
         {tab === "tickets" && (
-          <TicketsTab tickets={tickets} events={events} refresh={refresh} />
+          <TicketsTab tickets={tickets} events={events} programs={programs} refresh={refresh} />
         )}
         {tab === "theme" && (
           <ThemeTab draftTheme={draftTheme} setDraftTheme={setDraftTheme} hasUnsaved={hasUnsaved} setHasUnsaved={setHasUnsaved} themeCtx={themeCtx} />
@@ -557,10 +575,23 @@ export default function Dashboard() {
             </div>
             <div><div className="label">Description</div><textarea className="input" style={{ minHeight: 80, borderRadius: 12 }} value={editing.description} onChange={e => setEditing({ ...editing, description: e.target.value })} aria-label="Description" /></div>
             <div className="formRow">
-              <div><div className="label">Type</div>
-                <select className="input" value={editing.type} onChange={e => setEditing({ ...editing, type: e.target.value })} aria-label="Type">
-                  <option value="workshop">Workshop</option><option value="bootcamp">Bootcamp</option><option value="competition">Competition</option><option value="talk">Talk</option>
-                </select>
+              <div>
+                <div className="label">Type</div>
+                <input 
+                  list="program-types"
+                  className="input" 
+                  value={editing.type} 
+                  onChange={e => setEditing({ ...editing, type: e.target.value })} 
+                  placeholder="Select or type custom..."
+                />
+                <datalist id="program-types">
+                  <option value="workshop">Workshop</option>
+                  <option value="bootcamp">Bootcamp</option>
+                  <option value="competition">Competition</option>
+                  <option value="talk">Talk</option>
+                  <option value="course">Course</option>
+                  <option value="seminar">Seminar</option>
+                </datalist>
               </div>
               <div><div className="label">Status</div>
                 <select className="input" value={editing.status} onChange={e => setEditing({ ...editing, status: e.target.value })} aria-label="Status">
@@ -570,7 +601,11 @@ export default function Dashboard() {
             </div>
             <div className="formRow">
               <div><div className="label">Duration</div><input className="input" value={editing.duration} onChange={e => setEditing({ ...editing, duration: e.target.value })} aria-label="Duration" /></div>
-              <div><div className="label">Participants</div><input type="number" className="input" value={editing.participants} onChange={e => setEditing({ ...editing, participants: +e.target.value })} aria-label="Participants" /></div>
+              <div><div className="label">Participants (Current)</div><input type="number" className="input" value={editing.participants} onChange={e => setEditing({ ...editing, participants: +e.target.value })} aria-label="Participants" /></div>
+            </div>
+            <div className="formRow">
+              <div><div className="label">Total Capacity</div><input type="number" className="input" value={editing.capacity} onChange={e => setEditing({ ...editing, capacity: +e.target.value })} aria-label="Capacity" /></div>
+              <div><div className="label">Seats Remaining</div><input type="number" className="input" value={editing.seatsRemaining} onChange={e => setEditing({ ...editing, seatsRemaining: +e.target.value })} aria-label="Seats remaining" /></div>
             </div>
             <div className="formRow">
               <div><div className="label">Start Date</div><input type="date" className="input" value={editing.startDate} onChange={e => setEditing({ ...editing, startDate: e.target.value })} aria-label="Start date" /></div>

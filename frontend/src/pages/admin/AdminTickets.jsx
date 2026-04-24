@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState, useRef } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 import { listTickets, setTicketCheckedIn, deleteTicket, checkInByQrCode } from "../../services/ticketService";
 import { listEvents } from "../../services/eventService";
+import { listPrograms } from "../../services/programService";
 import "../../assets/styles/pages/adminTickets.css";
 
 function toCSV(rows) {
@@ -42,23 +43,24 @@ export default function AdminTickets() {
   const [checkMsg, setCheckMsg] = useState("");
 
   const [events, setEvents] = useState([]);
+  const [programs, setPrograms] = useState([]);
   const [tickets, setTickets] = useState([]);
 
   useEffect(() => {
     listEvents().then(d => setEvents(d || [])).catch(() => { });
+    listPrograms().then(d => setPrograms(d || [])).catch(() => { });
   }, []);
 
   useEffect(() => {
     listTickets().then(d => setTickets(d || [])).catch(() => { });
   }, [refresh]);
 
-  const eventMap = useMemo(() => {
+  const targetMap = useMemo(() => {
     const m = {};
-    for (const e of events) {
-      m[e._id || e.id] = e;
-    }
+    for (const e of events) m[e._id || e.id] = { ...e, type: "Event" };
+    for (const p of programs) m[p._id || p.id] = { ...p, type: "Program" };
     return m;
-  }, [events]);
+  }, [events, programs]);
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -73,12 +75,14 @@ export default function AdminTickets() {
 
   const enriched = useMemo(() => {
     return filtered.map(t => {
-      const ev = eventMap[t.eventId];
-      const title = ev?.title || "Event";
-      const short = `${t.eventId} • ${title}`; // short only (no username)
+      const targetId = (t.eventId?._id || t.eventId) || (t.programId?._id || t.programId);
+      const item = targetId ? targetMap[targetId] : null;
+      const title = item?.title || "Unknown";
+      const type = item?.type || (t.eventId ? "Event" : "Program");
+      const short = `${targetId || ""} • ${title} (${type})`;
       return { ...t, eventTitle: short };
     });
-  }, [filtered, eventMap]);
+  }, [filtered, targetMap]);
 
   // pagination
   const totalPages = Math.max(1, Math.ceil(enriched.length / pageSize));
@@ -223,9 +227,15 @@ export default function AdminTickets() {
       setCheckMsg("AG No + Event required.");
       return;
     }
-    const found = tickets.find(t => (t.agNo || "").toUpperCase() === ag && (t.eventId === ev || t._id === ev));
+    const found = tickets.find(t => {
+      const isAg = (t.agNo || "").toUpperCase() === ag;
+      const tId = (t.eventId?._id || t.eventId) || (t.programId?._id || t.programId);
+      const isTarget = tId === ev || (t._id || t.id) === ev;
+      return isAg && isTarget;
+    });
+
     if (!found) {
-      setCheckMsg("Ticket not found for this AG No + Event.");
+      setCheckMsg("Ticket not found for this AG No + Selection.");
       return;
     }
     if (found.checkedIn) {
@@ -271,8 +281,13 @@ export default function AdminTickets() {
           <div className="checkRow">
             <input className="input" placeholder="AG No (scan or type)" value={checkAg} onChange={(e) => setCheckAg(e.target.value)} />
             <select className="input" value={checkEvent} onChange={(e) => setCheckEvent(e.target.value)}>
-              <option value="">Select Event</option>
-              {events.map(e => <option key={e.id} value={e.id}>{e.id} • {e.title}</option>)}
+              <option value="">Select Event/Program</option>
+              <optgroup label="Events">
+                {events.map(e => <option key={e.id} value={e.id || e._id}>{e.title}</option>)}
+              </optgroup>
+              <optgroup label="Programs">
+                {programs.map(p => <option key={p.id} value={p.id || p._id}>{p.title}</option>)}
+              </optgroup>
             </select>
             <button className="btn btnPrimary" onClick={quickCheckIn}>Check-in</button>
           </div>

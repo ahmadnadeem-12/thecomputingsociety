@@ -31,249 +31,208 @@ function drawTCSLogo(doc, x, y, size) {
 }
 
 /**
- * Generate a ticket PDF
- * @param {Object} ticketData - All ticket information
- * @param {string} qrCodeDataUrl - QR code as base64 data URL
- * @returns {jsPDF} - The generated PDF document
+ * Draw one ticket card on the doc at position (oX, oY)
+ * Card size: 190mm wide × 88mm tall — matches frontend .horizontalTicket
  */
-export function generateTicketPDF(ticketData, qrCodeDataUrl) {
-    const doc = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-    });
+function drawTicketCard(doc, t, qr, oX, oY) {
+    const CW = 190; // card width
+    const CH = 55;   // Ultra-slim height to fit 5 per page
 
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 20;
-    let y = margin;
+    // --- Card Background ---
+    doc.setFillColor(22, 14, 38);
+    doc.roundedRect(oX, oY, CW, CH, 4, 4, 'F');
 
-    // Background - Dark theme
-    doc.setFillColor(15, 15, 26);
-    doc.rect(0, 0, pageWidth, pageHeight, 'F');
+    // Card border
+    doc.setDrawColor(255, 255, 255, 0.1);
+    doc.setLineWidth(0.2);
+    doc.roundedRect(oX, oY, CW, CH, 4, 4, 'S');
 
-    // Header gradient bar - Left side (Red)
+    // --- Left Glow Bar ---
     doc.setFillColor(220, 39, 67);
-    doc.rect(0, 0, pageWidth / 2, 50, 'F');
+    doc.rect(oX, oY + 3, 1, CH - 6, 'F');
 
-    // Header gradient bar - Right side (Pink/Magenta)
-    doc.setFillColor(194, 52, 165);
-    doc.rect(pageWidth / 2, 0, pageWidth / 2, 50, 'F');
+    // === QR CODE SECTION ===
+    const qrBoxSize = 30; // Compact QR
+    const qrPad = 1.5;
+    const qrX = oX + 10;
+    const qrY = oY + (CH - qrBoxSize - 6) / 2;
 
-    // Draw TCS Logo (centered at top)
-    const logoY = 25;
-    drawTCSLogo(doc, pageWidth / 2, logoY, 30);
+    doc.setFillColor(248, 248, 248);
+    doc.roundedRect(qrX, qrY, qrBoxSize, qrBoxSize, 2, 2, 'F');
 
-    y = 65;
+    if (qr) {
+        doc.addImage(qr, 'PNG', qrX + qrPad, qrY + qrPad, qrBoxSize - qrPad * 2, qrBoxSize - qrPad * 2);
+    }
 
-    // Title: THE COMPUTING SOCIETY
-    doc.setFontSize(22);
+    doc.setFontSize(5);
     doc.setFont('helvetica', 'bold');
+    doc.setTextColor(130, 120, 145);
+    doc.text('SCAN AT ENTRY', qrX + qrBoxSize / 2, qrY + qrBoxSize + 5, { align: 'center' });
 
-    // Calculate positions for centered title
-    const theText = 'THE ';
-    const computingText = 'COMPUTING ';
-    const societyText = 'SOCIETY';
+    // === DETAILS SECTION ===
+    const dx = qrX + qrBoxSize + 10;
+    let dy = oY + 9;
 
-    doc.setTextColor(255, 77, 109); // Red for THE
-    const theWidth = doc.getTextWidth(theText);
-    doc.setTextColor(199, 125, 255); // Purple for COMPUTING
-    const computingWidth = doc.getTextWidth(computingText);
-    doc.setTextColor(0, 217, 255); // Cyan for SOCIETY
-    const societyWidth = doc.getTextWidth(societyText);
-
-    const totalWidth = theWidth + computingWidth + societyWidth;
-    const startX = (pageWidth - totalWidth) / 2;
-
-    // Draw each word with its color
+    // Event Title
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
     doc.setTextColor(255, 77, 109);
-    doc.text(theText, startX, y);
+    const maxTitleW = CW - (dx - oX) - 10;
+    const titleLines = doc.splitTextToSize(String(t.eventTitle || 'TCS Event'), maxTitleW);
+    doc.text(titleLines[0], dx, dy);
 
-    doc.setTextColor(199, 125, 255);
-    doc.text(computingText, startX + theWidth, y);
+    dy += 6;
 
-    doc.setTextColor(0, 217, 255);
-    doc.text(societyText, startX + theWidth + computingWidth, y);
+    // --- Detail Grid ---
+    const cols = [
+        { label: 'DATE',           value: String(t.eventDate || 'TBA'),     x: 0   },
+        { label: 'TIME',           value: String(t.eventTime || 'TBA'),     x: 25  },
+        { label: 'DEPARTMENT',     value: String(t.department || 'CS'),      x: 52  },
+        { label: 'SEMESTER',       value: String(t.semester || '-'),         x: 76  },
+        { label: 'AG NO',          value: String(t.agNo || '-'),            x: 92 },
+    ];
 
-    y += 8;
+    doc.setFontSize(4.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(130, 120, 145);
+    cols.forEach(c => doc.text(c.label, dx + c.x, dy));
 
-    // Department subtitle
-    doc.setFontSize(10);
+    dy += 3;
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(240, 240, 255);
+    cols.forEach(c => doc.text(c.value, dx + c.x, dy));
+
+    dy += 6;
+    // Email row
+    doc.setFontSize(4.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(130, 120, 145);
+    doc.text('EMAIL', dx, dy);
+    dy += 3;
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(240, 240, 255);
+    doc.text(String(t.email || '-'), dx, dy);
+
+    dy += 6;
+    // Issued to
+    doc.setFontSize(6.5);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(154, 143, 166);
-    doc.text('Department of Computer Science, UAF', pageWidth / 2, y, { align: 'center' });
-
-    y += 15;
-
-    // Divider line
-    doc.setDrawColor(58, 32, 80);
-    doc.setLineWidth(0.5);
-    doc.line(margin, y, pageWidth - margin, y);
-
-    y += 12;
-
-    // Event Ticket Title
-    doc.setFontSize(18);
+    doc.setTextColor(200, 200, 210);
+    doc.text('Issued to:', dx, dy);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(255, 255, 255);
-    doc.text('EVENT TICKET', pageWidth / 2, y, { align: 'center' });
+    doc.text(String(t.name || '-'), dx + doc.getTextWidth('Issued to: ') + 0.5, dy);
 
-    y += 10;
+    dy += 6;
+    // Ticket ID pill
+    const tidStr = String(t.publicTicketId || t.id || '-');
+    doc.setFontSize(6);
+    doc.setFont('helvetica', 'normal');
+    const labelPart = 'Ticket ID:  ';
+    doc.setFont('courier', 'bold');
+    const pillTextW = doc.getTextWidth(labelPart + tidStr);
+    const pillW = pillTextW + 8;
+    const pillH = 6;
 
-    // Event name
-    doc.setFontSize(14);
+    // Pill background
+    doc.setFillColor(0, 30, 50);
+    doc.setDrawColor(0, 180, 220);
+    doc.setLineWidth(0.2);
+    doc.roundedRect(dx, dy - 4, pillW, pillH, 3, 3, 'FD');
+
+    // "Ticket ID:" in gray
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(130, 120, 145);
+    doc.text('Ticket ID:', dx + 3, dy);
+
+    // Actual ID in cyan
     doc.setTextColor(0, 217, 255);
-    doc.text(ticketData.eventTitle || 'TCS Event', pageWidth / 2, y, { align: 'center' });
+    doc.setFont('courier', 'bold');
+    doc.text(tidStr, dx + 3 + doc.getTextWidth('Ticket ID:  '), dy);
 
-    y += 15;
-
-    // Ticket details box
-    const boxX = margin;
-    const boxY = y;
-    const boxWidth = pageWidth - (margin * 2);
-    const boxHeight = 65;
-
-    // Box background
-    doc.setFillColor(18, 12, 28);
-    doc.roundedRect(boxX, boxY, boxWidth, boxHeight, 5, 5, 'F');
-
-    // Box border (gradient effect)
-    doc.setDrawColor(194, 52, 165);
-    doc.setLineWidth(0.8);
-    doc.roundedRect(boxX, boxY, boxWidth, boxHeight, 5, 5, 'S');
-
-    // Details inside box - 2 columns
-    const col1X = boxX + 12;
-    const col2X = pageWidth / 2 + 10;
-    let detailY = boxY + 15;
-
-    const leftDetails = [
-        { label: 'Full Name', value: ticketData.name },
-        { label: 'Email', value: ticketData.email },
-        { label: 'Semester', value: ticketData.semester },
-    ];
-
-    const rightDetails = [
-        { label: 'AG Number', value: ticketData.agNo },
-        { label: 'Department', value: ticketData.department },
-        { label: 'Event Date', value: ticketData.eventDate || 'TBA' },
-    ];
-
-    doc.setFontSize(8);
-    leftDetails.forEach((detail, index) => {
-        const currentY = detailY + (index * 17);
-
-        // Label
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(154, 143, 166);
-        doc.text(detail.label + ':', col1X, currentY);
-
-        // Value
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(255, 255, 255);
-        doc.text(String(detail.value || '-'), col1X, currentY + 5);
-    });
-
-    rightDetails.forEach((detail, index) => {
-        const currentY = detailY + (index * 17);
-
-        // Label
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(154, 143, 166);
-        doc.text(detail.label + ':', col2X, currentY);
-
-        // Value
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(255, 255, 255);
-        doc.text(String(detail.value || '-'), col2X, currentY + 5);
-    });
-
-    y = boxY + boxHeight + 15;
-    
-    // QR Code Section - High Definition Layout
-    const qrBoxSize = 90; // mm
-    const qrBoxX = (pageWidth - qrBoxSize) / 2;
-    const qrBoxY = y;
-    
-    // 1. Off-White Background Container (#f8f8f8 as requested)
-    doc.setFillColor(248, 248, 248);
-    doc.roundedRect(qrBoxX + 5, qrBoxY, qrBoxSize - 10, qrBoxSize + 5, 4, 4, 'F');
-    
-    // 2. High Contrast "SCAN AT ENTRY" Label
-    doc.setFontSize(10);
+    // --- Subtle Watermark ---
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(15, 10, 25); // Minimal dark color
-    doc.text('SCAN AT ENTRY', pageWidth / 2, qrBoxY + 8, { align: 'center' });
-
-    // 3. High-Resolution QR Code (Minimal Padding)
-    if (qrCodeDataUrl) {
-        const qrSize = 76; // Nearly fills the box space
-        const qrX = (pageWidth - qrSize) / 2;
-        const qrY = qrBoxY + 11;
-        doc.addImage(qrCodeDataUrl, 'PNG', qrX, qrY, qrSize, qrSize, undefined, 'FAST');
-    }
-    
-    y = qrBoxY + qrBoxSize + 25;
-
-    // 4. Full Ticket ID Display (Reverted as per requirement)
     doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(154, 143, 166);
-    doc.text('TICKET ID:', pageWidth / 2, y, { align: 'center' });
-    y += 5;
-    doc.setFontSize(10);
-    doc.setTextColor(0, 217, 255);
-    doc.text(ticketData.publicTicketId || ticketData.id, pageWidth / 2, y, { align: 'center' });
+    doc.setTextColor(255, 255, 255, 0.05);
+    doc.text('THE COMPUTING SOCIETY', CW - 5, CH - 5, { align: 'right' });
+}
 
-    y += 12;
+// -------------------------------------------------------
+// PUBLIC API
+// -------------------------------------------------------
 
-    // Footer divider
-    doc.setDrawColor(58, 32, 80);
-    doc.setLineWidth(0.3);
-    doc.line(margin, y, pageWidth - margin, y);
+/**
+ * Generate a single-ticket PDF (one card centered on A4)
+ */
+export function generateTicketPDF(ticketData, qrCodeDataUrl) {
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pageW = doc.internal.pageSize.getWidth();
+    const cardW = 190;
+    const cardH = 55;
+    const oX = (pageW - cardW) / 2;
+    const oY = 10;
 
-    y += 6;
+    // Page background
+    doc.setFillColor(10, 8, 18);
+    doc.rect(0, 0, pageW, doc.internal.pageSize.getHeight(), 'F');
 
-    // Footer text
-    doc.setFontSize(7);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(107, 95, 120);
-    doc.text('This ticket is valid for one-time entry only. Present this QR code at the event entrance.', pageWidth / 2, y, { align: 'center' });
-    y += 6;
-    doc.setTextColor(154, 143, 166);
-    doc.text('© The Computing Society - UAF | thecomputingsociety@gmail.com', pageWidth / 2, y, { align: 'center' });
-
+    drawTicketCard(doc, ticketData, qrCodeDataUrl, oX, oY);
     return doc;
 }
 
 /**
- * Generate and download ticket PDF
- * @param {Object} ticketData - Ticket information
- * @param {string} qrCodeDataUrl - QR code as base64
- * @returns {string} - File name
+ * Download single ticket
  */
 export function downloadTicketPDF(ticketData, qrCodeDataUrl) {
     try {
         const doc = generateTicketPDF(ticketData, qrCodeDataUrl);
         const fileName = `TCS_Ticket_${(ticketData.agNo || 'ticket')}.pdf`;
-
-        const blob = doc.output('blob');
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-
-        setTimeout(() => {
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        }, 100);
-
+        doc.save(fileName);
         return fileName;
     } catch (err) {
         console.error("Ticket download failed:", err);
         return null;
+    }
+}
+
+/**
+ * Download ALL tickets — A4 portrait, up to 3 tickets stacked per page
+ */
+export function downloadAllTicketsPDF(tickets, qrCodeDataUrls) {
+    if (!tickets || tickets.length === 0) return;
+
+    try {
+        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        const pageW = 210;
+        const pageH = 297;
+        const cardW = 190;
+        const cardH = 55;
+        const oX = (pageW - cardW) / 2;
+        const gap = 3;
+        const topMargin = 5;
+        const cardsPerPage = 5;
+
+        tickets.forEach((t, index) => {
+            const posOnPage = index % cardsPerPage;
+            if (index > 0 && posOnPage === 0) {
+                doc.addPage('a4', 'portrait');
+            }
+
+            if (posOnPage === 0) {
+                doc.setFillColor(10, 8, 18);
+                doc.rect(0, 0, pageW, pageH, 'F');
+            }
+
+            const oY = topMargin + posOnPage * (cardH + gap);
+            drawTicketCard(doc, t, qrCodeDataUrls[index], oX, oY);
+        });
+
+        const fileName = `TCS_All_Tickets_${new Date().toISOString().slice(0, 10)}.pdf`;
+        doc.save(fileName);
+    } catch (err) {
+        console.error("Multi-ticket download failed:", err);
     }
 }
 
