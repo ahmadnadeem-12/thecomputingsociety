@@ -14,6 +14,7 @@ import { listPrograms, createProgram, updateProgram } from "../services/programS
 import { listGalleryAlbums, createAlbum, updateAlbum, addImageToAlbum } from "../services/galleryService";
 import { Modal } from "../components/ui/Modal";
 import { ImageUploader } from "../components/ui/ImageUploader";
+import { FileUploader } from "../components/ui/FileUploader";
 import SEOHead from "../components/common/SEOHead";
 
 import {
@@ -556,7 +557,15 @@ export default function Dashboard() {
             </div>
             <div><div className="label">Tags (comma sep)</div><input className="input" value={editing.tags || ""} onChange={e => setEditing({ ...editing, tags: e.target.value })} aria-label="Tags" /></div>
             <div className="sectionSubtitle" style={{ fontSize: ".7rem", marginTop: ".3rem", color: "var(--accent-cyan)" }}>
-              Tip: Paste a OneDrive, Google Drive, or Direct PDF/Excel link below for attachments.
+              Option 1: Upload a PDF/Excel file directly
+            </div>
+            <FileUploader 
+              value={editing.link && editing.link.startsWith('data:') ? editing.link : ""} 
+              onChange={(base64) => setEditing({ ...editing, link: base64, linkText: editing.linkText || "Download File" })} 
+            />
+
+            <div className="sectionSubtitle" style={{ fontSize: ".7rem", marginTop: ".8rem", color: "var(--accent-cyan)" }}>
+              Option 2: Or paste a OneDrive, Google Drive, or Direct link
             </div>
             <div className="formRow">
               <div><div className="label">Attachment / Document URL</div><input className="input" value={editing.link} onChange={e => setEditing({ ...editing, link: e.target.value })} aria-label="Link URL" placeholder="https://..." /></div>
