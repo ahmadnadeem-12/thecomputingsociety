@@ -104,9 +104,24 @@ export default function Announcements() {
 
                 {a.link && (
                   <div style={{ marginTop: "1rem" }}>
-                    <Link to={a.link} className="btn btnPrimary" style={{ padding: ".5rem 1rem", fontSize: ".8rem" }}>
-                      {a.linkText || "Learn More"}
-                    </Link>
+                    <a 
+                      href={a.link} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="btn btnPrimary" 
+                      style={{ 
+                        padding: ".5rem 1rem", 
+                        fontSize: ".8rem",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: ".4rem"
+                      }}
+                    >
+                      {a.link.toLowerCase().endsWith('.pdf') ? '📄' : 
+                       a.link.toLowerCase().match(/\.(xlsx|xls|csv)$/) ? '📊' : 
+                       a.link.includes('drive.google.com') || a.link.includes('onedrive') ? '☁️' : '🔗'}
+                      {a.linkText || "View Attachment"}
+                    </a>
                   </div>
                 )}
               </motion.div>

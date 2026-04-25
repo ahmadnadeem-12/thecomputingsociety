@@ -555,9 +555,12 @@ export default function Dashboard() {
               </div>
             </div>
             <div><div className="label">Tags (comma sep)</div><input className="input" value={editing.tags || ""} onChange={e => setEditing({ ...editing, tags: e.target.value })} aria-label="Tags" /></div>
+            <div className="sectionSubtitle" style={{ fontSize: ".7rem", marginTop: ".3rem", color: "var(--accent-cyan)" }}>
+              Tip: Paste a OneDrive, Google Drive, or Direct PDF/Excel link below for attachments.
+            </div>
             <div className="formRow">
-              <div><div className="label">Link URL</div><input className="input" value={editing.link} onChange={e => setEditing({ ...editing, link: e.target.value })} aria-label="Link URL" /></div>
-              <div><div className="label">Link Text</div><input className="input" value={editing.linkText} onChange={e => setEditing({ ...editing, linkText: e.target.value })} aria-label="Link text" /></div>
+              <div><div className="label">Attachment / Document URL</div><input className="input" value={editing.link} onChange={e => setEditing({ ...editing, link: e.target.value })} aria-label="Link URL" placeholder="https://..." /></div>
+              <div><div className="label">Button Label</div><input className="input" value={editing.linkText} onChange={e => setEditing({ ...editing, linkText: e.target.value })} aria-label="Link text" placeholder="e.g. Download PDF" /></div>
             </div>
             <div style={{ display: "flex", gap: ".5rem", justifyContent: "flex-end" }}>
               <button className="btn btnGhost" onClick={() => setModalOpen(false)}>Cancel</button>
