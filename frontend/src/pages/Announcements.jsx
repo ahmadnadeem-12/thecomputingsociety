@@ -112,17 +112,22 @@ export default function Announcements() {
                         rel="noopener noreferrer"
                         className="btn btnPrimary" 
                         style={{ 
-                          padding: ".55rem 1.1rem", 
-                          fontSize: ".8rem",
+                          padding: ".6rem 1.2rem", 
+                          fontSize: ".85rem",
                           display: "inline-flex",
                           alignItems: "center",
-                          gap: ".4rem",
-                          background: "var(--accent-cyan)",
-                          color: "#111",
-                          fontWeight: 700
+                          gap: ".5rem",
+                          background: "linear-gradient(135deg, #00d9ff, #0077ff)",
+                          color: "#fff",
+                          fontWeight: 800,
+                          border: "none",
+                          boxShadow: "0 4px 15px rgba(0, 217, 255, 0.3)",
+                          borderRadius: "10px",
+                          letterSpacing: "0.5px",
+                          textTransform: "uppercase"
                         }}
                       >
-                        {a.attachment.toLowerCase().includes('pdf') ? '📄' : '📊'}
+                        <span style={{ fontSize: "1.1rem" }}>{a.attachment.toLowerCase().includes('pdf') ? '📄' : '📊'}</span>
                         {a.attachmentLabel || "Download File"}
                       </a>
                     )}
@@ -132,18 +137,33 @@ export default function Announcements() {
                         href={a.link} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="btn btnPrimary" 
+                        className="btn" 
                         style={{ 
-                          padding: ".55rem 1.1rem", 
-                          fontSize: ".8rem",
+                          padding: ".6rem 1.2rem", 
+                          fontSize: ".85rem",
                           display: "inline-flex",
                           alignItems: "center",
-                          gap: ".4rem",
-                          background: "rgba(255,255,255,0.08)",
-                          border: "1px solid rgba(255,255,255,0.1)"
+                          gap: ".5rem",
+                          background: "rgba(255, 255, 255, 0.05)",
+                          border: "1px solid rgba(255, 255, 255, 0.15)",
+                          color: "var(--text-muted)",
+                          backdropFilter: "blur(10px)",
+                          borderRadius: "10px",
+                          fontWeight: 600,
+                          transition: "all 0.3s ease"
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)";
+                          e.currentTarget.style.borderColor = "var(--accent-pink)";
+                          e.currentTarget.style.color = "#fff";
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)";
+                          e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.15)";
+                          e.currentTarget.style.color = "var(--text-muted)";
                         }}
                       >
-                        {a.link.includes('drive.google.com') || a.link.includes('onedrive') ? '☁️' : '🔗'}
+                        <span style={{ fontSize: "1.1rem" }}>{a.link.includes('drive.google.com') || a.link.includes('onedrive') ? '☁️' : '🔗'}</span>
                         {a.linkText || "View Link"}
                       </a>
                     )}
