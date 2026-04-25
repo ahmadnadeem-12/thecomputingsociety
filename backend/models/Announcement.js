@@ -32,6 +32,14 @@ const announcementSchema = new mongoose.Schema(
             type: String,
             default: "",
         },
+        attachment: {
+            type: String,
+            default: "",
+        },
+        attachmentLabel: {
+            type: String,
+            default: "",
+        },
     },
     {
         timestamps: true,

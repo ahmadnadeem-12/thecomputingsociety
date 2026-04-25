@@ -102,26 +102,51 @@ export default function Announcements() {
                   </div>
                 )}
 
-                {a.link && (
-                  <div style={{ marginTop: "1rem" }}>
-                    <a 
-                      href={a.link} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="btn btnPrimary" 
-                      style={{ 
-                        padding: ".5rem 1rem", 
-                        fontSize: ".8rem",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: ".4rem"
-                      }}
-                    >
-                      {a.link.toLowerCase().endsWith('.pdf') ? '📄' : 
-                       a.link.toLowerCase().match(/\.(xlsx|xls|csv)$/) ? '📊' : 
-                       a.link.includes('drive.google.com') || a.link.includes('onedrive') ? '☁️' : '🔗'}
-                      {a.linkText || "View Attachment"}
-                    </a>
+                {(a.attachment || a.link) && (
+                  <div style={{ marginTop: "1.2rem", display: "flex", gap: ".75rem", flexWrap: "wrap" }}>
+                    {a.attachment && (
+                      <a 
+                        href={a.attachment} 
+                        download={a.attachmentLabel || "Download"}
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="btn btnPrimary" 
+                        style={{ 
+                          padding: ".55rem 1.1rem", 
+                          fontSize: ".8rem",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: ".4rem",
+                          background: "var(--accent-cyan)",
+                          color: "#111",
+                          fontWeight: 700
+                        }}
+                      >
+                        {a.attachment.toLowerCase().includes('pdf') ? '📄' : '📊'}
+                        {a.attachmentLabel || "Download File"}
+                      </a>
+                    )}
+                    
+                    {a.link && (
+                      <a 
+                        href={a.link} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="btn btnPrimary" 
+                        style={{ 
+                          padding: ".55rem 1.1rem", 
+                          fontSize: ".8rem",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: ".4rem",
+                          background: "rgba(255,255,255,0.08)",
+                          border: "1px solid rgba(255,255,255,0.1)"
+                        }}
+                      >
+                        {a.link.includes('drive.google.com') || a.link.includes('onedrive') ? '☁️' : '🔗'}
+                        {a.linkText || "View Link"}
+                      </a>
+                    )}
                   </div>
                 )}
               </motion.div>

@@ -238,7 +238,17 @@ export default function Dashboard() {
 
   // Announcements
   const openAnnouncementCreate = () => {
-    setEditing({ title: "", body: "", date: new Date().toISOString().split("T")[0], priority: "normal", tags: "", link: "", linkText: "" });
+    setEditing({ 
+      title: "", 
+      body: "", 
+      date: new Date().toISOString().split("T")[0], 
+      priority: "normal", 
+      tags: "", 
+      link: "", 
+      linkText: "",
+      attachment: "",
+      attachmentLabel: ""
+    });
     setModalType("announcement");
     setModalOpen(true);
   };
@@ -556,20 +566,29 @@ export default function Dashboard() {
               </div>
             </div>
             <div><div className="label">Tags (comma sep)</div><input className="input" value={editing.tags || ""} onChange={e => setEditing({ ...editing, tags: e.target.value })} aria-label="Tags" /></div>
-            <div className="sectionSubtitle" style={{ fontSize: ".7rem", marginTop: ".3rem", color: "var(--accent-cyan)" }}>
-              Option 1: Upload a PDF/Excel file directly
+            
+            <div style={{ padding: "0.8rem", background: "rgba(255,255,255,0.03)", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+              <div style={{ fontSize: ".75rem", fontWeight: 700, marginBottom: ".6rem", color: "var(--accent-cyan)", display: "flex", alignItems: "center", gap: ".4rem" }}>
+                📁 Direct File Attachment
+              </div>
+              <FileUploader 
+                value={editing.attachment} 
+                onChange={(base64) => setEditing({ ...editing, attachment: base64, attachmentLabel: editing.attachmentLabel || "Download File" })} 
+              />
+              <div style={{ marginTop: ".6rem" }}>
+                <div className="label">Attachment Button Label</div>
+                <input className="input" value={editing.attachmentLabel} onChange={e => setEditing({ ...editing, attachmentLabel: e.target.value })} placeholder="e.g. Download PDF" />
+              </div>
             </div>
-            <FileUploader 
-              value={editing.link && editing.link.startsWith('data:') ? editing.link : ""} 
-              onChange={(base64) => setEditing({ ...editing, link: base64, linkText: editing.linkText || "Download File" })} 
-            />
 
-            <div className="sectionSubtitle" style={{ fontSize: ".7rem", marginTop: ".8rem", color: "var(--accent-cyan)" }}>
-              Option 2: Or paste a OneDrive, Google Drive, or Direct link
-            </div>
-            <div className="formRow">
-              <div><div className="label">Attachment / Document URL</div><input className="input" value={editing.link} onChange={e => setEditing({ ...editing, link: e.target.value })} aria-label="Link URL" placeholder="https://..." /></div>
-              <div><div className="label">Button Label</div><input className="input" value={editing.linkText} onChange={e => setEditing({ ...editing, linkText: e.target.value })} aria-label="Link text" placeholder="e.g. Download PDF" /></div>
+            <div style={{ padding: "0.8rem", background: "rgba(255,255,255,0.03)", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+              <div style={{ fontSize: ".75rem", fontWeight: 700, marginBottom: ".6rem", color: "var(--accent-pink)", display: "flex", alignItems: "center", gap: ".4rem" }}>
+                🔗 External Link / URL
+              </div>
+              <div className="formRow">
+                <div><div className="label">Link URL</div><input className="input" value={editing.link} onChange={e => setEditing({ ...editing, link: e.target.value })} placeholder="https://..." /></div>
+                <div><div className="label">Link Button Label</div><input className="input" value={editing.linkText} onChange={e => setEditing({ ...editing, linkText: e.target.value })} placeholder="e.g. Visit Website" /></div>
+              </div>
             </div>
             <div style={{ display: "flex", gap: ".5rem", justifyContent: "flex-end" }}>
               <button className="btn btnGhost" onClick={() => setModalOpen(false)}>Cancel</button>
