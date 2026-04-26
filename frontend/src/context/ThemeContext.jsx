@@ -1,7 +1,7 @@
-
 import React, { createContext, useEffect, useMemo, useState } from "react";
 import { LS_KEYS } from "../utils/constants";
 import { getLS, setLS } from "../utils/helpers";
+import { api } from "../services/api";
 
 export const ThemeContext = createContext(null);
 
@@ -118,41 +118,67 @@ function applyThemeToDOM(theme) {
   });
 }
 
+
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(DEFAULT_THEME);
 
   useEffect(() => {
-    // Normal flow: check saved theme
-    const saved = getLS(LS_KEYS.THEME, null);
-    // Merge saved with default so new keys are always present
-    const merged = saved ? { ...DEFAULT_THEME, ...saved } : DEFAULT_THEME;
-    setTheme(merged);
-    // Force apply all theme values
-    applyThemeToDOM(merged);
+    async function syncTheme() {
+      // 1. Check local storage for quick load
+      const saved = getLS(LS_KEYS.THEME, null);
+      if (saved) {
+        const merged = { ...DEFAULT_THEME, ...saved };
+        setTheme(merged);
+        applyThemeToDOM(merged);
+      }
+
+      // 2. Fetch from backend for global sync
+      try {
+        const res = await api.get("/theme");
+        if (res.data?.success && res.data?.data && Object.keys(res.data.data).length > 0) {
+          const remoteTheme = { ...DEFAULT_THEME, ...res.data.data };
+          setTheme(remoteTheme);
+          applyThemeToDOM(remoteTheme);
+          // Update local cache
+          setLS(LS_KEYS.THEME, remoteTheme);
+        }
+      } catch (err) {
+        console.error("Failed to sync theme with backend:", err);
+      }
+    }
+    syncTheme();
   }, []);
 
   const value = useMemo(() => ({
     theme,
     defaultTheme: DEFAULT_THEME,
-    setTheme: (t) => {
+    setTheme: async (t) => {
       const merged = { ...DEFAULT_THEME, ...t };
       setTheme(merged);
-      try {
-        setLS(LS_KEYS.THEME, merged);
-      } catch (e) {
-        console.error('Theme localStorage write failed:', e);
-      }
       applyThemeToDOM(merged);
+      
+      // Save locally
+      setLS(LS_KEYS.THEME, merged);
+
+      // Save to backend (only if admin, check handled by backend middleware)
+      try {
+        await api.post("/theme", { colors: merged });
+      } catch (err) {
+        console.error("Theme persistent save failed:", err);
+      }
     },
     applyLive: (t) => {
-      // Apply without saving - for live preview
       applyThemeToDOM(t);
     },
-    reset: () => {
-      // Clear saved theme and apply defaults
+    reset: async () => {
       localStorage.removeItem(LS_KEYS.THEME);
       setTheme(DEFAULT_THEME);
       applyThemeToDOM(DEFAULT_THEME);
+      try {
+        await api.delete("/theme");
+      } catch (e) {
+        console.error("Theme remote reset failed:", e);
+      }
     },
   }), [theme]);
 

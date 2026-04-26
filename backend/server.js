@@ -76,6 +76,7 @@ app.use("/api/tickets", require("./routes/tickets"));
 app.use("/api/gallery", require("./routes/gallery"));
 app.use("/api/programs", require("./routes/programs"));
 app.use("/api/degrees", require("./routes/degrees"));
+app.use("/api/theme", require("./routes/theme"));
 app.use("/api/home", require("./routes/home"));
 
 // ========================
