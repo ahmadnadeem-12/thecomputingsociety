@@ -368,12 +368,31 @@ export default function Tickets() {
                              <span style={{ fontSize: "1.4rem" }}>📥</span> DOWNLOAD PDF
                            </button>
 
-                           {t.checkedIn && (
-                             <div style={{ borderRadius: "50px", background: "rgba(74, 222, 128, 0.1)", color: "#4ade80", padding: "10px 20px", fontSize: "0.8rem", fontWeight: 900, display: "flex", alignItems: "center", gap: "5px", border: "1px solid rgba(74, 222, 128, 0.2)" }}>✓ CHECKED IN</div>
-                           )}
 
-                           {t.hasCertificate && (
-                             <button className="btn btnGhost" style={{ width: "100%", borderRadius: "50px", padding: "10px 20px", fontSize: "0.8rem", fontWeight: 800, color: "#fff", background: "rgba(255, 255, 255, 0.05)", border: "1px solid rgba(255,255,255,0.1)" }} onClick={() => nav("/certificate-preview", { state: { ...t, eventTitle: ev?.title } })}>📜 CLAIM CERTIFICATE</button>
+                           {t.checkedIn && (
+                             <button 
+                               className="btn" 
+                               style={{ 
+                                 width: "100%", 
+                                 borderRadius: "50px", 
+                                 padding: "10px 20px", 
+                                 fontSize: "0.85rem", 
+                                 fontWeight: 900, 
+                                 color: "#ffd700", 
+                                 background: "rgba(255, 215, 0, 0.1)", 
+                                 border: "1px solid rgba(255, 215, 0, 0.3)",
+                                 boxShadow: "0 0 15px rgba(255, 215, 0, 0.1)"
+                               }} 
+                               onClick={() => nav("/certificate-preview", { 
+                                 state: { 
+                                   ...t, 
+                                   eventTitle: ev?.title,
+                                   eventDate: ev?.date ? formatDate(ev.date) : (ev?.startDate || "TBA")
+                                 } 
+                               })}
+                             >
+                               📜 CLAIM CERTIFICATE
+                             </button>
                            )}
                         </div>
                       </div>
