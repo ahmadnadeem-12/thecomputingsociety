@@ -13,6 +13,7 @@ import { useAuth } from "../../hooks/useAuth";
 export default function ProtectedRoute({
   children,
   requireAdmin = false,
+  requireVerified = true, // Default to requiring verification for most protected routes
   redirectTo = "/admin/login"
 }) {
   const { user, isAuthed, isAdmin, loading } = useAuth();
@@ -30,6 +31,11 @@ export default function ProtectedRoute({
   // Logged in but not admin (when admin required)
   if (requireAdmin && !isAdmin) {
     return <Navigate to="/" replace />;
+  }
+
+  // Logged in student but not verified (and verification is required)
+  if (!isAdmin && requireVerified && !user?.isVerified) {
+    return <Navigate to="/verify-email" replace />;
   }
 
   return children;

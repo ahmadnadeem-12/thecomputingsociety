@@ -1,9 +1,11 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useModal } from "../../../context/ModalContext";
 import { listDegrees, createDegree, updateDegree, deleteDegree } from "../../../services/degreeService";
 
 export default function DegreesTab({ refreshKey, onRefresh }) {
+    const { showAlert, showConfirm } = useModal();
     const [editingId, setEditingId] = useState(null);
     const [form, setForm] = useState({
         code: "",
@@ -78,20 +80,26 @@ export default function DegreesTab({ refreshKey, onRefresh }) {
             onRefresh?.();
         } catch (err) {
             console.error("Save error:", err);
-            alert("Failed to save. Please try again.");
+            showAlert("Save Failed", "We couldn't save the degree program. Please try again.", "error");
         }
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm("Delete this degree program?")) {
-            try {
+        showConfirm(
+          "Delete Program",
+          "Are you sure you want to permanently delete this degree program?",
+          async () => {
+             try {
                 await deleteDegree(id);
                 onRefresh?.();
+                showAlert("Deleted", "Degree program has been removed.", "success");
             } catch (err) {
                 console.error("Delete error:", err);
-                alert("Failed to delete.");
+                showAlert("Error", "Failed to delete the program.", "error");
             }
-        }
+          },
+          { type: "error" }
+        );
     };
 
     return (
@@ -211,7 +219,7 @@ export default function DegreesTab({ refreshKey, onRefresh }) {
                                     };
                                     reader.readAsDataURL(file);
                                 } else {
-                                    alert("Please select a valid PDF file");
+                                    showAlert("Invalid File", "Please select a valid PDF file for the course outline.", "warning");
                                 }
                             }}
                         />

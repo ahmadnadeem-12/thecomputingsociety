@@ -22,7 +22,7 @@ export default function AdminLogin() {
     e.preventDefault();
     setErr("");
     try {
-      const u = await login({ email, password });
+      const u = await login({ identifier: email, password });
       if (u.role !== "admin") throw new Error("Not an admin account.");
       nav("/admin/dashboard");
     } catch (e2) {

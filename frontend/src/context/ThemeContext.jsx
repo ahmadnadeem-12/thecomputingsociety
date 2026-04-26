@@ -135,9 +135,14 @@ export function ThemeProvider({ children }) {
     theme,
     defaultTheme: DEFAULT_THEME,
     setTheme: (t) => {
-      setTheme(t);
-      setLS(LS_KEYS.THEME, t);
-      applyThemeToDOM(t);
+      const merged = { ...DEFAULT_THEME, ...t };
+      setTheme(merged);
+      try {
+        setLS(LS_KEYS.THEME, merged);
+      } catch (e) {
+        console.error('Theme localStorage write failed:', e);
+      }
+      applyThemeToDOM(merged);
     },
     applyLive: (t) => {
       // Apply without saving - for live preview

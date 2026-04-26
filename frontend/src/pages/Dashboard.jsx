@@ -13,9 +13,11 @@ import { listAnnouncements, createAnnouncement, updateAnnouncement } from "../se
 import { listPrograms, createProgram, updateProgram } from "../services/programService";
 import { listGalleryAlbums, createAlbum, updateAlbum, addImageToAlbum } from "../services/galleryService";
 import { Modal } from "../components/ui/Modal";
+import { useModal } from "../context/ModalContext";
 import { ImageUploader } from "../components/ui/ImageUploader";
 import { FileUploader } from "../components/ui/FileUploader";
 import SEOHead from "../components/common/SEOHead";
+import "../assets/styles/pages/dashboard.css";
 
 import {
   HomeTab,
@@ -27,7 +29,9 @@ import {
   DegreesTab,
   GalleryTab,
   TicketsTab,
-  ThemeTab
+  ThemeTab,
+  UsersTab,
+  AuditLogsTab
 } from "./admin/tabs";
 
 // Admin tabs configuration
@@ -42,11 +46,14 @@ const ADMIN_TABS = [
   { key: "gallery", label: "📸 Gallery", icon: "📸" },
   { key: "tickets", label: "🎟️ Tickets", icon: "🎟️" },
   { key: "theme", label: "🎨 Theme", icon: "🎨" },
+  { key: "users", label: "👥 Users", icon: "👥" },
+  { key: "audit", label: "📜 Audit Logs", icon: "📜" },
 ];
 
 export default function Dashboard() {
   const nav = useNavigate();
   const { user, isAdmin, logout } = useAuth();
+  const { showAlert, showConfirm } = useModal();
   const eventsCtx = useContext(EventContext);
   const themeCtx = useContext(ThemeContext);
 
@@ -156,7 +163,7 @@ export default function Dashboard() {
   const saveEvent = async () => {
     try {
       if (!editing?.title) {
-        alert("Please enter a title");
+        showAlert("Validation Error", "Please provide a title.", "warning");
         return;
       }
 
@@ -182,7 +189,7 @@ export default function Dashboard() {
     } catch (err) {
       const msg = err.response?.data?.message || err.message || "Failed to save event";
       console.error("Save Event Failed:", msg, err);
-      alert(`Error: ${msg}`);
+      showAlert("Operation Failed", msg, "error");
     }
   };
 
@@ -230,10 +237,16 @@ export default function Dashboard() {
   };
 
   const deletePerson = async (id, type) => {
-    if (!confirm("Delete this profile?")) return;
-    if (type === "cabinet") await deleteCabinetMember(id);
-    else await deleteFaculty(id);
-    refresh();
+    showConfirm(
+      "Confirm Deletion",
+      "Are you sure you want to remove this profile? This action cannot be undone.",
+      async () => {
+        if (type === "cabinet") await deleteCabinetMember(id);
+        else await deleteFaculty(id);
+        refresh();
+      },
+      { type: "error" }
+    );
   };
 
   // Announcements
@@ -292,7 +305,7 @@ export default function Dashboard() {
   const saveProgram = async () => {
     try {
       if (!editing?.title) {
-        alert("Please enter a title");
+        showAlert("Validation Error", "Please provide a title.", "warning");
         return;
       }
       
@@ -320,7 +333,7 @@ export default function Dashboard() {
     } catch (err) {
       const msg = err.response?.data?.message || err.message || "Failed to save program";
       console.error("Save Program Failed:", msg, err);
-      alert(`Error: ${msg}`);
+      showAlert("Operation Failed", msg, "error");
     }
   };
 
@@ -419,7 +432,7 @@ export default function Dashboard() {
       </div>
 
       {/* Tabs */}
-      <nav style={{ display: "flex", gap: ".4rem", flexWrap: "wrap", marginBottom: "1rem" }} role="tablist">
+      <nav className="adminTabs" role="tablist">
         {ADMIN_TABS.map(t => (
           <motion.button
             key={t.key}
@@ -471,6 +484,12 @@ export default function Dashboard() {
         {tab === "theme" && (
           <ThemeTab draftTheme={draftTheme} setDraftTheme={setDraftTheme} hasUnsaved={hasUnsaved} setHasUnsaved={setHasUnsaved} themeCtx={themeCtx} />
         )}
+        {tab === "users" && (
+          <UsersTab />
+        )}
+        {tab === "audit" && (
+          <AuditLogsTab />
+        )}
       </div>
 
       {/* ==================== MODALS ==================== */}
@@ -508,12 +527,12 @@ export default function Dashboard() {
         {/* Cabinet/Faculty Modal */}
         {(modalType === "cabinet" || modalType === "faculty") && editing && (
           <div style={{ display: "grid", gap: ".7rem" }}>
-            <div style={{ display: "flex", gap: "1.25rem", alignItems: "flex-start" }}>
-              <div style={{ width: 130, flexShrink: 0 }}>
-                <div className="label" style={{ marginBottom: ".5rem" }}>Profile Photo</div>
+            <div className="flex-stack" style={{ display: "flex", gap: "1.25rem", alignItems: "flex-start" }}>
+              <div style={{ width: 130, flexShrink: 0, margin: "0 auto" }}>
+                <div className="label" style={{ marginBottom: ".5rem", textAlign: "center" }}>Profile Photo</div>
                 <ImageUploader value={editing.avatar} onChange={(url) => setEditing({ ...editing, avatar: url })} placeholder="Upload Photo" aspectRatio="1" maxSize={256} />
               </div>
-              <div style={{ flex: 1 }}>
+              <div style={{ flex: 1, width: "100%" }}>
                 <div><div className="label">Name</div><input className="input" value={editing.name} onChange={e => setEditing({ ...editing, name: e.target.value })} aria-label="Name" /></div>
               </div>
             </div>

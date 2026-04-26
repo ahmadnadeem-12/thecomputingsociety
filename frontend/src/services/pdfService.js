@@ -1,471 +1,306 @@
-/**
- * PDF Service for TCS Tickets
- * Generates professional PDF tickets with logo, QR code, and all details
- */
+import jsPDF from 'jspdf';
 
-import { jsPDF } from 'jspdf';
+// ════════════════════════════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════════════════════════════
 
-// TCS Logo as base64 (gradient circle with TCS text)
-// This is a simplified version - in production, use actual logo file
-const TCS_LOGO_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAF8WlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNi4wLWMwMDIgNzkuMTY0NDg4LCAyMDIwLzA3LzEwLTIyOjA2OjUzICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjIuMCAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDI0LTAxLTE1VDEyOjAwOjAwKzA1OjAwIiB4bXA6TW9kaWZ5RGF0ZT0iMjAyNC0wMS0xNVQxMjowMDowMCswNTowMCIgeG1wOk1ldGFkYXRhRGF0ZT0iMjAyNC0wMS0xNVQxMjowMDowMCswNTowMCIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciIHBob3Rvc2hvcDpDb2xvck1vZGU9IjMiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6YTEyMzQ1NjctODkwYS0xMWVkLTAwMDAtMDAwMDAwMDAwMDAwIiB4bXBNTTpEb2N1bWVudElEPSJ4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';
-
-/**
- * Draw the TCS logo (white circle with TCS text - like website)
- * @param {jsPDF} doc - The PDF document
- * @param {number} x - X position (center)
- * @param {number} y - Y position (center)
- * @param {number} size - Logo size (diameter)
- */
-function drawTCSLogo(doc, x, y, size) {
-    const radius = size / 2;
-
-    // White circle background (main logo)
-    doc.setFillColor(255, 255, 255);
-    doc.circle(x, y, radius, 'F');
-
-    // TCS Text in red/pink gradient color
-    doc.setFontSize(size * 0.38);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(220, 39, 67); // Primary red
-    doc.text('TCS', x, y + size * 0.13, { align: 'center' });
+function lerp(a, b, t) {
+  return [
+    Math.round(a[0] + (b[0] - a[0]) * t),
+    Math.round(a[1] + (b[1] - a[1]) * t),
+    Math.round(a[2] + (b[2] - a[2]) * t),
+  ];
 }
 
-/**
- * Draw one ticket card on the doc at position (oX, oY)
- * Card size: 190mm wide × 88mm tall — matches frontend .horizontalTicket
- */
-function drawTicketCard(doc, t, qr, oX, oY) {
-    const CW = 190; // card width
-    const CH = 55;   // Ultra-slim height to fit 5 per page
+// ════════════════════════════════════════════════════════════
+//  TICKET PDF
+// ════════════════════════════════════════════════════════════
 
-    // --- Card Background ---
-    doc.setFillColor(22, 14, 38);
-    doc.roundedRect(oX, oY, CW, CH, 4, 4, 'F');
+const TK_BG   = [8, 11, 30];
+const TK_CARD = [12, 16, 42];
+const TK_PINK = [255, 45, 149];
+const TK_CYAN = [34, 211, 238];
+const TK_PRP  = [138, 92, 246];
+const TK_WHT  = [255, 255, 255];
+const TK_GRY  = [148, 163, 184];
 
-    // Card border
-    doc.setDrawColor(255, 255, 255, 0.1);
-    doc.setLineWidth(0.2);
-    doc.roundedRect(oX, oY, CW, CH, 4, 4, 'S');
+function drawPageHeader(doc, W, H) {
+  doc.setFillColor(TK_BG[0], TK_BG[1], TK_BG[2]);
+  doc.rect(0, 0, W, H, 'F');
+  
+  let hy = 20;
+  // Header Arrows
+  doc.setDrawColor(TK_PINK[0], TK_PINK[1], TK_PINK[2]); doc.setLineWidth(0.4);
+  doc.line(15, hy, 50, hy);
+  doc.triangle(49, hy - 0.8, 49, hy + 0.8, 52, hy, 'F');
 
-    // --- Left Glow Bar ---
-    doc.setFillColor(220, 39, 67);
-    doc.rect(oX, oY + 3, 1, CH - 6, 'F');
+  doc.setDrawColor(TK_CYAN[0], TK_CYAN[1], TK_CYAN[2]);
+  doc.line(W - 15, hy, W - 50, hy);
+  doc.triangle(W - 49, hy - 0.8, W - 49, hy + 0.8, W - 52, hy, 'F');
 
-    // === QR CODE SECTION ===
-    const qrBoxSize = 30; // Compact QR
-    const qrPad = 1.5;
-    const qrX = oX + 10;
-    const qrY = oY + (CH - qrBoxSize - 6) / 2;
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(20);
+  const title = 'THE COMPUTING SOCIETY';
+  const tw = doc.getTextWidth(title);
+  const tx = (W - tw) / 2;
+  doc.setTextColor(TK_PINK[0], TK_PINK[1], TK_PINK[2]); doc.text('THE ', tx, hy + 1);
+  doc.setTextColor(TK_PRP[0], TK_PRP[1], TK_PRP[2]); doc.text('COMPUTING ', tx + doc.getTextWidth('THE '), hy + 1);
+  doc.setTextColor(TK_CYAN[0], TK_CYAN[1], TK_CYAN[2]); doc.text('SOCIETY', tx + doc.getTextWidth('THE COMPUTING '), hy + 1);
 
-    doc.setFillColor(248, 248, 248);
-    doc.roundedRect(qrX, qrY, qrBoxSize, qrBoxSize, 2, 2, 'F');
+  hy += 7;
+  doc.setFontSize(8); doc.setTextColor(TK_GRY[0], TK_GRY[1], TK_GRY[2]);
+  doc.text('DEPT. OF COMPUTER SCIENCE, UNIVERSITY OF AGRICULTURE FAISALABAD', W / 2, hy, { align: 'center' });
 
-    if (qr) {
-        doc.addImage(qr, 'PNG', qrX + qrPad, qrY + qrPad, qrBoxSize - qrPad * 2, qrBoxSize - qrPad * 2);
+  hy += 10;
+  doc.setTextColor(TK_PRP[0], TK_PRP[1], TK_PRP[2]); doc.setFontSize(7); doc.setFont('helvetica', 'italic');
+  doc.text('»»»»» Kindly show this ticket at the entry desk for verification. «««««', W / 2, hy, { align: 'center' });
+  
+  return hy + 5;
+}
+
+function drawPageFooter(doc, W, H) {
+  const fy = H - 12;
+  doc.setFontSize(8); doc.setTextColor(TK_GRY[0], TK_GRY[1], TK_GRY[2]);
+  doc.text('Thank you for being a part of our community.', 15, fy);
+  doc.setTextColor(TK_CYAN[0], TK_CYAN[1], TK_CYAN[2]);
+  doc.text('Learn. Connect. Innovate.', W - 15, fy, { align: 'right' });
+
+  const bx = W/2, by = fy;
+  doc.setDrawColor(TK_PRP[0], TK_PRP[1], TK_PRP[2]); doc.setLineWidth(0.3);
+  doc.circle(bx, by, 6, 'S');
+  doc.setTextColor(TK_CYAN[0], TK_CYAN[1], TK_CYAN[2]); doc.setFontSize(6);
+  doc.text('</>', bx, by + 1.2, { align: 'center' });
+}
+
+function drawOneTicketCard(doc, t, qrUrl, x, y, w, h) {
+  const pad = 8;
+  doc.setFillColor(10, 15, 35);
+  doc.roundedRect(x, y, w, h, 8, 8, 'F');
+  
+  // Outer glow border
+  doc.setDrawColor(TK_PINK[0], TK_PINK[1], TK_PINK[2], 0.1);
+  doc.setLineWidth(0.5);
+  doc.roundedRect(x-0.5, y-0.5, w+1, h+1, 8.5, 8.5, 'S');
+
+  // Simulated Side Cutouts
+  doc.setFillColor(TK_BG[0], TK_BG[1], TK_BG[2]);
+  doc.circle(x, y + h/2, 4, 'F');
+  doc.circle(x + w, y + h/2, 4, 'F');
+
+  // QR Section
+  const qW = h - pad * 2.5;
+  const qX = x + pad, qY = y + pad;
+  if (qrUrl) {
+    doc.setFillColor(255, 255, 255); doc.roundedRect(qX, qY, qW, qW, 4, 4, 'F');
+    doc.addImage(qrUrl, 'PNG', qX + 3, qY + 3, qW - 6, qW - 6);
+  }
+  doc.setFontSize(6); doc.setTextColor(TK_GRY[0], TK_GRY[1], TK_GRY[2]); doc.setFont('helvetica', 'bold');
+  doc.text('SCAN AT ENTRY', qX + qW/2, qY + qW + 6, { align: 'center', charSpace: 1 });
+
+  const dX = qX + qW + 12, dW = w - (dX - x) - pad;
+  let dy = y + pad + 8;
+
+  // Title
+  doc.setFontSize(16); doc.setFont('helvetica', 'bold'); doc.setTextColor(TK_PINK[0], TK_PINK[1], TK_PINK[2]);
+  doc.text((t.eventTitle || 'TCS OFFICIAL PASS').toUpperCase(), dX, dy);
+
+  dy += 12;
+  const colW = (dW / 5);
+  const items = [
+    { L: 'DATE', V: t.eventDate }, { L: 'TIME/DURATION', V: t.eventTime }, 
+    { L: 'DEPARTMENT', V: t.department }, { L: 'SEMESTER', V: t.semester }, { L: 'AG NO', V: t.agNo }
+  ];
+
+  items.forEach((item, i) => {
+    const ix = dX + i * colW;
+    doc.setFontSize(6); doc.setTextColor(TK_GRY[0], TK_GRY[1], TK_GRY[2]); doc.setFont('helvetica', 'bold');
+    doc.text(item.L, ix, dy - 4);
+    doc.setFontSize(7.5); doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold');
+    let val = String(item.V || 'N/A');
+    if (val.length > 15) val = val.substring(0, 13) + '..';
+    doc.text(val, ix, dy + 0.5);
+  });
+
+  dy += 16;
+  doc.setFontSize(6); doc.setTextColor(TK_GRY[0], TK_GRY[1], TK_GRY[2]); doc.setFont('helvetica', 'bold');
+  doc.text('VERIFIED EMAIL ADDRESS', dX, dy);
+  doc.setTextColor(255, 255, 255); doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+  doc.text(t.email || '', dX, dy + 5);
+
+  const issuedToX = dX + dW * 0.45;
+  doc.setFontSize(6); doc.setTextColor(TK_GRY[0], TK_GRY[1], TK_GRY[2]); doc.setFont('helvetica', 'bold');
+  doc.text('ISSUED TO (VERIFIED DELEGATE)', issuedToX, dy);
+  doc.setTextColor(TK_CYAN[0], TK_CYAN[1], TK_CYAN[2]); doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+  const name = (t.name || '').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+  doc.text(name, issuedToX, dy + 5.5);
+
+  const pW = 65, pH = 7, pX = x + w - pW - pad;
+  doc.setFillColor(34, 211, 238, 0.05);
+  doc.setDrawColor(TK_CYAN[0], TK_CYAN[1], TK_CYAN[2]); doc.setLineWidth(0.3);
+  doc.roundedRect(pX, dy + 1, pW, pH, 3.5, 3.5, 'S');
+  doc.setFontSize(5); doc.setTextColor(TK_CYAN[0], TK_CYAN[1], TK_CYAN[2]); doc.setFont('helvetica', 'bold');
+  doc.text('TICKET ID: ' + (t.publicTicketId || t.id || 'N/A'), pX + pW/2, dy + 5.5, { align: 'center', charSpace: 0.5 });
+}
+
+export function downloadTicketPDF(t, qr) {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+  const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
+  const sy = drawPageHeader(doc, W, H);
+  drawOneTicketCard(doc, t, qr, 15, sy + 15, W - 30, 52);
+  drawPageFooter(doc, W, H);
+  doc.save(`TCS_Pass_${t.name || 'User'}.pdf`);
+}
+
+export function downloadAllTicketsPDF(tickets, qrs) {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+  const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
+  const PER = 3, ch = 52, gap = 12;
+  tickets.forEach((t, i) => {
+    if (i % PER === 0) {
+      if (i > 0) doc.addPage();
+      drawPageHeader(doc, W, H);
+      drawPageFooter(doc, W, H);
     }
-
-    doc.setFontSize(5);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(130, 120, 145);
-    doc.text('SCAN AT ENTRY', qrX + qrBoxSize / 2, qrY + qrBoxSize + 5, { align: 'center' });
-
-    // === DETAILS SECTION ===
-    const dx = qrX + qrBoxSize + 10;
-    let dy = oY + 9;
-
-    // Event Title
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(255, 77, 109);
-    const maxTitleW = CW - (dx - oX) - 10;
-    const titleLines = doc.splitTextToSize(String(t.eventTitle || 'TCS Event'), maxTitleW);
-    doc.text(titleLines[0], dx, dy);
-
-    dy += 6;
-
-    // --- Detail Grid ---
-    const cols = [
-        { label: 'DATE',           value: String(t.eventDate || 'TBA'),     x: 0   },
-        { label: 'TIME',           value: String(t.eventTime || 'TBA'),     x: 25  },
-        { label: 'DEPARTMENT',     value: String(t.department || 'CS'),      x: 52  },
-        { label: 'SEMESTER',       value: String(t.semester || '-'),         x: 76  },
-        { label: 'AG NO',          value: String(t.agNo || '-'),            x: 92 },
-    ];
-
-    doc.setFontSize(4.5);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(130, 120, 145);
-    cols.forEach(c => doc.text(c.label, dx + c.x, dy));
-
-    dy += 3;
-    doc.setFontSize(7);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(240, 240, 255);
-    cols.forEach(c => doc.text(c.value, dx + c.x, dy));
-
-    dy += 6;
-    // Email row
-    doc.setFontSize(4.5);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(130, 120, 145);
-    doc.text('EMAIL', dx, dy);
-    dy += 3;
-    doc.setFontSize(7);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(240, 240, 255);
-    doc.text(String(t.email || '-'), dx, dy);
-
-    dy += 6;
-    // Issued to
-    doc.setFontSize(6.5);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(200, 200, 210);
-    doc.text('Issued to:', dx, dy);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(255, 255, 255);
-    doc.text(String(t.name || '-'), dx + doc.getTextWidth('Issued to: ') + 0.5, dy);
-
-    dy += 6;
-    // Ticket ID pill
-    const tidStr = String(t.publicTicketId || t.id || '-');
-    doc.setFontSize(6);
-    doc.setFont('helvetica', 'normal');
-    const labelPart = 'Ticket ID:  ';
-    doc.setFont('courier', 'bold');
-    const pillTextW = doc.getTextWidth(labelPart + tidStr);
-    const pillW = pillTextW + 8;
-    const pillH = 6;
-
-    // Pill background
-    doc.setFillColor(0, 30, 50);
-    doc.setDrawColor(0, 180, 220);
-    doc.setLineWidth(0.2);
-    doc.roundedRect(dx, dy - 4, pillW, pillH, 3, 3, 'FD');
-
-    // "Ticket ID:" in gray
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(130, 120, 145);
-    doc.text('Ticket ID:', dx + 3, dy);
-
-    // Actual ID in cyan
-    doc.setTextColor(0, 217, 255);
-    doc.setFont('courier', 'bold');
-    doc.text(tidStr, dx + 3 + doc.getTextWidth('Ticket ID:  '), dy);
-
-    // --- Subtle Watermark ---
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8);
-    doc.setTextColor(255, 255, 255, 0.05);
-    doc.text('THE COMPUTING SOCIETY', CW - 5, CH - 5, { align: 'right' });
+    const py = 55 + (i % PER) * (ch + gap);
+    drawOneTicketCard(doc, t, qrs[i], 15, py, W - 30, ch);
+  });
+  doc.save('TCS_Pass_Batch.pdf');
 }
 
-// -------------------------------------------------------
-// PUBLIC API
-// -------------------------------------------------------
-
-/**
- * Generate a single-ticket PDF (one card centered on A4)
- */
-export function generateTicketPDF(ticketData, qrCodeDataUrl) {
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    const pageW = doc.internal.pageSize.getWidth();
-    const cardW = 190;
-    const cardH = 55;
-    const oX = (pageW - cardW) / 2;
-    const oY = 10;
-
-    // Page background
-    doc.setFillColor(10, 8, 18);
-    doc.rect(0, 0, pageW, doc.internal.pageSize.getHeight(), 'F');
-
-    drawTicketCard(doc, ticketData, qrCodeDataUrl, oX, oY);
-    return doc;
-}
-
-/**
- * Download single ticket
- */
-export function downloadTicketPDF(ticketData, qrCodeDataUrl) {
-    try {
-        const doc = generateTicketPDF(ticketData, qrCodeDataUrl);
-        const fileName = `TCS_Ticket_${(ticketData.agNo || 'ticket')}.pdf`;
-        doc.save(fileName);
-        return fileName;
-    } catch (err) {
-        console.error("Ticket download failed:", err);
-        return null;
-    }
-}
-
-/**
- * Download ALL tickets — A4 portrait, up to 3 tickets stacked per page
- */
-export function downloadAllTicketsPDF(tickets, qrCodeDataUrls) {
-    if (!tickets || tickets.length === 0) return;
-
-    try {
-        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-        const pageW = 210;
-        const pageH = 297;
-        const cardW = 190;
-        const cardH = 55;
-        const oX = (pageW - cardW) / 2;
-        const gap = 3;
-        const topMargin = 5;
-        const cardsPerPage = 5;
-
-        tickets.forEach((t, index) => {
-            const posOnPage = index % cardsPerPage;
-            if (index > 0 && posOnPage === 0) {
-                doc.addPage('a4', 'portrait');
-            }
-
-            if (posOnPage === 0) {
-                doc.setFillColor(10, 8, 18);
-                doc.rect(0, 0, pageW, pageH, 'F');
-            }
-
-            const oY = topMargin + posOnPage * (cardH + gap);
-            drawTicketCard(doc, t, qrCodeDataUrls[index], oX, oY);
-        });
-
-        const fileName = `TCS_All_Tickets_${new Date().toISOString().slice(0, 10)}.pdf`;
-        doc.save(fileName);
-    } catch (err) {
-        console.error("Multi-ticket download failed:", err);
-    }
-}
-
-/**
- * Get PDF as base64 string (for email attachment)
- * @param {Object} ticketData - Ticket information
- * @param {string} qrCodeDataUrl - QR code as base64
- * @returns {string} - PDF as base64 string
- */
-export function getPDFAsBase64(ticketData, qrCodeDataUrl) {
-    const doc = generateTicketPDF(ticketData, qrCodeDataUrl);
-    return doc.output('datauristring');
-}
-
-/**
- * Get PDF as Blob (for email attachment)
- * @param {Object} ticketData - Ticket information
- * @param {string} qrCodeDataUrl - QR code as base64
- * @returns {Blob} - PDF as Blob
- */
-export function getPDFAsBlob(ticketData, qrCodeDataUrl) {
-    const doc = generateTicketPDF(ticketData, qrCodeDataUrl);
-    return doc.output('blob');
-}
-
-// ============================================
-// CERTIFICATE OF PARTICIPATION
-// Premium dark/gold design
-// ============================================
-
-/**
- * Generate a premium event participation certificate
- * @param {Object} data
- * @param {string} data.name - Participant name
- * @param {string} data.agNo - AG number
- * @param {string} data.eventTitle - Event title
- * @param {string} data.eventDate - Event date (formatted string)
- * @param {string} data.eventTime - Event time
- * @param {string} data.venue - Event venue
- * @param {string} data.organizer - Organizer name (for signature)
- * @param {string} data.description - Brief event description
- * @returns {jsPDF}
- */
-export function generateCertificatePDF(data) {
-    const doc = new jsPDF({
-        orientation: 'landscape',
-        unit: 'mm',
-        format: 'a4',
-    });
-
-    const W = doc.internal.pageSize.getWidth();   // 297
-    const H = doc.internal.pageSize.getHeight();   // 210
-
-    // ---- BACKGROUND ----
-    doc.setFillColor(20, 20, 22); // Charcoal / Almost Black
-    doc.rect(0, 0, W, H, 'F');
-
-    // ---- CORNER CURVES (Using large circles for smooth curves) ----
-
-    // 1. Top-Left Red Curve Area
-    // Dark Shadow Layer
-    doc.setFillColor(35, 35, 40);
-    doc.circle(-20, -20, 110, 'F');
-    // Red Layer
-    doc.setFillColor(180, 20, 35); // Vibrant Red
-    doc.circle(-20, -20, 100, 'F');
-
-    // 2. Bottom-Right Red Curve Area
-    // Dark Shadow Layer
-    doc.setFillColor(35, 35, 40);
-    doc.circle(W + 20, H + 20, 110, 'F');
-    // Red Layer
-    doc.setFillColor(180, 20, 35);
-    doc.circle(W + 20, H + 20, 100, 'F');
-
-    // Add some sharp accent triangles for depth (Standard methods)
-    doc.setFillColor(140, 15, 30);
-    doc.triangle(0, 0, 50, 0, 0, 50, 'F');
-    doc.triangle(W, H, W - 50, H, W, H - 50, 'F');
-
-    // ---- GOLD SEAL / BADGE (Top Left) ----
-    const sealX = 45;
-    const sealY = 45;
-
-    // Ribbons
-    doc.setFillColor(212, 175, 55); // Gold
-    doc.triangle(sealX - 8, sealY + 10, sealX - 15, sealY + 35, sealX - 2, sealY + 25, 'F');
-    doc.triangle(sealX + 8, sealY + 10, sealX + 15, sealY + 35, sealX + 2, sealY + 25, 'F');
-
-    // Circle Badge
-    doc.setFillColor(212, 175, 55);
-    doc.circle(sealX, sealY, 15, 'F');
-    doc.setDrawColor(180, 140, 40);
-    doc.setLineWidth(0.5);
-    doc.circle(sealX, sealY, 13, 'S');
-
-    // TCS Text in Badge
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(20, 20, 22);
-    doc.text('TCS', sealX, sealY + 1, { align: 'center' });
-    doc.setFontSize(4);
-    doc.text('AWARD', sealX, sealY + 4, { align: 'center' });
-
-    // ---- MAIN TEXT CONTENT ----
-    let y = 60;
-
-    // "CERTIFICATE"
-    doc.setFontSize(48);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(255, 255, 255);
-    doc.text('CERTIFICATE', W / 2 + 20, y, { align: 'center' });
-
-    y += 12;
-    // "OF PARTICIPATION"
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'normal');
-    doc.text('OF PARTICIPATION', W / 2 + 15, y, { align: 'center' });
-
-    y += 15;
-    // Gold Thin Line
-    doc.setDrawColor(212, 175, 55);
-    doc.setLineWidth(0.5);
-    doc.line(W / 2 - 50, y, W / 2 + 80, y);
-
-    y += 20;
-    // "PROUDLY PRESENTED TO"
-    doc.setFontSize(10);
-    doc.setTextColor(180, 180, 190);
-    doc.text('PROUDLY PRESENTED TO', W / 2 + 15, y, { align: 'center' });
-
-    y += 18;
-    // Participant Name (Elegant Script-like)
-    doc.setFontSize(42);
-    doc.setFont('times', 'bolditalic');
-    doc.setTextColor(212, 175, 55); // Gold
-    doc.text((data.name || 'Name').toUpperCase(), W / 2 + 20, y, { align: 'center' });
-
-    y += 12;
-    // AG No
-    if (data.agNo) {
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(212, 175, 55);
-        doc.text(`AG No: ${data.agNo}`, W / 2 + 20, y, { align: 'center' });
-    }
-
-    y += 15;
-    // Short Description (Enlarged)
-    doc.setFontSize(11);
-    doc.setTextColor(160, 160, 170);
-    const descText = data.certificateDescription || data.description || `For participating in "${data.eventTitle || 'TCS Event'}" organized by The Computing Society, University of Agriculture Faisalabad.`;
-    const descLines = doc.splitTextToSize(descText, 170);
-    doc.text(descLines, W / 2 + 20, y, { align: 'center' });
-
-    // ---- Event Details Box (Clean) ----
-    y += 18;
-    const boxW = 160;
-    const boxX = (W - boxW) / 2 + 20;
-    doc.setDrawColor(212, 175, 55, 0.5);
-    doc.setLineWidth(0.2);
-    doc.roundedRect(boxX, y, boxW, 18, 2, 2, 'S');
-
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(212, 175, 55);
-    const col1 = boxX + boxW / 4;
-    const col2 = boxX + (boxW * 3) / 4;
-    doc.text('EVENT', col1, y + 6, { align: 'center' });
-    doc.text('DATE', col2, y + 6, { align: 'center' });
-
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(255, 255, 255);
-    doc.text(data.eventTitle || 'TCS Event', col1, y + 13, { align: 'center' });
-    doc.text(data.eventDate || 'TBA', col2, y + 13, { align: 'center' });
-
-    // ---- SIGNATURES ----
-    y += 28; // Reduced from 35 to prevent overlap with footer at bottom
-    const sigWidth = 60;
-    const leftSigX = W / 2 - 50;
-    const rightSigX = W / 2 + 60;
-
-    // Left: Date
-    doc.setDrawColor(212, 175, 55);
-    doc.line(leftSigX - sigWidth / 2, y, leftSigX + sigWidth / 2, y);
-    doc.setFontSize(8);
-    doc.setTextColor(150, 150, 160);
-    doc.text('DATE', leftSigX, y + 5, { align: 'center' });
-    doc.setTextColor(255, 255, 255);
-    doc.text(data.eventDate || new Date().toLocaleDateString(), leftSigX, y - 3, { align: 'center' });
-
-    // Right: Signature
-    doc.line(rightSigX - sigWidth / 2, y, rightSigX + sigWidth / 2, y);
-    doc.setTextColor(150, 150, 160);
-    doc.text('SIGNATURE', rightSigX, y + 5, { align: 'center' });
-    doc.setTextColor(255, 255, 255);
-    doc.text(data.organizer || 'The Computing Society', rightSigX, y - 3, { align: 'center' });
-
-    // ---- FOOTER ----
-    doc.setFontSize(7);
-    doc.setTextColor(100, 100, 110);
-    doc.text('© The Computing Society — Department of Computer Science, University of Agriculture Faisalabad', W / 2, H - 10, { align: 'center' });
-
-    return doc;
-}
+// ════════════════════════════════════════════════════════════
+//  AWARD CERTIFICATE — ULTRA PREMIUM VERSION
+// ════════════════════════════════════════════════════════════
 
 export function downloadCertificatePDF(data) {
-    try {
-        const doc = generateCertificatePDF(data);
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+  const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
+  
+  const NAVY = [26, 17, 69], PINK = [220, 38, 114], BLUE = [37, 99, 235], GREY = [107, 114, 128], SLATE = [241, 245, 249];
 
-        // Final filename
-        const safeName = (data.name || 'Participant').trim().replace(/[^a-zA-Z0-9]/g, '_');
-        const fileName = `TCS_Certificate_${safeName}.pdf`;
+  // 1. COMPLEX BACKGROUND ACCENTS (Matching dots and curve aesthetics)
+  doc.setFillColor(NAVY[0], NAVY[1], NAVY[2]);
+  // Top Left Dark Section
+  doc.triangle(0, 0, 50, 0, 0, 50, 'F');
+  doc.setFillColor(PINK[0], PINK[1], PINK[2]);
+  doc.circle(5, 5, 1, 'F'); doc.circle(10, 5, 1, 'F'); doc.circle(5, 10, 1, 'F');
 
-        // Manual download method (more robust for filename/extension)
-        const blob = doc.output('blob');
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
+  // Bottom Right Dark Section
+  doc.setFillColor(NAVY[0], NAVY[1], NAVY[2]);
+  doc.triangle(W, H, W - 70, H, W, H - 70, 'F');
+  doc.setFillColor(PINK[0], PINK[1], PINK[2]);
+  for(let i=0; i<3; i++) for(let j=0; j<3; j++) doc.circle(W-15+i*4, H-15+j*4, 0.6, 'F');
 
-        // Cleanup
-        setTimeout(() => {
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        }, 100);
+  // 2. MULTI-LINE BORDER
+  doc.setLineWidth(0.5);
+  for (let i = 0; i < 10; i++) {
+    const c = lerp([15, 20, 50], PINK, i / 10);
+    doc.setDrawColor(c[0], c[1], c[2]);
+    doc.rect(2 + i * 0.3, 2 + i * 0.3, W - 4 - i * 0.6, H - 4 - i * 0.6, 'S');
+  }
 
-        return fileName;
-    } catch (err) {
-        console.error("Certificate download failed:", err);
-        return null;
+  // 3. HEADER
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(13);
+  doc.setTextColor(BLUE[0], BLUE[1], BLUE[2]);
+  doc.text('THE COMPUTING SOCIETY', W/2, 25, { align: 'center', charSpace: 1.2 });
+  
+  doc.setDrawColor(PINK[0], PINK[1], PINK[2]); doc.setLineWidth(0.4);
+  doc.line(W/2 - 35, 28, W/2 + 35, 28);
+  doc.setFillColor(PINK[0], PINK[1], PINK[2]); doc.circle(W/2 - 35, 28, 0.7, 'F'); doc.circle(W/2 + 35, 28, 0.7, 'F');
+
+  doc.setFontSize(8.5); doc.setTextColor(GREY[0], GREY[1], GREY[2]);
+  doc.text('DEPT. OF COMPUTER SCIENCE,', W/2, 35, { align: 'center' });
+  doc.text('UNIVERSITY OF AGRICULTURE FAISALABAD', W/2, 40, { align: 'center' });
+
+  // 4. MAIN TITLE
+  doc.setFont('times', 'bold');
+  doc.setFontSize(46);
+  doc.setTextColor(NAVY[0], NAVY[1], NAVY[2]);
+  doc.text('AWARD CERTIFICATE', W/2, 65, { align: 'center' });
+
+  // 5. SUBTITLE
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(15);
+  doc.setTextColor(PINK[0], PINK[1], PINK[2]);
+  doc.text('OF PARTICIPATION', W/2, 78, { align: 'center', charSpace: 2 });
+  doc.setDrawColor(PINK[0], PINK[1], PINK[2]); doc.setLineWidth(0.3);
+  doc.line(W/2 - 45, 78, W/2 - 30, 78); doc.line(W/2 + 30, 78, W/2 + 45, 78);
+  doc.setFillColor(BLUE[0], BLUE[1], BLUE[2]); doc.triangle(W/2-28, 77.2, W/2-28, 78.8, W/2-26, 78, 'F');
+  doc.triangle(W/2+28, 77.2, W/2+28, 78.8, W/2+26, 78, 'F');
+
+  // 6. PROUDLY PRESENTED
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(GREY[0], GREY[1], GREY[2]);
+  doc.text('PROUDLY PRESENTED TO', W/2, 95, { align: 'center' });
+
+  // 7. NAME (Gradient-ish effect via shadow)
+  doc.setFont('times', 'bolditalic');
+  doc.setFontSize(54);
+  doc.setTextColor(NAVY[0], NAVY[1], NAVY[2]);
+  doc.text((data.name || 'User Name').toUpperCase(), W/2, 118, { align: 'center' });
+  // Subtle glow
+  doc.setTextColor(BLUE[0], BLUE[1], BLUE[2]); doc.setFontSize(54.2);
+  doc.text((data.name || 'User Name').toUpperCase(), W/2 + 0.1, 118.1, { align: 'center' , opacity: 0.1 });
+
+  // 8. AG NO
+  const ag = `AG No: ${data.agNo || 'XXXX-AG-XXXX'}`;
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5);
+  const aw = doc.getTextWidth(ag) + 12;
+  doc.setFillColor(NAVY[0], NAVY[1], NAVY[2]);
+  doc.roundedRect(W/2 - aw/2, 128, aw, 8, 4, 4, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.text(ag, W/2, 133.5, { align: 'center' });
+
+  // 9. EVENT TEXT
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(11);
+  doc.setTextColor(NAVY[0], NAVY[1], NAVY[2]);
+  const text = `For participating in "${data.eventTitle || 'Event'}" organized by\nThe Computing Society, University of Agriculture Faisalabad.`;
+  doc.text(text, W/2, 150, { align: 'center', lineHeightFactor: 1.4 });
+
+  // 10. VECTOR ICONS (No emojis)
+  const iy = 188, c1 = W*0.25, c2 = W*0.5, c3 = W*0.75;
+  
+  function drawIcon(x, y, type) {
+    doc.setDrawColor(NAVY[0], NAVY[1], NAVY[2]); doc.setLineWidth(0.4);
+    doc.circle(x, y-10, 6.5, 'S');
+    doc.setFillColor(NAVY[0], NAVY[1], NAVY[2]); doc.circle(x, y-10, 6, 'F');
+    doc.setDrawColor(255, 255, 255); doc.setLineWidth(0.5);
+    if(type === 'date') {
+       doc.rect(x-2.5, y-12.5, 5, 4.5, 'S'); doc.line(x-2.5, y-10.5, x+2.5, y-10.5);
+    } else if(type === 'pen') {
+       doc.line(x-2, y-8.5, x+2, y-11.5); doc.line(x+2, y-11.5, x+1, y-12.5);
     }
+  }
+  drawIcon(c1, iy, 'date'); drawIcon(c2, iy, 'date'); drawIcon(c3, iy, 'pen');
+
+  doc.setTextColor(PINK[0], PINK[1], PINK[2]); doc.setFontSize(8.5); doc.setFont('helvetica', 'bold');
+  doc.text('EVENT DATE', c1, iy, { align: 'center' });
+  doc.text('DATE', c2, iy, { align: 'center' });
+  doc.text('SIGNATURE', c3, iy, { align: 'center' });
+
+  doc.setTextColor(NAVY[0], NAVY[1], NAVY[2]); doc.setFontSize(9.5); doc.setFont('helvetica', 'normal');
+  doc.text(data.eventTitle || 'TCS Event', c1, iy + 6, { align: 'center' });
+  doc.text(data.eventDate || '2026-01-10', c1, iy + 11, { align: 'center' });
+  doc.text(data.eventDate || '2026-01-10', c2, iy + 6, { align: 'center' });
+  
+  doc.setFont('times', 'bolditalic'); doc.setFontSize(13);
+  doc.text('The Computing Society', c3, iy + 8, { align: 'center' });
+  doc.setDrawColor(NAVY[0], NAVY[1], NAVY[2]); doc.setLineWidth(0.4);
+  doc.line(c3 - 18, iy + 11, c3 + 18, iy + 11);
+
+  // 11. SEAL (Vector)
+  const sx = W/2, sy = H - 22;
+  doc.setFillColor(NAVY[0], NAVY[1], NAVY[2]);
+  // Star seal effect
+  for(let i=0; i<12; i++){
+    const ang = (i * 30) * Math.PI / 180;
+    doc.triangle(sx + 10*Math.cos(ang), sy + 10*Math.sin(ang), 
+                 sx + 12*Math.cos(ang+0.2), sy + 12*Math.sin(ang+0.2),
+                 sx + 12*Math.cos(ang-0.2), sy + 12*Math.sin(ang-0.2), 'F');
+  }
+  doc.circle(sx, sy, 10, 'F');
+  doc.setDrawColor(PINK[0], PINK[1], PINK[2]); doc.setLineWidth(0.8);
+  doc.circle(sx, sy, 10.5, 'S');
+  doc.setTextColor(255, 255, 255); doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+  doc.text('</>', sx, sy + 1.5, { align: 'center' });
+
+  doc.save(`TCS_Certificate_${data.name || 'Student'}.pdf`);
 }

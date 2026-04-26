@@ -20,10 +20,18 @@ router.get("/", protect, async (req, res) => {
     res.json({ success: true, count: tickets.length, data: tickets });
 });
 
-// @route   POST /api/tickets
-// @desc    Create a ticket (generate for event or program)
 router.post("/", protect, async (req, res) => {
-    const { eventId, programId, name, agNo, email, department, semester } = req.body;
+    let { eventId, programId, name, agNo, email, department, semester } = req.body;
+
+    // FORCE: If not admin, use authenticated user's data to prevent spoofing
+    if (req.user.role !== "admin") {
+        if (!req.user.isVerified) {
+            return res.status(403).json({ success: false, message: "Please verify your email to generate tickets. Check your inbox." });
+        }
+        name = req.user.name;
+        agNo = req.user.agNo;
+        email = req.user.email;
+    }
 
     if ((!eventId && !programId) || !name || !agNo || !email) {
         return res.status(400).json({ success: false, message: "eventId or programId, name, agNo, and email are required" });
@@ -67,11 +75,17 @@ router.post("/", protect, async (req, res) => {
         });
     }
 
-    // Generate public ticket ID
-    const safeName = (name || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-    const ts = new Date().toISOString().replace(/[-:.TZ]/g, "");
-    const rand = Math.floor(1000 + Math.random() * 9000);
-    const publicTicketId = `${safeName || "student"}-${agNo || "0000-AG-0000"}-${ts}-${rand}`;
+    // Acronym Helper
+    const getAcronym = (text) => (text || "TCS")
+        .split(/\s+/)
+        .map(w => w[0])
+        .join("")
+        .toUpperCase();
+
+    // Generate public ticket ID (Simplified)
+    const eventShort = getAcronym(target.title);
+    const lastName = (req.user.name || name).trim().split(/\s+/).pop().toUpperCase();
+    const publicTicketId = `${eventShort}-${lastName}-${agNo.trim().toUpperCase()}`;
 
     const ticket = await Ticket.create({
         publicTicketId,

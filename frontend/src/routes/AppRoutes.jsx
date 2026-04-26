@@ -22,6 +22,9 @@ const Dashboard = lazy(() => import("../pages/Dashboard"));
 const AdminTickets = lazy(() => import("../pages/admin/AdminTickets"));
 const AdminLogin = lazy(() => import("../pages/AdminLogin"));
 const CertificatePreview = lazy(() => import("../pages/CertificatePreview"));
+const Profile = lazy(() => import("../pages/Profile"));
+const VerifyEmailNotice = lazy(() => import("../pages/VerifyEmailNotice"));
+const VerifySuccess = lazy(() => import("../pages/VerifySuccess"));
 const NotFound = lazy(() => import("../pages/NotFound"));
 
 // Loading fallback component
@@ -43,6 +46,11 @@ export default function AppRoutes() {
         <Route path="/programs" element={<Programs />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/tickets" element={<Tickets />} />
+        <Route path="/profile" element={
+          <ProtectedRoute requireVerified={false}>
+            <Profile />
+          </ProtectedRoute>
+        } />
         <Route path="/certificate-preview" element={<CertificatePreview />} />
 
         {/* Auth Routes */}
@@ -50,6 +58,8 @@ export default function AppRoutes() {
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/verify-success" element={<VerifySuccess />} />
+        <Route path="/verify-email" element={<VerifyEmailNotice />} />
 
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />

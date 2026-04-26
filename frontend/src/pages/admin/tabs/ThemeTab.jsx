@@ -1,5 +1,5 @@
-
 import React, { useState, useEffect, useMemo } from "react";
+import { useModal } from "../../../context/ModalContext";
 import LivePreview from "../../../components/admin/LivePreview";
 
 export default function ThemeTab({
@@ -9,6 +9,7 @@ export default function ThemeTab({
     setHasUnsaved,
     themeCtx
 }) {
+    const { showAlert, showConfirm } = useModal();
     // Color groups
     const colorGroups = {
         "🎨 Background Colors": ["Background Dark", "Background Darker", "Background Purple", "Background Card"],
@@ -50,20 +51,39 @@ export default function ThemeTab({
     const handleSaveTheme = () => {
         const password = prompt("Enter admin password to save theme:");
         if (password === "tcsadmin") {
-            themeCtx.setTheme(currentTheme);
-            setHasUnsaved(false);
-            alert("✅ Theme saved successfully!");
-        } else {
-            alert("❌ Incorrect password!");
+            try {
+                // Create a clean copy of the theme to save
+                const themeToSave = JSON.parse(JSON.stringify(currentTheme));
+                themeCtx.setTheme(themeToSave);
+                setHasUnsaved(false);
+                
+                // Verify it was saved to localStorage
+                const saved = localStorage.getItem('tcs_theme');
+                if (saved) {
+                    showAlert("Theme Saved", "The new theme has been applied globally.", "success");
+                } else {
+                    showAlert("Partial Success", "Theme applied but may not persist. Please check storage.", "warning");
+                }
+            } catch (err) {
+                console.error('Theme save error:', err);
+                showAlert("Update Error", "Failed to save theme: " + err.message, "error");
+            }
+        } else if (password !== null) {
+            showAlert("Access Denied", "Incorrect admin password provided.", "error");
         }
     };
 
     const handleReset = () => {
-        if (confirm("Reset theme to defaults?")) {
+        showConfirm(
+          "Reset Theme", 
+          "Are you sure you want to reset all colors to their original factory defaults?",
+          () => {
             themeCtx.reset();
             setDraftTheme(themeCtx.defaultTheme || {});
             setHasUnsaved(false);
-        }
+          },
+          { type: "warning" }
+        );
     };
 
     const handleCancel = () => {

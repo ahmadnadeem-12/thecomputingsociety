@@ -151,4 +151,64 @@ async function sendResetEmail(toEmail, resetUrl, userName) {
     return info;
 }
 
-module.exports = { sendResetEmail };
+/**
+ * Generic send email function
+ * @param {Object} options - { email, subject, message, html }
+ */
+async function sendEmail(options) {
+    const transporter = await getTransporter();
+
+    // Use default styled HTML if only 'message' is provided
+    const html = options.html || `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f0f1a; color: #fff; }
+            .container { max-width: 520px; margin: 0 auto; background: linear-gradient(135deg, #0f0f1a 0%, #1a0a2e 100%); border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+            .header { background: linear-gradient(135deg, #dc2743, #c234a5); padding: 30px; text-align: center; }
+            .header h1 { margin: 0; font-size: 22px; color: #fff; letter-spacing: 2px; }
+            .body { padding: 35px; }
+            .greeting { font-size: 18px; margin-bottom: 15px; color: #fff; }
+            .message { font-size: 15px; color: #9a8fa6; line-height: 1.7; margin-bottom: 25px; }
+            .footer { padding: 20px 30px; border-top: 1px solid rgba(255,255,255,0.06); text-align: center; font-size: 11px; color: #6b5f78; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>THE COMPUTING SOCIETY</h1>
+            </div>
+            <div class="body">
+                <div class="greeting">Hello!</div>
+                <div class="message">${options.message}</div>
+            </div>
+            <div class="footer">
+                &copy; The Computing Society — UAF<br/>
+                This is an automated security email.
+            </div>
+        </div>
+    </body>
+    </html>
+    `;
+
+    const mailOptions = {
+        from: `"The Computing Society" <${process.env.SMTP_USER || "noreply@tcs.uaf"}>`,
+        to: options.email,
+        subject: options.subject,
+        text: options.message,
+        html,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    
+    // Log preview link if on Ethereal
+    if (nodemailer.getTestMessageUrl(info)) {
+        console.log(`📬 Verification Email Preview: ${nodemailer.getTestMessageUrl(info)}`);
+    }
+
+    return info;
+}
+
+module.exports = { sendResetEmail, sendEmail };

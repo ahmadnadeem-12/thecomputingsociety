@@ -233,21 +233,27 @@
 }
 
 /* Responsive */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .cabinetGrid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 1rem;
   }
+}
 
+@media (max-width: 480px) {
+  .cabinetGrid {
+    grid-template-columns: 1fr;
+  }
   .profileCard {
     padding: 1.5rem 1rem;
   }
-
   .dpWrap {
     width: 85px;
     height: 85px;
   }
+}
 
+@media (max-width: 640px) {
   .detailGrid {
     grid-template-columns: 1fr;
   }

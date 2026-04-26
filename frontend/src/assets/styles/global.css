@@ -138,10 +138,10 @@ body::after {
   z-index: -1;
 }
 
-/* Layout constraints - Desktop lock for most pages, responsive for auth */
+/* Layout constraints - fully responsive */
 .layout {
   width: 100%;
-  min-width: 1024px;
+  min-width: 0;
 }
 
 .layout.auth-responsive {
@@ -168,7 +168,7 @@ textarea {
 
 .layout {
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
+  grid-template-columns: 300px minmax(0, 1fr);
   min-height: 100vh;
   position: relative;
 }
@@ -243,13 +243,23 @@ textarea {
   font-weight: bold;
 }
 
-/* ===== FULLSCREEN MOBILE MENU ===== */
+/* ===== MOBILE OVERLAY (click outside to close) ===== */
+.mobileMenuOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+/* ===== SIDEBAR MOBILE MENU ===== */
 .mobileMenu {
   display: none;
   position: fixed;
   top: 0;
   left: 0;
-  width: 280px;
+  width: 300px;
   height: 100vh;
   z-index: 9998;
   background: #0a0510;
@@ -348,6 +358,10 @@ body.mobileMenuOpen {
     display: flex;
   }
 
+  .mobileMenuOverlay {
+    display: block;
+  }
+
   .desktopSidebar {
     display: none !important;
   }
@@ -355,59 +369,163 @@ body.mobileMenuOpen {
   .layout {
     grid-template-columns: 1fr;
     padding-top: 60px;
+    min-width: 0;
   }
 
   .main {
-    padding-left: 0;
+    padding: 1rem 0.75rem 2rem;
   }
 
   .sidebar::before {
     display: none;
   }
 
-  /* Smaller fonts on mobile */
+  /* Section */
+  .section {
+    padding: 1.25rem;
+    border-radius: 16px;
+  }
+
+  .sectionHeader {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+
   .sectionTitle {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+    letter-spacing: 0.04em;
   }
 
   .sectionSubtitle {
+    font-size: 0.82rem;
+  }
+
+  /* Buttons */
+  .btn {
+    font-size: 0.78rem;
+    padding: 0.5rem 1rem;
+    letter-spacing: 0.06em;
+  }
+
+  .pill {
+    font-size: 0.68rem;
+    padding: 0.3rem 0.65rem;
+  }
+
+  /* Forms */
+  .formRow {
+    grid-template-columns: 1fr !important;
+  }
+
+  .input {
     font-size: 0.85rem;
+    padding: 0.65rem 0.9rem;
+  }
+
+  /* Grids go single column */
+  .ticketsGrid,
+  .featureGrid,
+  .noticeGrid,
+  .quickLinks {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Ticket horizontal layout stacks */
+  .horizontalTicket {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ticketQrSection {
+    align-self: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .ticketActionSection {
+    align-self: stretch;
+    text-align: center;
+  }
+
+  .ticketDetailsGrid {
+    grid-template-columns: 1fr 1fr !important;
   }
 
   .navLabel {
     display: inline;
   }
-}
 
-/* ===== SMALL MOBILE ===== */
-@media (max-width: 480px) {
-  .hamburgerBtn {
-    width: 44px;
-    height: 44px;
-    top: 0.75rem;
-    left: 0.75rem;
+  /* Card */
+  .card {
+    padding: 1rem;
+    border-radius: 14px;
   }
 
-  .mobileSidebar {
+  /* Footer */
+  .footer {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+}
+
+/* ===== SMALL MOBILE (320-480) ===== */
+@media (max-width: 480px) {
+  .hamburgerBtn {
+    width: 40px;
+    height: 40px;
+    top: 0.5rem;
+    left: 0.5rem;
+    font-size: 1.2rem;
+    border-radius: 10px;
+  }
+
+  .mobileMenu {
     width: 260px;
   }
 
+  .layout {
+    padding-top: 50px;
+  }
+
+  .main {
+    padding: 0.75rem 0.5rem 1.5rem;
+  }
+
+  .section {
+    padding: 1rem;
+    border-radius: 14px;
+  }
+
   .sectionTitle {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
   }
 
   .sectionSubtitle {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
   }
 
   .pill {
-    font-size: 0.7rem;
-    padding: 0.35rem 0.7rem;
+    font-size: 0.65rem;
+    padding: 0.25rem 0.55rem;
   }
 
   .btn {
-    font-size: 0.8rem;
-    padding: 0.5rem 1rem;
+    font-size: 0.73rem;
+    padding: 0.45rem 0.85rem;
+  }
+
+  .ticketDetailsGrid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .heroButtons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .heroButtons .btn {
+    width: 100%;
   }
 }
 
@@ -420,8 +538,8 @@ body.mobileMenuOpen {
 
 .logoCircle {
   position: relative;
-  width: 65px;
-  height: 65px;
+  width: 75px;
+  height: 75px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -464,8 +582,8 @@ body.mobileMenuOpen {
 
 .logoText {
   font-family: 'Outfit', sans-serif;
-  font-size: 1.3rem;
-  font-weight: 800;
+  font-size: 1.5rem;
+  font-weight: 900;
   letter-spacing: 0.05em;
   color: white;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -546,7 +664,7 @@ body.mobileMenuOpen {
 }
 
 .brandThe {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   background: linear-gradient(90deg, #ff4d6d 0%, #ff6b8a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -556,7 +674,7 @@ body.mobileMenuOpen {
 }
 
 .brandComputing {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   background: linear-gradient(90deg, #c77dff 0%, #9b59b6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -566,7 +684,7 @@ body.mobileMenuOpen {
 }
 
 .brandSociety {
-  font-size: 1rem;
+  font-size: 1.1rem;
   background: linear-gradient(90deg, #00d9ff 0%, #00b4d8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -576,7 +694,7 @@ body.mobileMenuOpen {
 }
 
 .brandingSubtitle {
-  font-size: 0.6rem;
+  font-size: 0.72rem;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -617,13 +735,13 @@ body.mobileMenuOpen {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  gap: 0.9rem;
+  padding: 0.85rem 1.25rem;
   border-radius: var(--radius-full);
   color: var(--sidebar-text);
-  font-size: 0.88rem;
+  font-size: 1.05rem;
   font-weight: 500;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   border: 1px solid transparent;
   background: transparent;
   transition: all var(--transition-normal);
@@ -1461,24 +1579,40 @@ select optgroup {
 
   /* Section improvements */
   .section {
-    padding: 1.25rem !important;
+    padding: 1rem !important;
     border-radius: var(--radius-md) !important;
   }
 
   .sectionTitle {
-    font-size: 1.35rem !important;
+    font-size: 1.5rem !important;
+    text-align: center;
+    width: 100%;
   }
+
+  .sectionSubtitle {
+    font-size: 0.85rem !important;
+    text-align: center;
+    width: 100%;
+  }
+
+  .sectionHeader {
+    text-align: center;
+    gap: 1rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+
+  /* Responsive Utils */
+  .grid-2-1 { grid-template-columns: 1fr !important; }
+  .grid-3-1 { grid-template-columns: 1fr !important; }
+  .grid-4-1 { grid-template-columns: 1fr !important; }
+  
+  .flex-stack { flex-direction: column !important; }
+  .text-center-mobile { text-align: center !important; }
 
   /* Card Grid */
   .cardGrid {
     grid-template-columns: 1fr !important;
     gap: 1rem !important;
-  }
-
-  /* Buttons */
-  .btn {
-    padding: 0.55rem 1rem !important;
-    font-size: 0.78rem !important;
   }
 
   /* Notice Grid */

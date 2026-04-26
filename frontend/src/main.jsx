@@ -8,16 +8,20 @@ import { AuthProvider } from "./context/AuthContext";
 import { EventProvider } from "./context/EventContext";
 import { ThemeProvider } from "./context/ThemeContext";
 
+import { ModalProvider } from "./context/ModalContext";
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ThemeProvider>
-      <AuthProvider>
-        <EventProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </EventProvider>
-      </AuthProvider>
+      <ModalProvider>
+        <AuthProvider>
+          <EventProvider>
+            <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+              <App />
+            </BrowserRouter>
+          </EventProvider>
+        </AuthProvider>
+      </ModalProvider>
     </ThemeProvider>
   </React.StrictMode>
 );

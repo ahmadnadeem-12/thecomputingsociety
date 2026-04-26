@@ -9,4 +9,6 @@ export { default as DegreesTab } from "./DegreesTab";
 export { default as GalleryTab } from "./GalleryTab";
 export { default as TicketsTab } from "./TicketsTab";
 export { default as ThemeTab } from "./ThemeTab";
+export { default as UsersTab } from "./UsersTab";
+export { default as AuditLogsTab } from "./AuditLogsTab";
 

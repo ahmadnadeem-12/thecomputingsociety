@@ -41,6 +41,17 @@ export default function Navbar() {
     return item;
   });
 
+  // Insert Profile link ONLY if authed AND verified
+  const { user } = useAuth();
+  const isVerified = user?.isVerified || isAdmin;
+
+  if (isAuthed && isVerified) {
+    const ticketsIdx = navItems.findIndex(i => i.key === "tickets");
+    navItems.splice(ticketsIdx + 1, 0, { key: "profile", label: "My Profile", path: "/profile", icon: "👤" });
+  }
+
+  const filteredNavItems = navItems;
+
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
     if (mobileMenuOpen) {
@@ -71,52 +82,63 @@ export default function Navbar() {
       {/* MOBILE FULLSCREEN MENU */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div
-            className="mobileMenu"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
+          <>
+            {/* Dark overlay - click to close */}
+            <motion.div
+              className="mobileMenuOverlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+            />
+            <motion.div
+              className="mobileMenu"
+              initial={{ x: -280, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -280, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            >
 
-            {/* Logo */}
-            <div className="mobileMenuLogo">
-              <div className="logoCircle" style={{ width: 60, height: 60 }}>
-                <span className="logoText" style={{ fontSize: "1.2rem" }}>TCS</span>
+              {/* Logo */}
+              <div className="mobileMenuLogo">
+                <div className="logoCircle" style={{ width: 60, height: 60 }}>
+                  <span className="logoText" style={{ fontSize: "1.2rem" }}>TCS</span>
+                </div>
+                <div style={{ marginTop: "0.5rem" }}>
+                  <div style={{ fontSize: "0.9rem", fontWeight: 800, color: "var(--title-the)" }}>THE</div>
+                  <div style={{ fontSize: "0.9rem", fontWeight: 800, color: "var(--title-computing)" }}>COMPUTING</div>
+                  <div style={{ fontSize: "0.9rem", fontWeight: 800, color: "var(--title-society)" }}>SOCIETY</div>
+                </div>
               </div>
-              <div style={{ marginTop: "0.5rem" }}>
-                <div style={{ fontSize: "0.9rem", fontWeight: 800, color: "var(--title-the)" }}>THE</div>
-                <div style={{ fontSize: "0.9rem", fontWeight: 800, color: "var(--title-computing)" }}>COMPUTING</div>
-                <div style={{ fontSize: "0.9rem", fontWeight: 800, color: "var(--title-society)" }}>SOCIETY</div>
-              </div>
-            </div>
 
-            {/* Nav Links */}
-            <nav className="mobileMenuNav">
-              {navItems.map((item, idx) => (
-                <motion.div
-                  key={item.key}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                >
-                  <NavLink
-                    to={item.path}
-                    className={({ isActive }) => `mobileNavLink ${isActive ? "active" : ""}`}
-                    end={item.path === "/"}
-                    onClick={handleNavClick}
+              {/* Nav Links */}
+              <nav className="mobileMenuNav">
+                {filteredNavItems.map((item, idx) => (
+                  <motion.div
+                    key={item.key}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
                   >
-                    <span className="mobileNavIcon">{item.icon}</span>
-                    <span>{item.label}</span>
-                  </NavLink>
-                </motion.div>
-              ))}
-            </nav>
+                    <NavLink
+                      to={item.path}
+                      className={({ isActive }) => `mobileNavLink ${isActive ? "active" : ""}`}
+                      end={item.path === "/"}
+                      onClick={handleNavClick}
+                    >
+                      <span className="mobileNavIcon">{item.icon}</span>
+                      <span>{item.label}</span>
+                    </NavLink>
+                  </motion.div>
+                ))}
+              </nav>
 
-            {/* Footer */}
-            <div className="mobileMenuFooter">
-              © TCS • UAF • 2024–25
-            </div>
-          </motion.div>
+              {/* Footer */}
+              <div className="mobileMenuFooter">
+                © TCS • UAF • 2024–25
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
 
@@ -149,7 +171,7 @@ export default function Navbar() {
 
         {/* Navigation Links */}
         <nav className="nav">
-          {navItems.map((item) => (
+          {filteredNavItems.map((item) => (
             <motion.div
               key={item.key}
               variants={itemVariants}
@@ -161,7 +183,7 @@ export default function Navbar() {
                 className={({ isActive }) => `navLink ${isActive ? "navLinkActive" : ""}`}
                 end={item.path === "/"}
               >
-                <span style={{ fontSize: "1.1rem" }}>{item.icon}</span>
+                <span style={{ fontSize: "1.25rem" }}>{item.icon}</span>
                 <span className="navLabel">{item.label}</span>
               </NavLink>
             </motion.div>

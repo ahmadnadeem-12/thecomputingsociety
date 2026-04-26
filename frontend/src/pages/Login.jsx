@@ -6,7 +6,7 @@ import { useAuth } from "../hooks/useAuth";
 export default function Login() {
   const { login } = useAuth();
   const nav = useNavigate();
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState(localStorage.getItem("tcs_last_agNo") || "");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [err, setErr] = useState("");
@@ -15,7 +15,12 @@ export default function Login() {
     e.preventDefault();
     setErr("");
     try {
-      const u = await login({ email, password });
+      const u = await login({ identifier, password });
+      // Update last agNo for next time if it looks like an AG No
+      if (identifier.includes("-AG-")) {
+        localStorage.setItem("tcs_last_agNo", identifier);
+      }
+      
       if (u.role === "admin") nav("/admin/dashboard");
       else nav("/tickets");
     } catch (e2) {
@@ -35,8 +40,8 @@ export default function Login() {
 
       <form className="card" onSubmit={onSubmit} style={{ maxWidth: 560 }}>
         <div>
-          <div className="label">Email</div>
-          <input type="email" className="input" value={email} onChange={e => setEmail(e.target.value)} placeholder="Enter your email" required />
+          <div className="label">Email or AG Number</div>
+          <input className="input" value={identifier} onChange={e => setIdentifier(e.target.value)} placeholder="Email or 20xx-AG-xxxx" required />
         </div>
         <div style={{ marginTop: ".7rem" }}>
           <div className="label">Password</div>

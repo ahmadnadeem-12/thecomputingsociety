@@ -20,6 +20,21 @@ const userSchema = new mongoose.Schema(
             trim: true,
             match: [/\S+@\S+\.\S+/, "Please enter a valid email"],
         },
+        department: {
+            type: String,
+            trim: true,
+        },
+        semester: {
+            type: String,
+            trim: true,
+        },
+        agNo: {
+            type: String,
+            unique: true,
+            trim: true,
+            uppercase: true,
+            sparse: true, // Allows multiple users with null agNo (admins)
+        },
         password: {
             type: String,
             required: [true, "Password is required"],
@@ -30,6 +45,20 @@ const userSchema = new mongoose.Schema(
             type: String,
             enum: ["student", "admin"],
             default: "student",
+        },
+        isVerified: {
+            type: Boolean,
+            default: false,
+        },
+        verificationToken: String,
+        verificationTokenExpire: Date,
+        loginAttempts: {
+            type: Number,
+            required: true,
+            default: 0,
+        },
+        lockUntil: {
+            type: Date,
         },
 
         // ========================

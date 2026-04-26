@@ -1,0 +1,74 @@
+/* =========================================================
+   ADMIN DASHBOARD - Responsive Overlay
+   ========================================================= */
+
+.adminTabs {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Hide scrollbar for clean look */
+}
+
+.adminTabs::-webkit-scrollbar {
+    display: none;
+}
+
+.adminTabs .pill {
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+}
+
+.formRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* Modal Content adjustments for forms */
+.modalContent .input, 
+.modalContent .sexyInput {
+    font-size: 0.95rem;
+}
+
+.modalContent .label {
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+}
+
+@media (max-width: 768px) {
+    .formRow {
+        grid-template-columns: 1fr;
+    }
+    
+    .adminHeader {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1.25rem;
+    }
+
+    .modalContent {
+        padding: 1rem !important;
+    }
+    
+    .modalContent .formRow {
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .sectionTitle {
+        font-size: 1.4rem !important;
+    }
+    
+    .sectionHeader .btn {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+}

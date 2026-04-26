@@ -42,6 +42,15 @@ export function AuthProvider({ children }) {
       logoutUser();
       setUser(null);
     },
+    refreshUser: async () => {
+      try {
+        const sessionUser = await getSessionUser();
+        setUser(sessionUser);
+        return sessionUser;
+      } catch (err) {
+        console.error("Refresh user failed", err);
+      }
+    }
   }), [user, loading]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

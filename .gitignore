@@ -34,3 +34,7 @@ yarn-error.log*
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# Local Scratch/AI Files
+scratch/
+.gemini/
