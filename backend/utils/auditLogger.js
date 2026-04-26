@@ -20,7 +20,7 @@ exports.logAction = async (req, action, targetType, targetId, details, metadata 
             targetId,
             details,
             metadata,
-            ipAddress: req.ip || req.connection.remoteAddress,
+            ipAddress: req.ip || req.headers["x-forwarded-for"]?.split(",")[0] || req.connection.remoteAddress || "Unknown",
         });
     } catch (error) {
         console.error("Audit Logging Error:", error);

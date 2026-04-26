@@ -180,7 +180,7 @@ export default function UsersTab() {
             return (
               <div 
                 key={u._id} 
-                className={`card userCard ${isSelected ? 'selectedCard' : ''} ${isAdmin ? 'adminCard' : 'selectableCard'}`}
+                className={`card userCard flex-stack ${isSelected ? 'selectedCard' : ''} ${isAdmin ? 'adminCard' : 'selectableCard'}`}
                 onClick={(e) => toggleSelect(u._id, u.role, e)}
                 style={{ 
                   display: 'flex', 
@@ -199,60 +199,58 @@ export default function UsersTab() {
                 {isSelected && <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '4px', background: 'var(--accent-pink)' }} />}
 
                 {!isAdmin ? (
-                  <input 
-                    type="checkbox" 
-                    checked={isSelected}
-                    onChange={(e) => toggleSelect(u._id, u.role, e)}
-                    onClick={(e) => e.stopPropagation()}
-                    style={{ width: '20px', height: '20px', cursor: 'pointer', flexShrink: 0 }}
-                  />
+                  <div style={{ display: "flex", gap: "1rem", alignItems: "center", width: "100%" }}>
+                    <input 
+                      type="checkbox" 
+                      checked={isSelected}
+                      onChange={(e) => toggleSelect(u._id, u.role, e)}
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ width: '20px', height: '20px', cursor: 'pointer', flexShrink: 0 }}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 700, fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: "wrap" }}>
+                        <span style={{ color: isSelected ? 'var(--accent-pink)' : 'var(--text-bright)' }}>{u.name}</span>
+                        {/* Verification Badge */}
+                        <span style={{ 
+                          fontSize: '0.65rem', 
+                          padding: '0.15rem 0.5rem', 
+                          borderRadius: '50px',
+                          background: u.isVerified ? 'rgba(74,222,128,0.1)' : 'rgba(255,165,0,0.1)',
+                          color: u.isVerified ? '#4ade80' : '#ffa500',
+                          border: `1px solid ${u.isVerified ? 'rgba(74,222,128,0.2)' : 'rgba(255,165,0,0.2)'}`,
+                          fontWeight: 700
+                        }}>
+                          {u.isVerified ? 'VERIFIED ✓' : 'UNVERIFIED ⚠'}
+                        </span>
+                      </div>
+                      <div style={{ marginTop: '0.35rem', display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{u.email}</div>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--accent-cyan)', fontWeight: 600 }}>{u.agNo || 'N/A'}</div>
+                      </div>
+                    </div>
+                  </div>
                 ) : (
-                  <div style={{ width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <span style={{ fontSize: '0.8rem' }}>🔒</span>
+                  <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "1rem" }}>
+                    <div style={{ width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <span style={{ fontSize: '0.8rem' }}>🔒</span>
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <span style={{ color: 'var(--text-bright)' }}>{u.name}</span>
+                        <span className="pill pillRed" style={{ fontSize: '0.65rem', padding: '0.15rem 0.5rem' }}>ADMIN</span>
+                      </div>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{u.email}</div>
+                    </div>
                   </div>
                 )}
 
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: "wrap" }}>
-                    <span style={{ color: isSelected ? 'var(--accent-pink)' : 'var(--text-bright)' }}>{u.name}</span>
-                    {isAdmin && <span className="pill pillRed" style={{ fontSize: '0.65rem', padding: '0.15rem 0.5rem' }}>ADMIN</span>}
-                    
-                    {/* Verification Badge */}
-                    {!isAdmin && (
-                      <span style={{ 
-                        fontSize: '0.65rem', 
-                        padding: '0.15rem 0.5rem', 
-                        borderRadius: '50px',
-                        background: u.isVerified ? 'rgba(74,222,128,0.1)' : 'rgba(255,165,0,0.1)',
-                        color: u.isVerified ? '#4ade80' : '#ffa500',
-                        border: `1px solid ${u.isVerified ? 'rgba(74,222,128,0.2)' : 'rgba(255,165,0,0.2)'}`,
-                        fontWeight: 700
-                      }}>
-                        {u.isVerified ? 'VERIFIED ✓' : 'UNVERIFIED ⚠'}
-                      </span>
-                    )}
-                  </div>
-                  <div style={{ marginTop: '0.35rem', display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                       <span>{u.email}</span>
-                    </div>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <span style={{ fontSize: '0.7rem' }}>🆔</span>
-                      <span style={{ color: isSelected ? 'var(--text-bright)' : 'var(--accent-cyan)', fontWeight: 600 }}>{u.agNo || 'N/A'}</span>
-                    </div>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                      Joined {new Date(u.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                    </div>
-                  </div>
-                </div>
-
                 {!isAdmin && (
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <div className="flex-stack" style={{ display: 'flex', gap: '0.5rem', marginLeft: 'auto', width: 'auto' }}>
                     {!u.isVerified && (
                       <>
                         <button 
                           className="btn btnGhost" 
-                          style={{ padding: '0.4rem 0.8rem', fontSize: '0.75rem', borderColor: 'rgba(255,255,255,0.1)' }}
+                          style={{ padding: '0.4rem 0.8rem', fontSize: '0.75rem', borderColor: 'rgba(255,255,255,0.1)', whiteSpace: 'nowrap' }}
                           onClick={async (e) => {
                             e.stopPropagation();
                             showConfirm(
@@ -265,19 +263,17 @@ export default function UsersTab() {
                               }
                             );
                           }}
-                          title="Manually Verify User"
                         >
                           Manual Verify
                         </button>
                         <button 
                           className="btn btnGhost" 
-                          style={{ padding: '0.4rem 0.8rem', fontSize: '0.75rem', borderColor: 'rgba(255,255,255,0.1)' }}
+                          style={{ padding: '0.4rem 0.8rem', fontSize: '0.75rem', borderColor: 'rgba(255,255,255,0.1)', whiteSpace: 'nowrap' }}
                           onClick={async (e) => {
                             e.stopPropagation();
                             await resendVerifyEmail(u._id);
                             showAlert("Link Sent", "The verification email has been resent successfully.", "success");
                           }}
-                          title="Resend Verification Email"
                         >
                           Resend Link
                         </button>
@@ -295,7 +291,6 @@ export default function UsersTab() {
                       }}
                       onClick={(e) => handleDelete(u._id, u.name, e)}
                       disabled={deletingId === u._id}
-                      title="Delete User"
                     >
                       {deletingId === u._id ? "..." : "🗑️"}
                     </button>

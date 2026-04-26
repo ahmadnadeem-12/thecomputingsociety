@@ -21,6 +21,12 @@ const { errorHandler, notFound } = require("./middleware/errorHandler");
 // Initialize Express
 const app = express();
 
+/**
+ * Trust proxy is essential for capturing real client IP addresses 
+ * when the application is behind a reverse proxy (Nginx, Cloudflare, etc.)
+ */
+app.set("trust proxy", true);
+
 // ========================
 // Security Middleware
 // ========================
