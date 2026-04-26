@@ -354,8 +354,9 @@ router.get("/verify/:token", async (req, res) => {
     // Auto-login: Generate a token
     const token = user.getSignedJwtToken();
 
-    // Redirect to frontend with token — REPLACE 'localhost:5173' if your port is different
-    const frontendUrl = `http://localhost:5173/verify-success?token=${token}`;
+    // Redirect to frontend with token
+    const frontendBaseUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    const frontendUrl = `${frontendBaseUrl}/verify-success?token=${token}`;
     res.redirect(frontendUrl);
 });
 
