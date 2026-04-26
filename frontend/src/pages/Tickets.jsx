@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
 import { api } from "../services/api";
 import { QRCodeCanvas } from "qrcode.react";
-import { downloadTicketPDF, downloadAllTicketsPDF } from "../services/pdfService";
+import { downloadTicketPDF, downloadAllTicketsPDF, downloadCertificatePDF } from "../services/pdfService";
 
 export default function Tickets() {
   const { user, isAuthed, logout } = useAuth();
