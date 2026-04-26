@@ -70,14 +70,15 @@ export default function Navbar() {
 
   return (
     <>
-      {/* HAMBURGER BUTTON - Mobile only */}
-      <button
-        className="hamburgerBtn"
-        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        aria-label="Toggle menu"
-      >
-        {mobileMenuOpen ? "✕" : "☰"}
-      </button>
+      {!mobileMenuOpen && (
+        <button
+          className="hamburgerBtn"
+          onClick={() => setMobileMenuOpen(true)}
+          aria-label="Open menu"
+        >
+          ☰
+        </button>
+      )}
 
       {/* MOBILE FULLSCREEN MENU */}
       <AnimatePresence>
@@ -98,6 +99,13 @@ export default function Navbar() {
               exit={{ x: -280, opacity: 0 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
             >
+              <button 
+                className="mobileMenuClose" 
+                onClick={() => setMobileMenuOpen(false)}
+                aria-label="Close menu"
+              >
+                ✕
+              </button>
 
               {/* Logo */}
               <div className="mobileMenuLogo">

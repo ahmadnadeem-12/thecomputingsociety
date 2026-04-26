@@ -53,11 +53,12 @@
     }
 
     .adminTabs {
-        padding-left: 1rem;
-        padding-right: 1.5rem; /* Extra space at the end */
+        padding-left: 0;
+        padding-right: 1.5rem; /* Only peek at the end (right side) */
         gap: 0.6rem;
         scrollbar-width: none;
         -ms-overflow-style: none;
+        margin-left: 0;
     }
 
     .adminTabs::-webkit-scrollbar {
@@ -65,10 +66,11 @@
     }
 
     .adminTabs .pill {
-        /* Ensuring a 'peek' effect by setting a width that doesn't align perfectly with mobile screens */
-        min-width: 100px; 
-        max-width: 130px;
         flex: 0 0 auto;
+        min-width: fit-content;
+        max-width: none;
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
     }
     
     .modalContent .formRow {
