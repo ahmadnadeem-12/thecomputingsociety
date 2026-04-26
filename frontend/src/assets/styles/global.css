@@ -1601,6 +1601,42 @@ select optgroup {
     padding-bottom: 1.5rem !important;
   }
 
+/* --- Custom Checkbox --- */
+.tcs-check-wrap {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+.tcs-checkbox {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+.tcs-checkbox:checked {
+  background: var(--accent-pink);
+  border-color: var(--accent-pink);
+  box-shadow: 0 0 10px rgba(194, 52, 165, 0.4);
+}
+.tcs-checkbox:checked::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+}
+.tcs-checkbox:hover { border-color: var(--accent-cyan); }
+
   /* Responsive Utils */
   .grid-2-1 { grid-template-columns: 1fr !important; }
   .grid-3-1 { grid-template-columns: 1fr !important; }

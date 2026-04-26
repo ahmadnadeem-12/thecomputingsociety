@@ -199,33 +199,36 @@ export default function UsersTab() {
                 {isSelected && <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '4px', background: 'var(--accent-pink)' }} />}
 
                 {!isAdmin ? (
-                  <div style={{ display: "flex", gap: "1rem", alignItems: "center", width: "100%" }}>
-                    <input 
-                      type="checkbox" 
-                      checked={isSelected}
-                      onChange={(e) => toggleSelect(u._id, u.role, e)}
-                      onClick={(e) => e.stopPropagation()}
-                      style={{ width: '20px', height: '20px', cursor: 'pointer', flexShrink: 0 }}
-                    />
+                  <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start", width: "100%" }}>
+                    <div style={{ marginTop: "4px" }}>
+                      <input 
+                        type="checkbox" 
+                        className="tcs-checkbox"
+                        checked={isSelected}
+                        onChange={(e) => toggleSelect(u._id, u.role, e)}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 700, fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: "wrap" }}>
-                        <span style={{ color: isSelected ? 'var(--accent-pink)' : 'var(--text-bright)' }}>{u.name}</span>
-                        {/* Verification Badge */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: "wrap", marginBottom: '0.35rem' }}>
+                        <span style={{ fontWeight: 800, fontSize: '1.05rem', color: isSelected ? 'var(--accent-pink)' : 'var(--text-bright)' }}>{u.name}</span>
                         <span style={{ 
-                          fontSize: '0.65rem', 
-                          padding: '0.15rem 0.5rem', 
-                          borderRadius: '50px',
+                          fontSize: '0.6rem', 
+                          padding: '0.15rem 0.4rem', 
+                          borderRadius: '4px',
                           background: u.isVerified ? 'rgba(74,222,128,0.1)' : 'rgba(255,165,0,0.1)',
                           color: u.isVerified ? '#4ade80' : '#ffa500',
                           border: `1px solid ${u.isVerified ? 'rgba(74,222,128,0.2)' : 'rgba(255,165,0,0.2)'}`,
-                          fontWeight: 700
+                          fontWeight: 800,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px'
                         }}>
-                          {u.isVerified ? 'VERIFIED ✓' : 'UNVERIFIED ⚠'}
+                          {u.isVerified ? 'Verified' : 'Unverified'}
                         </span>
                       </div>
-                      <div style={{ marginTop: '0.35rem', display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
-                        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{u.email}</div>
-                        <div style={{ fontSize: '0.85rem', color: 'var(--accent-cyan)', fontWeight: 600 }}>{u.agNo || 'N/A'}</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                        <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>{u.email}</div>
+                        <div style={{ fontSize: '0.82rem', color: 'var(--accent-cyan)', fontWeight: 600 }}>{u.agNo || 'N/A'}</div>
                       </div>
                     </div>
                   </div>
@@ -235,11 +238,11 @@ export default function UsersTab() {
                       <span style={{ fontSize: '0.8rem' }}>🔒</span>
                     </div>
                     <div>
-                      <div style={{ fontWeight: 700, fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <div style={{ fontWeight: 800, fontSize: '1.05rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                         <span style={{ color: 'var(--text-bright)' }}>{u.name}</span>
-                        <span className="pill pillRed" style={{ fontSize: '0.65rem', padding: '0.15rem 0.5rem' }}>ADMIN</span>
+                        <span className="pill pillRed" style={{ fontSize: '0.6rem', padding: '0.15rem 0.4rem', borderRadius: '4px' }}>ADMIN</span>
                       </div>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{u.email}</div>
+                      <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>{u.email}</div>
                     </div>
                   </div>
                 )}

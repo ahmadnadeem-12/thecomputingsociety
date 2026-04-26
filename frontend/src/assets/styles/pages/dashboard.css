@@ -60,6 +60,35 @@
     .modalContent .formRow {
         gap: 0.75rem;
     }
+
+    /* Tab scroll indicator hint */
+    .adminTabs {
+        padding-right: 2rem;
+        position: relative;
+    }
+
+    .adminTabs::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0.75rem;
+        width: 30px;
+        background: linear-gradient(to right, transparent, var(--bg-dark));
+        pointer-events: none;
+        z-index: 5;
+    }
+
+    /* User Card Alignment Fixes */
+    .userCard.flex-stack {
+        align-items: stretch !important;
+        text-align: left !important;
+    }
+
+    .userCard.flex-stack .btn {
+        width: 100%;
+        margin-top: 0.25rem;
+    }
 }
 
 @media (max-width: 480px) {
