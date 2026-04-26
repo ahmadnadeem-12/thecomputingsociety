@@ -377,8 +377,9 @@ export default function Profile() {
       ) : (
         <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
 
-      <div className="sectionHeader" style={{ textAlign: "left", marginBottom: "1rem" }}>
+      <div className="sectionHeader" style={{ textAlign: "left", marginBottom: "1rem", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1 className="profileTitle" style={{ fontWeight: 950, color: "#ff2d95", letterSpacing: "2px", textTransform: "uppercase" }}>MY PROFILE</h1>
+        <button className="btn btnGhost" style={{ padding: "0.6rem 1.5rem", borderRadius: "12px", fontSize: '0.8rem' }} onClick={() => { logout(); window.location.href = "/login"; }}>🚪 LOGOUT</button>
       </div>
 
         {/* ACCOUNT INFORMATION CARD */}

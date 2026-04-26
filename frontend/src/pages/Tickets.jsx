@@ -368,7 +368,6 @@ export default function Tickets() {
                              <span style={{ fontSize: "1.4rem" }}>📥</span> DOWNLOAD PDF
                            </button>
 
-
                            {t.checkedIn && (
                              <button 
                                className="btn" 
@@ -383,15 +382,16 @@ export default function Tickets() {
                                  border: "1px solid rgba(255, 215, 0, 0.3)",
                                  boxShadow: "0 0 15px rgba(255, 215, 0, 0.1)"
                                }} 
-                               onClick={() => nav("/certificate-preview", { 
-                                 state: { 
+                               onClick={() => {
+                                 const certData = { 
                                    ...t, 
                                    eventTitle: ev?.title,
                                    eventDate: ev?.date ? formatDate(ev.date) : (ev?.startDate || "TBA")
-                                 } 
-                               })}
+                                 };
+                                 downloadCertificatePDF(certData);
+                               }}
                              >
-                               📜 CLAIM CERTIFICATE
+                               📜 DOWNLOAD CERTIFICATE
                              </button>
                            )}
                         </div>
@@ -458,6 +458,18 @@ export default function Tickets() {
           .ticketContentGrid { grid-template-columns: 1fr 1fr !important; gap: 1rem !important; }
           .successModalContent { padding: 2rem 1.5rem; border-radius: 25px; }
           .successIcon { font-size: 3.5rem; }
+          
+          /* Realme 5i / Small Mobile Buttons */
+          .regCard .btnPrimary { 
+            font-size: 0.85rem !important; 
+            padding: 1rem !important; 
+            letter-spacing: 1px !important; 
+            border-radius: 15px !important; 
+          }
+          .btnPrimary[style*="DOWNLOAD ALL"] {
+             font-size: 0.75rem !important;
+             padding: 0.6rem 1.5rem !important;
+          }
         }
 
         @media (max-width: 480px) {
