@@ -259,17 +259,30 @@ textarea {
   position: fixed;
   top: 0;
   left: 0;
-  width: 300px;
+  width: 290px;
+  max-width: 85vw;
   height: 100vh;
   z-index: 9998;
   background: linear-gradient(165deg, #0a0510 0%, #1a0a25 50%, #050508 100%);
   flex-direction: column;
-  padding: 2rem 1.5rem;
+  padding: 0.5rem 1.25rem 1.5rem;
   overflow-y: auto;
   overflow-x: hidden;
-  box-shadow: 10px 0 50px rgba(0, 0, 0, 0.9);
+  box-shadow: 15px 0 60px rgba(0, 0, 0, 0.95);
   border-right: 1px solid rgba(194, 52, 165, 0.2);
-  position: relative;
+}
+
+.mobileMenuLogo {
+  margin-top: 0.25rem;
+}
+
+/* Ensure menu content starts at the very top */
+.mobileMenu::-webkit-scrollbar {
+  display: none;
+}
+.mobileMenu {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .mobileMenu::before {
@@ -306,7 +319,7 @@ textarea {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 1.25rem !important;
   width: 100%;
 }
 
@@ -328,16 +341,17 @@ textarea {
 .mobileNavLink {
   display: flex;
   align-items: center;
-  gap: 1.2rem;
-  padding: 1rem 1.5rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 18px;
-  color: #e8e0ed;
-  text-decoration: none;
-  font-size: 1rem;
-  font-weight: 700;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 1rem !important;
+  padding: 0.65rem 1.25rem !important;
+  margin: 0 0.75rem !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 14px !important;
+  color: #e8e0ed !important;
+  text-decoration: none !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  transition: all 0.3s ease !important;
 }
 
 .mobileNavLink:active {
@@ -394,7 +408,7 @@ textarea {
 
   .layout {
     grid-template-columns: 1fr;
-    padding-top: 60px;
+    padding-top: 20px !important;
     min-width: 0;
   }
 
@@ -419,24 +433,24 @@ textarea {
   }
 
   .sectionTitle {
-    font-size: 1.3rem;
-    letter-spacing: 0.04em;
+    font-size: clamp(1.1rem, 5vw, 1.3rem) !important;
+    letter-spacing: 0.02em;
   }
 
   .sectionSubtitle {
-    font-size: 0.82rem;
+    font-size: clamp(0.72rem, 3vw, 0.82rem) !important;
   }
 
   /* Buttons */
   .btn {
-    font-size: 0.78rem;
+    font-size: clamp(0.7rem, 2.5vw, 0.78rem) !important;
     padding: 0.5rem 1rem;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.04em;
   }
 
   .pill {
-    font-size: 0.68rem;
-    padding: 0.3rem 0.65rem;
+    font-size: 0.65rem;
+    padding: 0.25rem 0.55rem;
   }
 
   /* Forms */
@@ -1318,7 +1332,7 @@ select optgroup {
 }
 
 .loaderText {
-  margin-top: 1rem;
+  margin-top: 0.4rem;
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.15em;
@@ -1651,7 +1665,7 @@ select optgroup {
   }
 
   .navLink {
-    padding: 0.55rem 0.85rem !important;
+    padding: 1.25rem 1.5rem 1rem !important;
     font-size: 0.8rem !important;
     flex-shrink: 0 !important;
   }
@@ -1805,29 +1819,48 @@ select optgroup {
 }
 
 .skeleton {
+  background: rgba(15, 8, 25, 0.6); /* Matches card depth */
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  display: block;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.03) 25%,
-    rgba(255, 255, 255, 0.08) 50%,
-    rgba(255, 255, 255, 0.03) 75%
+    transparent,
+    rgba(255, 255, 255, 0.04),
+    transparent
   );
-  background-size: 800px 100%;
-  animation: shimmer 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  border-radius: var(--radius-md);
-  display: inline-block;
-  vertical-align: middle;
+  animation: shimmer 1.8s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 .skeleton-text {
-  height: 1rem;
+  height: 0.8rem;
   width: 100%;
   margin-bottom: 0.5rem;
+  border-radius: 4px;
 }
 
 .skeleton-title {
-  height: 2.5rem;
+  height: 2rem;
   width: 70%;
   margin-bottom: 1rem;
+  border-radius: 8px;
 }
 
 .skeleton-circle {
@@ -1836,21 +1869,22 @@ select optgroup {
 }
 
 .skeleton-card {
-  height: 200px;
+  height: 180px;
   width: 100%;
-  border: 1px solid var(--border-soft);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .skeleton-btn {
   height: 40px;
   width: 120px;
-  border-radius: var(--radius-full);
+  border-radius: 50px;
 }
 
 .skeleton-pill {
   height: 24px;
   width: 100px;
-  border-radius: var(--radius-full);
+  border-radius: 50px;
 }
 
 /* =========================================================

@@ -111,24 +111,24 @@ export default function Navbar() {
 
               {/* Logo */}
               <div className="mobileMenuLogo">
-                <div className="logoCircle" style={{ width: 80, height: 80 }}>
-                  <span className="logoText" style={{ fontSize: "1.4rem" }}>TCS</span>
+                <div className="logoCircle" style={{ width: 75, height: 75 }}>
+                  <span className="logoText" style={{ fontSize: "1.25rem" }}>TCS</span>
                 </div>
-                <div style={{ marginTop: "1rem", textAlign: "center" }}>
-                  <div style={{ fontSize: "1.4rem", fontWeight: 950, color: "#ff3366", letterSpacing: "0.18em", lineHeight: 1.1 }}>THE</div>
+                <div style={{ marginTop: "0.4rem", textAlign: "center" }}>
+                  <div style={{ fontSize: "1.2rem", fontWeight: 950, color: "#ff3366", letterSpacing: "0.15em", lineHeight: 1.1 }}>THE</div>
                   <div style={{ 
-                    fontSize: "1.4rem", 
+                    fontSize: "1.2rem", 
                     fontWeight: 950, 
                     color: "#c234a5",
-                    letterSpacing: "0.08em",
+                    letterSpacing: "0.05em",
                     lineHeight: 1.1,
-                    margin: "2px 0"
+                    margin: "1px 0"
                   }}>COMPUTING</div>
                   <div style={{ 
-                    fontSize: "1.4rem", 
+                    fontSize: "1.2rem", 
                     fontWeight: 950, 
                     color: "#00d9ff",
-                    letterSpacing: "0.08em",
+                    letterSpacing: "0.05em",
                     lineHeight: 1.1
                   }}>SOCIETY</div>
                 </div>

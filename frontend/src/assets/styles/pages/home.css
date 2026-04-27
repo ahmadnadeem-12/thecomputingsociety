@@ -251,13 +251,13 @@
 }
 
 .noticeIcon {
-  width: 50px;
-  height: 50px;
-  border-radius: 16px;
+  width: clamp(42px, 12vw, 50px);
+  height: clamp(42px, 12vw, 50px);
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 4vw, 1.5rem);
   flex-shrink: 0;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
@@ -313,17 +313,23 @@
 
 .noticeActions .btn {
   flex: 1;
-  height: 36px;
+  height: clamp(32px, 10vw, 36px);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.72rem;
+  gap: 0.4rem;
+  font-size: clamp(0.65rem, 2vw, 0.72rem);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border-radius: 50px;
   cursor: pointer;
   transition: all 0.3s ease;
+}
+
+.noticeActions .btn svg {
+  width: clamp(10px, 3vw, 12px) !important;
+  height: clamp(10px, 3vw, 12px) !important;
 }
 
 .btnNoticeOpen {
@@ -909,6 +915,7 @@
     gap: 0.75rem !important;
     margin-top: 1.5rem;
     width: 100%;
+    margin-bottom: 0 !important; /* Force tight gap */
   }
 
   .heroButtons.mobileOnly a {
@@ -929,8 +936,9 @@
   }
 
   .statsGrid {
-    padding: 1.5rem 1rem !important;
+    padding: 1.5rem 0.25rem !important;
     border-radius: 24px;
+    margin-top: 0.35rem !important; /* Synced with small mobile */
   }
 
   .statNumber {
@@ -1279,3 +1287,73 @@
  }
 }
 
+/* =========================================================
+   SMALL MOBILE OPTIMIZATIONS (Under 480px)
+   ========================================================= */
+@media (max-width: 480px) {
+  .welcomeBanner {
+    padding: 1.25rem 1.5rem 1rem !important;
+    margin-top: 0 !important;
+  }
+
+  .majesticBadgeMobile {
+    padding: 0.55rem 1.25rem !important;
+    font-size: 0.62rem !important;
+    margin-bottom: 1.5rem !important;
+    width: auto !important;
+    display: inline-flex !important;
+  }
+
+  .theText {
+    font-size: 1.9rem !important;
+    line-height: 1 !important;
+  }
+
+  .mainText {
+    font-size: 2.45rem !important;
+    line-height: 1.15 !important;
+    display: block !important;
+    white-space: nowrap !important;
+    letter-spacing: -0.01em !important;
+    padding-bottom: 0.15em !important;
+  }
+
+  .majesticDescMobile {
+    font-size: 0.88rem !important;
+    padding: 0 !important;
+    margin-bottom: 1.5rem !important;
+    line-height: 1.5 !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+
+  .heroButtons {
+    gap: 0.6rem !important;
+    width: 100% !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .heroButtons .btn {
+    font-size: 0.7rem !important;
+    padding: 0.55rem 0.8rem !important;
+    height: 48px !important;
+    flex: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  .statsGrid {
+    padding: 1.5rem 0.25rem !important;
+    border-radius: 24px !important;
+    gap: 0 !important;
+    margin-top: 0.35rem !important;
+  }
+
+  .statNumber {
+    font-size: 1.4rem !important;
+  }
+
+  .statLabel {
+    font-size: 0.62rem !important;
+    letter-spacing: 0.02em !important;
+    white-space: nowrap !important;
+  }
+}
