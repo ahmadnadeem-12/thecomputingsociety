@@ -76,7 +76,9 @@ export default function Navbar() {
           onClick={() => setMobileMenuOpen(true)}
           aria-label="Open menu"
         >
-          ☰
+          <div className="hamLine line-1"></div>
+          <div className="hamLine line-2"></div>
+          <div className="hamLine line-3"></div>
         </button>
       )}
 
@@ -109,13 +111,26 @@ export default function Navbar() {
 
               {/* Logo */}
               <div className="mobileMenuLogo">
-                <div className="logoCircle" style={{ width: 60, height: 60 }}>
-                  <span className="logoText" style={{ fontSize: "1.2rem" }}>TCS</span>
+                <div className="logoCircle" style={{ width: 80, height: 80 }}>
+                  <span className="logoText" style={{ fontSize: "1.4rem" }}>TCS</span>
                 </div>
-                <div style={{ marginTop: "0.5rem" }}>
-                  <div style={{ fontSize: "0.9rem", fontWeight: 800, color: "var(--title-the)" }}>THE</div>
-                  <div style={{ fontSize: "0.9rem", fontWeight: 800, color: "var(--title-computing)" }}>COMPUTING</div>
-                  <div style={{ fontSize: "0.9rem", fontWeight: 800, color: "var(--title-society)" }}>SOCIETY</div>
+                <div style={{ marginTop: "1rem", textAlign: "center" }}>
+                  <div style={{ fontSize: "1.4rem", fontWeight: 950, color: "#ff3366", letterSpacing: "0.18em", lineHeight: 1.1 }}>THE</div>
+                  <div style={{ 
+                    fontSize: "1.4rem", 
+                    fontWeight: 950, 
+                    color: "#c234a5",
+                    letterSpacing: "0.08em",
+                    lineHeight: 1.1,
+                    margin: "2px 0"
+                  }}>COMPUTING</div>
+                  <div style={{ 
+                    fontSize: "1.4rem", 
+                    fontWeight: 950, 
+                    color: "#00d9ff",
+                    letterSpacing: "0.08em",
+                    lineHeight: 1.1
+                  }}>SOCIETY</div>
                 </div>
               </div>
 
@@ -167,12 +182,24 @@ export default function Navbar() {
             <div className="logoShine" />
           </motion.div>
           <div className="sidebarBranding">
-            <div className="brandingTitle">
-              <div className="brandWord brandThe">THE</div>
-              <div className="brandWord brandComputing">COMPUTING</div>
-              <div className="brandWord brandSociety">SOCIETY</div>
+            <div className="brandingTitle" style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+              <div className="brandThe" style={{ color: "#ff3366", fontSize: "1.3rem", fontWeight: 900, letterSpacing: "0.18em", lineHeight: "1" }}>THE</div>
+              <div className="brandComputing" style={{ 
+                fontSize: "1.3rem", 
+                fontWeight: 900,
+                color: "#c234a5",
+                letterSpacing: "0.12em",
+                lineHeight: "1"
+              }}>COMPUTING</div>
+              <div className="brandSociety" style={{ 
+                fontSize: "1.3rem", 
+                fontWeight: 900,
+                color: "#00d9ff",
+                letterSpacing: "0.12em",
+                lineHeight: "1"
+              }}>SOCIETY</div>
             </div>
-            <div className="brandingSubtitle">DEPT. OF COMPUTER SCIENCE</div>
+            <div className="brandingSubtitle" style={{ fontSize: "0.65rem", marginTop: "4px" }}>DEPT. OF COMPUTER SCIENCE</div>
           </div>
           <div className="headerGlow" />
         </motion.div>

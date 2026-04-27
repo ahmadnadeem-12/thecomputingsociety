@@ -11,6 +11,16 @@ router.get("/", async (req, res) => {
     res.json({ success: true, count: events.length, data: events });
 });
 
+// @route   GET /api/events/spotlight
+// @desc    Get only events for advertisement (with posters)
+// @access  Public
+router.get("/spotlight", async (req, res) => {
+    const events = await Event.find({ advertise: true, adPoster: { $ne: "" } })
+        .select("title adPoster advertise")
+        .sort({ date: 1 });
+    res.json({ success: true, data: events });
+});
+
 // @route   GET /api/events/:id
 // @desc    Get single event
 // @access  Public
@@ -31,6 +41,12 @@ router.post("/", protect, adminOnly, async (req, res) => {
     if (data.capacity && data.capacity > 0) {
         data.seatsRemaining = data.capacity;
     }
+    
+    // Single Hero enforcement
+    if (data.isHero) {
+        await Event.updateMany({}, { isHero: false });
+    }
+
     const event = await Event.create(data);
     res.status(201).json({ success: true, data: event });
 });
@@ -50,6 +66,11 @@ router.put("/:id", protect, adminOnly, async (req, res) => {
     if (data.capacity !== undefined && data.capacity !== oldEvent.capacity) {
         const diff = data.capacity - oldEvent.capacity;
         data.seatsRemaining = Math.max(0, (oldEvent.seatsRemaining || 0) + diff);
+    }
+
+    // Single Hero enforcement
+    if (data.isHero) {
+        await Event.updateMany({ _id: { $ne: req.params.id } }, { isHero: false });
     }
 
     const event = await Event.findByIdAndUpdate(req.params.id, data, {

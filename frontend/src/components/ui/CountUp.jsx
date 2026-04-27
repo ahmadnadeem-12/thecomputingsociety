@@ -19,12 +19,8 @@ export function CountUp({ value, duration = 2000 }) {
 
     const { number: targetNumber, suffix } = parseValue(value);
 
-    // Check if animation already happened this session
-    const sessionKey = "tcs_stats_animated";
-    const alreadyAnimated = sessionStorage.getItem(sessionKey) === "true";
-
-    const [count, setCount] = useState(alreadyAnimated ? targetNumber : 0);
-    const [hasAnimated, setHasAnimated] = useState(alreadyAnimated);
+    const [count, setCount] = useState(0);
+    const [hasAnimated, setHasAnimated] = useState(false);
     const ref = useRef(null);
 
     useEffect(() => {
@@ -36,7 +32,6 @@ export function CountUp({ value, duration = 2000 }) {
             (entries) => {
                 if (entries[0].isIntersecting && !hasAnimated) {
                     setHasAnimated(true);
-                    sessionStorage.setItem(sessionKey, "true");
                     animateCount();
                 }
             },

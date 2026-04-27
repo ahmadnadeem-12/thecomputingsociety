@@ -12,20 +12,32 @@ function fileToDataURL(file) {
     });
 }
 
-// Center crop and resize image
-async function processImage(dataUrl, maxSize = 512) {
+// Resize image while maintaining aspect ratio
+async function processImage(dataUrl, maxSize = 2048) {
     return new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
             const canvas = document.createElement("canvas");
-            const side = Math.min(img.width, img.height);
-            const sx = Math.floor((img.width - side) / 2);
-            const sy = Math.floor((img.height - side) / 2);
-            canvas.width = maxSize;
-            canvas.height = maxSize;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > maxSize) {
+                    height *= maxSize / width;
+                    width = maxSize;
+                }
+            } else {
+                if (height > maxSize) {
+                    width *= maxSize / height;
+                    height = maxSize;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
             const ctx = canvas.getContext("2d");
-            ctx.drawImage(img, sx, sy, side, side, 0, 0, maxSize, maxSize);
-            resolve(canvas.toDataURL("image/jpeg", 0.85));
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL("image/jpeg", 0.9));
         };
         img.src = dataUrl;
     });
@@ -131,11 +143,12 @@ export function ImageUploader({
                         src={preview}
                         alt="Preview"
                         style={{
-                            position: "absolute",
-                            inset: 0,
                             width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
+                            height: "auto",
+                            maxHeight: "100%",
+                            objectFit: "contain",
+                            display: "block",
+                            margin: "0 auto",
                             borderRadius: "inherit",
                         }}
                     />

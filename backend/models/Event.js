@@ -52,6 +52,22 @@ const eventSchema = new mongoose.Schema(
             trim: true,
             maxlength: [500, "Certificate description cannot exceed 500 characters"],
         },
+        adPoster: {
+            type: String, // Base64 or URL
+            default: "",
+        },
+        advertise: {
+            type: Boolean,
+            default: false,
+        },
+        registrationDeadline: {
+            type: String, // YYYY-MM-DD
+            default: "",
+        },
+        isHero: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,

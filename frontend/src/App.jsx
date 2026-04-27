@@ -7,6 +7,7 @@ import Footer from "./components/common/Footer";
 import Loader from "./components/common/Loader";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import AppRoutes from "./routes/AppRoutes";
+import EventSpotlight from "./components/ui/EventSpotlight";
 
 export default function App() {
   const [booting, setBooting] = useState(true);
@@ -44,8 +45,9 @@ export default function App() {
               </motion.div>
             </AnimatePresence>
           </div>
-          <Footer />
+          {location.pathname !== "/" && <Footer />}
         </main>
+        {location.pathname === "/" && <EventSpotlight />}
       </div>
     </ErrorBoundary>
   );

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
 import { api } from "../services/api";
@@ -10,6 +10,10 @@ import { downloadTicketPDF, downloadAllTicketsPDF, downloadCertificatePDF } from
 export default function Tickets() {
   const { user, isAuthed, logout } = useAuth();
   const nav = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const targetEventId = queryParams.get("eventId");
+
   const [events, setEvents] = useState([]);
   const [programs, setPrograms] = useState([]);
   const [myTickets, setMyTickets] = useState([]);
@@ -23,7 +27,7 @@ export default function Tickets() {
       fetchData();
       fetchMyTickets();
     }
-  }, [isAuthed]);
+  }, [isAuthed, targetEventId]); // Re-fetch or re-selection if target changes
 
   // Auto-dismiss success message
   useEffect(() => {
@@ -46,7 +50,10 @@ export default function Tickets() {
       setEvents(evData);
       setPrograms(prData);
       
-      if (evData.length > 0) {
+      // Select logic
+      if (targetEventId) {
+          setForm({ selectionType: "event", selectionId: targetEventId });
+      } else if (evData.length > 0) {
         setForm(f => ({ ...f, selectionType: "event", selectionId: evData[0]._id }));
       } else if (prData.length > 0) {
         setForm(f => ({ ...f, selectionType: "program", selectionId: prData[0]._id }));
@@ -232,8 +239,10 @@ export default function Tickets() {
                   >
                     {!events.length && !programs.length && <option value="">NO ACTIVE EVENTS AT THE MOMENT</option>}
                     <optgroup label="✨ MAJOR EVENTS" style={{ background: "#0a0f23", color: "var(--accent-cyan)", padding: "10px" }}>
-                      {events.length > 0 ? (
-                        events.map(e => <option key={e._id} value={`event:${e._id}`} style={{ background: "#0a0f23", color: "#fff" }}>{e.title}</option>)
+                      {events.filter(e => !e.registrationDeadline || new Date(e.registrationDeadline).setHours(23, 59, 59, 999) >= new Date()).length > 0 ? (
+                        events
+                          .filter(e => !e.registrationDeadline || new Date(e.registrationDeadline).setHours(23, 59, 59, 999) >= new Date())
+                          .map(e => <option key={e._id} value={`event:${e._id}`} style={{ background: "#0a0f23", color: "#fff" }}>{e.title}</option>)
                       ) : <option disabled>No active events</option>}
                     </optgroup>
                     <optgroup label="📚 TRAINING PROGRAMS" style={{ background: "#0a0f23", color: "var(--accent-cyan)", padding: "10px" }}>
@@ -246,15 +255,55 @@ export default function Tickets() {
                 </div>
               </div>
             </div>
+            
+            {/* Deadline Display */}
+            {form.selectionType === "event" && events.find(e => e._id === form.selectionId)?.registrationDeadline && (
+              <div style={{ 
+                marginTop: "2.5rem", 
+                padding: "1.2rem", 
+                borderRadius: "20px", 
+                background: "rgba(220, 39, 67, 0.05)", 
+                border: "1px solid rgba(220, 39, 67, 0.2)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.8rem",
+                animation: "pulse 2s infinite"
+              }}>
+                <span style={{ fontSize: "1.2rem" }}>⌛</span>
+                <span style={{ fontSize: "0.85rem", fontWeight: 800, color: "var(--accent-red)", letterSpacing: "1px" }}>
+                  REGISTRATION DEADLINE: {formatDate(events.find(e => e._id === form.selectionId).registrationDeadline)}
+                </span>
+              </div>
+            )}
 
-            <button 
-              className="btn btnPrimary" 
-              style={{ width: "100%", marginTop: "3.5rem", padding: "1.2rem", borderRadius: "20px", fontSize: "1.1rem", fontWeight: 900, textTransform: "uppercase", letterSpacing: "2px" }} 
-              onClick={onGenerate} 
-              disabled={isLoading}
-            >
-              {isLoading ? "⏳ SYNCING DEPLOYMENT..." : "🚀 GENERATE VERIFIED PASS"}
-            </button>
+            {(() => {
+              const selectedItem = form.selectionType === 'event' ? events.find(e => e._id === form.selectionId) : null;
+              const isDeadlinePassed = selectedItem?.registrationDeadline && new Date(selectedItem.registrationDeadline).setHours(23, 59, 59, 999) < new Date();
+              
+              if (isDeadlinePassed) {
+                return (
+                  <button 
+                    className="btn btnGhost" 
+                    style={{ width: "100%", marginTop: "2.5rem", padding: "1.2rem", borderRadius: "20px", fontSize: "1rem", fontWeight: 900, color: "var(--accent-red)", border: "2px dashed var(--accent-red)", cursor: "not-allowed" }} 
+                    disabled
+                  >
+                    🚫 REGISTRATION CLOSED (DEADLINE EXPIRED)
+                  </button>
+                );
+              }
+
+              return (
+                <button 
+                  className="btn btnPrimary" 
+                  style={{ width: "100%", marginTop: "3.5rem", padding: "1.2rem", borderRadius: "20px", fontSize: "1.1rem", fontWeight: 900, textTransform: "uppercase", letterSpacing: "2px" }} 
+                  onClick={onGenerate} 
+                  disabled={isLoading}
+                >
+                  {isLoading ? "⏳ SYNCING DEPLOYMENT..." : "🚀 GENERATE VERIFIED PASS"}
+                </button>
+              );
+            })()}
             {err && <div style={{ color: "#ff4d4d", marginTop: "1.5rem", textAlign: "center", fontWeight: 700, padding: "0.8rem", borderRadius: "12px", background: "rgba(255,77,77,0.15)" }}>{err}</div>}
           </div>
 

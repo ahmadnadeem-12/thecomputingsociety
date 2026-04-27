@@ -59,6 +59,15 @@ router.post("/", protect, async (req, res) => {
     if (eventId) {
         target = await Event.findById(eventId);
         if (!target) return res.status(404).json({ success: false, message: "Event not found" });
+        
+        // Check Deadline
+        if (target.registrationDeadline) {
+            const deadlineDate = new Date(target.registrationDeadline);
+            deadlineDate.setHours(23, 59, 59, 999);
+            if (deadlineDate < new Date()) {
+                return res.status(400).json({ success: false, message: "Registration for this event has been closed (Deadline passed)." });
+            }
+        }
     } else if (programId) {
         target = await Program.findById(programId);
         if (!target) return res.status(404).json({ success: false, message: "Program not found" });

@@ -259,32 +259,46 @@ textarea {
   position: fixed;
   top: 0;
   left: 0;
-  width: 280px; /* Slightly narrower for better fit on small phones */
+  width: 300px;
   height: 100vh;
   z-index: 9998;
-  background: #0a0510;
+  background: linear-gradient(165deg, #0a0510 0%, #1a0a25 50%, #050508 100%);
   flex-direction: column;
-  padding: 1.5rem; /* Standardized padding */
+  padding: 2rem 1.5rem;
   overflow-y: auto;
   overflow-x: hidden;
-  box-shadow: 4px 0 40px rgba(0, 0, 0, 0.8);
-  border-right: 1px solid rgba(194, 52, 165, 0.3);
+  box-shadow: 10px 0 50px rgba(0, 0, 0, 0.9);
+  border-right: 1px solid rgba(194, 52, 165, 0.2);
+  position: relative;
+}
+
+.mobileMenu::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(194, 52, 165, 0.15) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .mobileMenuClose {
   align-self: flex-end;
-  margin-bottom: 1rem;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  border: none;
+  margin-bottom: 1.5rem;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
   color: white;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.3s ease;
 }
 
 .mobileMenuLogo {
@@ -292,14 +306,21 @@ textarea {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
   width: 100%;
+}
+
+.mobileMenuLogo .logoCircle {
+  width: 85px !important;
+  height: 85px !important;
+  font-size: 1.4rem !important;
+  box-shadow: 0 0 30px rgba(194, 52, 165, 0.4), 0 10px 40px rgba(0, 0, 0, 0.5) !important;
 }
 
 .mobileMenuNav {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
   width: 100%;
   flex-grow: 1;
 }
@@ -307,25 +328,32 @@ textarea {
 .mobileNavLink {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.85rem 1.25rem;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 12px;
+  gap: 1.2rem;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 18px;
   color: #e8e0ed;
   text-decoration: none;
-  font-size: 0.95rem;
-  font-weight: 600;
-  transition: all 0.2s;
+  font-size: 1rem;
+  font-weight: 700;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.mobileNavLink:hover,
+.mobileNavLink:active {
+  transform: scale(0.97);
+}
+
 .mobileNavLink.active {
-  background: linear-gradient(135deg, rgba(220, 39, 67, 0.3), rgba(194, 52, 165, 0.3));
+  background: linear-gradient(135deg, rgba(220, 39, 67, 0.15), rgba(194, 52, 165, 0.25));
+  border-color: rgba(194, 52, 165, 0.4);
   color: white;
+  box-shadow: 0 8px 20px rgba(194, 52, 165, 0.2);
 }
 
 .mobileNavIcon {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
 }
 
 .mobileMenuFooter {
@@ -530,8 +558,9 @@ textarea {
 
 .sidebarHeader {
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  align-items: flex-end;
+  gap: 1.2rem;
+  padding-bottom: 0.5rem;
 }
 
 .logoCircle {
@@ -789,7 +818,7 @@ textarea {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding: 2rem 2.5rem;
+  padding: 1.25rem 2rem;
   overflow: hidden;
 }
 
@@ -1085,6 +1114,20 @@ textarea {
 
 .input::placeholder {
   color: var(--text-dim);
+}
+
+/* Date/Time Picker Accessibility */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+    padding: 2px;
+    opacity: 0.8;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="time"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
 }
 
 /* =========================================================
@@ -1541,6 +1584,44 @@ select optgroup {
    ENHANCED MOBILE RESPONSIVENESS
    ========================================================= */
 @media (max-width: 768px) {
+  .hamburgerBtn {
+    position: fixed;
+    top: 1.25rem;
+    left: 1.25rem;
+    z-index: 1000;
+    background: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    cursor: pointer;
+    padding: 10px;
+    transition: transform 0.3s ease;
+  }
+
+  .hamburgerBtn:hover {
+    transform: translateX(3px);
+  }
+
+  .hamLine {
+    height: 3px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #ff3366, #00ebff);
+    box-shadow: 0 0 15px rgba(255, 51, 102, 0.4);
+    transition: all 0.3s ease;
+  }
+
+  .line-1 { width: 28px; }
+  .line-2 { 
+    width: 20px; 
+    box-shadow: 0 0 15px rgba(0, 235, 255, 0.4);
+  }
+  .line-3 { width: 32px; }
+
+  .hamburgerBtn:hover .hamLine {
+    width: 32px;
+    box-shadow: 0 0 20px rgba(0, 235, 255, 0.6);
+  }
 
   /* Sidebar improvements */
   .sidebar {

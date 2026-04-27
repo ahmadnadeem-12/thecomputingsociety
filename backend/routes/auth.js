@@ -479,10 +479,7 @@ router.put("/users/:id/manual-verify", protect, adminOnly, async (req, res) => {
     targetUser.verificationTokenExpire = undefined;
     await targetUser.save();
 
-    await logAction(req, "USER_VERIFIED_MANUALLY", "User", targetUser._id, { 
-        targetId: targetUser._id, 
-        targetEmail: targetUser.email 
-    });
+    await logAction(req, "USER_VERIFIED_MANUALLY", "User", targetUser._id, `Manually verified user: ${targetUser.name} (${targetUser.email})`);
 
     res.json({ success: true, message: `User ${targetUser.name} verified manually.` });
 });

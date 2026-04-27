@@ -7,6 +7,7 @@ import { CountUp } from "../components/ui/CountUp";
 import { getHomeContent } from "../services/homeService";
 import { Skeleton, SkeletonText, SkeletonTitle, SkeletonCard, SkeletonButton, SkeletonPill } from "../components/ui/Skeleton";
 import SEOHead from "../components/common/SEOHead";
+import HeroSpotlight from "../components/ui/HeroSpotlight";
 import "../assets/styles/pages/home.css";
 
 // Simplified animations for better performance
@@ -89,47 +90,218 @@ export default function Home() {
       <motion.div initial="hidden" animate="visible" variants={fadeIn}>
         {/* Welcome Banner */}
         <div className="welcomeBanner">
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <div className="pill pillRed" style={{ display: "inline-block", marginBottom: "1rem" }}>
-              {heroBadge}
+          <div className="heroContentContainer" style={{ position: "relative", zIndex: 1, textAlign: "left" }}>
+            {/* Desktop Top Badge */}
+            <div className="desktopOnly heroSubtitleDesktop">
+              OFFICIAL SOCIETY • DEPT. OF COMPUTER SCIENCE • UAF
             </div>
 
-            <div className="welcomeTitle" style={{ fontSize: "3rem", lineHeight: 1.1 }}>
-              <span className="wordThe">{heroTitle?.line1}</span>{" "}
-              <span className="wordComputing">{heroTitle?.line2}</span>{" "}
-              <span className="wordSociety">{heroTitle?.line3}</span>
+            {/* Desktop Title - 3 Lines (Refined Weight 600) */}
+            <div className="heroTitle desktopOnly" style={{
+              fontSize: "clamp(3.5rem, 6vw, 4.8rem)",
+              lineHeight: "0.92",
+              marginBottom: "1.5rem",
+              fontWeight: "600",
+            }}>
+              <div style={{ color: "var(--accent-red)" }}>THE</div>
+              <div style={{ color: "var(--accent-pink)" }}>COMPUTING</div>
+              <div style={{ color: "#00d9ff", filter: "drop-shadow(0 0 15px rgba(0, 217, 255, 0.3))" }}>SOCIETY</div>
             </div>
 
-            <div className="welcomeSubtitle" style={{ maxWidth: 650, marginTop: "1rem" }}>
-              {heroDescription}
+            <div className="heroDescription desktopOnly" style={{
+              maxWidth: "550px",
+              textAlign: "left",
+              fontSize: "1.05rem",
+              lineHeight: "1.8",
+              color: "rgba(255,255,255,0.5)",
+              marginBottom: "1.5rem",
+              fontWeight: "500"
+            }}>
+              The official hub for Computer Science excellence at UAF.
+              We bridge the gap between academic learning and industry
+              demands through cutting-edge workshops, hackathons,
+              and a vibrant network of tech professionals.
             </div>
 
-            <div className="heroButtons">
-              <Link to="/events"><Button>Explore Events</Button></Link>
-              <Link to="/tickets"><Button variant="ghost">Get Tickets</Button></Link>
-              <Link to="/programs"><Button variant="ghost">View Programs</Button></Link>
+            {/* Mobile Majestic Version */}
+            <div className="heroBadge mobileOnly majesticBadgeMobile">
+              OFFICIAL SOCIETY • DEPT. OF COMPUTER SCIENCE • UAF
+            </div>
+            <div className="heroTitle mobileOnly majesticTitleMobile">
+              <span className="theText">The</span>
+              <span className="mainText">Computing Society</span>
+            </div>
+            <div className="heroDescription mobileOnly majesticDescMobile">
+              A community of innovators, problem solvers,<br />
+              and future tech leaders.
             </div>
 
-            {/* Stats with Count Animation */}
-            <div className="heroStats">
-              {(stats || []).map((s, i) => (
-                <div key={i} className="statItem">
-                  <div className="statNumber">
-                    <CountUp value={s.number} duration={2000} />
+            <div className="heroButtons desktopOnly" style={{ display: "flex", flexWrap: "nowrap", gap: "0.5rem", marginTop: "1.25rem", width: "100%", alignItems: "center" }}>
+              <Link to="/events" className="btnExplore" style={{ height: "40px", padding: "0 0.75rem", fontSize: "0.65rem", whiteSpace: "nowrap" }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                EXPLORE EVENTS
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: "3px" }}>
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </Link>
+
+              <Link to="/tickets" className="btnSecondary btnTickets" style={{ height: "40px", padding: "0 0.7rem", fontSize: "0.62rem", whiteSpace: "nowrap" }}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" /><path d="M13 5v2" /><path d="M13 17v2" /><path d="M13 11v2" />
+                </svg>
+                GET TICKETS
+              </Link>
+              <Link to="/programs" className="btnSecondary btnPrograms" style={{ height: "40px", padding: "0 0.7rem", fontSize: "0.62rem", whiteSpace: "nowrap" }}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
+                </svg>
+                VIEW PROGRAMS
+              </Link>
+            </div>
+
+            <div className="heroButtons mobileOnly" style={{ display: "flex", flexDirection: "column", gap: "0.8rem", width: "100%", marginTop: "2rem" }}>
+              <Link to="/events" style={{ width: '100%', textDecoration: "none" }}>
+                <button className="btnExplore" style={{ width: "100%" }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                  EXPLORE EVENTS
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: "auto" }}>
+                    <path d="M9 18l6-6-6-6" />
+                  </svg>
+                </button>
+              </Link>
+              <div className="sideBySide" style={{ display: "flex", gap: "0.7rem", width: "100%" }}>
+                <Link to="/tickets" style={{ flex: 1, textDecoration: "none" }}>
+                  <button className="btnSecondary" style={{ width: "100%", fontSize: "0.7rem" }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" /><path d="M13 5v2" /><path d="M13 17v2" /><path d="M13 11v2" />
+                    </svg>
+                    TICKETS
+                  </button>
+                </Link>
+                <Link to="/programs" style={{ flex: 1, textDecoration: "none" }}>
+                  <button className="btnSecondary" style={{ width: "100%", fontSize: "0.7rem" }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
+                    </svg>
+                    PROGRAMS
+                  </button>
+                </Link>
+              </div>
+            </div>
+
+            <div className="statsGrid desktopOnly">
+              {(stats || []).map((s, i) => {
+                const getIcon = (label) => {
+                  const l = label.toLowerCase();
+                  if (l.includes("event")) return (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  );
+                  if (l.includes("active") || l.includes("member")) return (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
+                    </svg>
+                  );
+                  if (l.includes("faculty") || l.includes("mentor")) return (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M22 10L12 5L2 10L12 15L22 10Z" />
+                      <path d="M6 12V17C6 17 8 20 12 20C16 20 18 17 18 17V12" />
+                    </svg>
+                  );
+                  return "🔥";
+                };
+                const getIconColor = (label) => {
+                  const l = label.toLowerCase();
+                  if (l.includes("event")) return "#ff3366";
+                  if (l.includes("active") || l.includes("member")) return "#00ebff";
+                  return "#c234a5";
+                };
+                const color = getIconColor(s.label);
+                return (
+                  <div key={i} className="statItem">
+                    <div className="statIcon" style={{ color: color }}>
+                      {getIcon(s.label)}
+                    </div>
+                    <div className="statNumber" style={{ color: color }}>
+                      <CountUp value={s.number} />+
+                    </div>
+                    <div className="statLabel">
+                      {s.label}
+                    </div>
                   </div>
-                  <div className="statLabel">{s.label}</div>
-                </div>
-              ))}
+                );
+              })}
             </div>
+
+          </div>
+
+          {/* New Event Spotlight Card */}
+          <div className="desktopOnly">
+            <HeroSpotlight />
+          </div>
+        </div>
+
+        {/* Mobile Stats Grid - Matching Desktop Aesthetic */}
+        <div className="mobileOnly" style={{ padding: "0 1rem", marginBottom: "2rem" }}>
+          <div className="statsGrid" style={{ width: "100%", maxWidth: "100%", marginTop: "2rem" }}>
+            {(stats || []).map((s, i) => {
+              const getIcon = (label) => {
+                const l = label.toLowerCase();
+                if (l.includes("event")) return (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                );
+                if (l.includes("active") || l.includes("member")) return (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
+                  </svg>
+                );
+                if (l.includes("faculty") || l.includes("mentor")) return (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 10L12 5L2 10L12 15L22 10Z" />
+                    <path d="M6 12V17C6 17 8 20 12 20C16 20 18 17 18 17V12" />
+                  </svg>
+                );
+                return "🔥";
+              };
+              const getIconColor = (label) => {
+                const l = label.toLowerCase();
+                if (l.includes("event")) return "#ff3366";
+                if (l.includes("active") || l.includes("member")) return "#00ebff";
+                return "#c234a5";
+              };
+              const color = getIconColor(s.label);
+              return (
+                <div key={i} className="statItem" style={{ flex: 1, minWidth: "80px" }}>
+                  <div className="statIcon" style={{ color: color, marginBottom: "0.5rem" }}>
+                    {getIcon(s.label)}
+                  </div>
+                  <div className="statNumber" style={{ color: color, fontSize: "1.4rem" }}><CountUp value={s.number} />+</div>
+                  <div className="statLabel" style={{ fontSize: "0.65rem", opacity: 0.6 }}>{s.label}</div>
+                </div>
+              );
+            })}
+          </div>
+          
+          {/* Hero Spotlight for Mobile */}
+          <div style={{ marginTop: "2rem" }}>
+             <HeroSpotlight />
           </div>
         </div>
 
         <div className="hr" />
 
-        {/* Notice Cards - Clickable */}
-        <div className="noticeGrid">
+        {/* Notice Cards - Desktop Version */}
+        <div className="noticeGrid desktopOnly">
           {(notices || []).map((n, index) => {
-            // Determine navigation path based on notice type
             const getPath = () => {
               const title = n.title?.toLowerCase() || "";
               if (title.includes("announcement")) return "/announcements";
@@ -138,18 +310,46 @@ export default function Home() {
               return n.link || "/";
             };
 
+            const getIcon = (title) => {
+              const t = title.toLowerCase();
+              if (t.includes("announcement")) return "📢";
+              if (t.includes("event")) return "🎤";
+              if (t.includes("ticket")) return "🎟️";
+              return n.icon || "🔔";
+            };
+
+            const getDotColor = (idx) => {
+              if (idx === 0) return "#ff3366";
+              if (idx === 1) return "#00ebff";
+              return "#00f5d4";
+            };
+
+            const getTimeAgo = (idx) => {
+              if (idx === 0) return "2h ago";
+              if (idx === 1) return "1d ago";
+              return "2d ago";
+            };
+
             return (
               <Link key={n.id || index} to={getPath()} style={{ textDecoration: "none" }}>
-                <div className="noticeCard" style={{ cursor: "pointer" }}>
+                <div className="noticeCard" style={{ borderColor: `${getDotColor(index)}44` }}>
                   <div className="noticeInner">
-                    <div className="noticeIcon" style={{ background: n.gradient }}>
-                      {n.icon}
+                    <div className="noticeHeader">
+                      <div className="noticeIcon" style={{ background: n.gradient, color: "#fff", border: `1px solid ${getDotColor(index)}` }}>
+                        {getIcon(n.title)}
+                      </div>
+                      <div className="noticeText">
+                        <div className="noticeTitle">{n.title}</div>
+                        <div className="noticeMeta">{n.meta}</div>
+                      </div>
+                      <div className="noticeTime">
+                        <div className="timeDot" style={{ background: getDotColor(index), boxShadow: `0 0 10px ${getDotColor(index)}` }} />
+                        {getTimeAgo(index)}
+                      </div>
                     </div>
-                    <div className="noticeTitle">{n.title}</div>
-                    <div className="noticeMeta">{n.meta}</div>
                     <div className="noticeActions">
-                      <span className="btn btnPrimary" style={{ padding: ".5rem 1rem", fontSize: ".78rem" }}>Open</span>
-                      <span className="btn btnGhost" style={{ padding: ".5rem 1rem", fontSize: ".78rem" }}>Details</span>
+                      <span className="btn btnNoticeOpen">Open</span>
+                      <span className="btn btnNoticeDetails">Details</span>
                     </div>
                   </div>
                 </div>
@@ -158,10 +358,93 @@ export default function Home() {
           })}
         </div>
 
+        {/* Notice Cards - Mobile Majestic Version */}
+        <div className="mobileNoticeList mobileOnly">
+          {(notices || []).map((n, index) => {
+            const getPath = () => {
+              const title = n.title?.toLowerCase() || "";
+              if (title.includes("announcement")) return "/announcements";
+              if (title.includes("event")) return "/events";
+              if (title.includes("ticket")) return "/tickets";
+              return n.link || "/";
+            };
+
+            const getMobileIcon = (title) => {
+              const t = title.toLowerCase();
+              if (t.includes("announcement")) return "📢";
+              if (t.includes("event")) return "🎤";
+              if (t.includes("ticket")) return "🎟️";
+              return n.icon || "🔔";
+            };
+
+            const getActionIcon = (title) => {
+              const t = title.toLowerCase();
+              if (t.includes("announcement")) return (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" />
+                </svg>
+              );
+              if (t.includes("event")) return (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+              );
+              return (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="9" width="20" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /><circle cx="12" cy="16" r="1" />
+                </svg>
+              );
+            };
+
+            // Hardcoded time-ago for mock, in real app this would come from backend
+            const getTimeAgo = (idx) => {
+              if (idx === 0) return "2h ago";
+              if (idx === 1) return "1d ago";
+              return "2d ago";
+            };
+
+            const getDotColor = (idx) => {
+              if (idx === 0) return "#ff3366";
+              if (idx === 1) return "#00ebff";
+              return "#00f5d4";
+            };
+
+            return (
+              <div key={n.id || index} className="mobileNoticeCard">
+                <div className="mobileNoticeHeader">
+                  <div className="mobileNoticeIconBox" style={{ background: n.gradient }}>
+                    {getMobileIcon(n.title)}
+                  </div>
+                  <div className="mobileNoticeTime">
+                    <div className="timeDot" style={{ background: getDotColor(index) }} />
+                    {getTimeAgo(index)}
+                  </div>
+                </div>
+
+                <div className="mobileNoticeTitle">{n.title}</div>
+                <div className="mobileNoticeMeta">{n.meta}</div>
+
+                <div className="mobileNoticeActions">
+                  <Link to={getPath()} className="mobileBtnOpen" style={{ background: n.gradient }}>
+                    {getActionIcon(n.title)} OPEN
+                  </Link>
+                  <Link to={getPath()} className="mobileBtnDetails">
+                    DETAILS
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 18l6-6-6-6" />
+                    </svg>
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+
         <div className="hr" />
 
-        {/* Features */}
-        <div>
+        {/* Features - Desktop Version */}
+        <div className="desktopOnly">
           <div className="sectionHeader" style={{ marginBottom: "1rem" }}>
             <div>
               <div className="sectionTitle" style={{ fontSize: "1.3rem" }}>What We Offer</div>
@@ -169,30 +452,209 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="featureGrid">
-            {(features || []).map((f, idx) => (
-              <div key={f.id || idx} className="featureCard">
-                <div className="featureIcon">{f.icon}</div>
-                <div className="featureTitle">{f.title}</div>
-                <div className="featureDesc">{f.desc}</div>
-              </div>
-            ))}
+          <div className="offeringsGrid">
+            {(features || []).map((f, idx) => {
+              const getFeatureIconAndColor = (title) => {
+                const t = title.toLowerCase();
+                if (t.includes("workshop")) return { icon: "🚀", grad: "linear-gradient(135deg, #FF3CAC, #784BA0, #2B86C5)" };
+                if (t.includes("competition")) return { icon: "🏆", grad: "linear-gradient(135deg, #667eea, #764ba2)" };
+                if (t.includes("hackathon")) return { icon: "💡", grad: "linear-gradient(135deg, #a18cd1, #fbc2eb)" };
+                if (t.includes("bootcamp")) return { icon: "🎯", grad: "linear-gradient(135deg, #21d4fd, #b721ff)" };
+                return { icon: "✨", grad: "linear-gradient(135deg, #8BC6EC, #9599E2)" };
+              };
+              const style = getFeatureIconAndColor(f.title);
+              
+              return (
+                <div key={f.id || idx} className="offeringCard">
+                  <div className="offeringIconBox" style={{ background: style.grad }}>
+                    {style.icon}
+                  </div>
+                  <div className="offeringContent">
+                    <div className="offeringTitle">{f.title}</div>
+                    <div className="offeringDesc">{f.desc}</div>
+                  </div>
+                  <div className="offeringArrow">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="7" y1="17" x2="17" y2="7"></line>
+                      <polyline points="7 7 17 7 17 17"></polyline>
+                    </svg>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        <div className="hr" />
+        {/* What We Offer - Mobile Version (Exactly as Image) */}
+        <div className="mobileOnly">
+          <h2 className="mobileSectionTitle">What We Offer</h2>
+          <p className="mobileSectionSubtitle">Programs designed to elevate your skills and accelerate your growth.</p>
+          <div className="mobileAccentLine" />
 
-        {/* Quick Links */}
-        <div style={{ textAlign: "center" }}>
-          <div className="sectionSubtitle" style={{ marginBottom: "1rem" }}>Quick Access</div>
-          <div className="quickLinks" style={{ justifyContent: "center" }}>
-            {(quickLinks || []).map((q, i) => (
-              <Link key={q.id || i} to={q.path} className="quickLink">
-                <span>{q.icon}</span> {q.label}
-              </Link>
-            ))}
+          <div className="mobileOfferList">
+            {(features || []).map((f, idx) => {
+              const getFeatureIconAndColor = (title) => {
+                const t = title.toLowerCase();
+                if (t.includes("workshop")) return { icon: "🚀", grad: "linear-gradient(135deg, #FF3CAC, #784BA0, #2B86C5)" };
+                if (t.includes("competition")) return { icon: "🏆", grad: "linear-gradient(135deg, #667eea, #764ba2)" };
+                if (t.includes("hackathon")) return { icon: "💡", grad: "linear-gradient(135deg, #a18cd1, #fbc2eb)" };
+                if (t.includes("bootcamp")) return { icon: "🎯", grad: "linear-gradient(135deg, #21d4fd, #b721ff)" };
+                return { icon: "✨", grad: "linear-gradient(135deg, #8BC6EC, #9599E2)" };
+              };
+              const style = getFeatureIconAndColor(f.title);
+
+              return (
+                <div key={f.id || idx} className="mobileOfferCard">
+                  <div className="mobileIconContainer" style={{ background: style.grad }}>
+                    {style.icon}
+                  </div>
+                  <div className="mobileTextContent">
+                    <div className="mobileOfferTitle">{f.title}</div>
+                    <div className="mobileOfferDesc">{f.desc}</div>
+                  </div>
+                  <div className="mobileChevron">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
+
+        <div className="hr desktopOnly" />
+
+        {/* Unified Quick Access & Footer Bar - Desktop */}
+        <div className="desktopOnly">
+          <div className="quickAccessFooterBar">
+            <div className="quickLabel">QUICK ACCESS</div>
+            <div className="barDivider"></div>
+            
+            <div className="quickLinksContainer">
+              {(quickLinks || []).map((q, i) => {
+                const get3DIcon = (label) => {
+                  const l = label.toLowerCase();
+                  if (l.includes("cabinet")) return "🏛️";
+                  if (l.includes("faculty")) return "🎓";
+                  if (l.includes("gallery")) return "📸";
+                  if (l.includes("admin")) return "🔐";
+                  return "🔗";
+                };
+                return (
+                  <React.Fragment key={q.id || i}>
+                    <Link to={q.path} className="quickLinkItem">
+                      <span className="quickIcon3D">{get3DIcon(q.label)}</span>
+                      {q.label}
+                    </Link>
+                    {i < quickLinks.length - 1 && <div className="barDivider"></div>}
+                  </React.Fragment>
+                );
+              })}
+            </div>
+
+            <div className="barFooterContent">
+              <div className="barFooterTitle">THE COMPUTING SOCIETY</div>
+              <div className="barFooterSub">Built with ❤️ for UAF • Final Year Project</div>
+              <div className="barFooterMeta">© 2025-26 Cabinet • Dept. of Computer Science</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Access - Mobile Version (Exactly as Image) */}
+        <div className="mobileOnly mobileQuickAccess">
+          <h3 className="mobileQuickHeader">QUICK ACCESS</h3>
+          <div className="mobileQuickList">
+            {(quickLinks || []).map((q, i) => {
+              // Custom SVG Icons with Gradients
+              const getQuickIcon = (label) => {
+                const l = label.toLowerCase();
+
+                if (l.includes("cabinet")) {
+                  return (
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="svgIcon">
+                      <defs>
+                        <linearGradient id="gradCabinet" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#c234a5" />
+                          <stop offset="100%" stopColor="#9b59b6" />
+                        </linearGradient>
+                      </defs>
+                      <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke="url(#gradCabinet)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M9 11C11.2091 11 13 9.20914 13 7C13 4.79086 11.2091 3 9 3C6.79086 3 5 4.79086 5 7C5 9.20914 6.79086 11 9 11Z" stroke="url(#gradCabinet)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M23 21V19C22.9993 18.1137 22.7044 17.2522 22.1614 16.5523C21.6184 15.8524 20.8581 15.3516 20 15.13" stroke="url(#gradCabinet)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89317 18.7122 8.75608 18.1676 9.45768C17.623 10.1593 16.8604 10.6597 16 10.88" stroke="url(#gradCabinet)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  );
+                }
+
+                if (l.includes("faculty")) {
+                  return (
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="svgIcon">
+                      <defs>
+                        <linearGradient id="gradFaculty" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#ff3366" />
+                          <stop offset="100%" stopColor="#dc2743" />
+                        </linearGradient>
+                      </defs>
+                      <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" fill="url(#gradFaculty)" opacity="0.15" />
+                      <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" stroke="url(#gradFaculty)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M12 8V12" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+                      <path d="M10 10H14" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+                    </svg>
+                  );
+                }
+
+                if (l.includes("gallery")) {
+                  return (
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="svgIcon">
+                      <defs>
+                        <linearGradient id="gradGallery" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#00ebff" />
+                          <stop offset="100%" stopColor="#c234a5" />
+                        </linearGradient>
+                      </defs>
+                      <rect x="3" y="3" width="18" height="18" rx="4" stroke="url(#gradGallery)" strokeWidth="2.5" />
+                      <circle cx="8.5" cy="8.5" r="1.5" fill="url(#gradGallery)" />
+                      <path d="M21 15L16 10L5 21" stroke="url(#gradGallery)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  );
+                }
+
+                if (l.includes("admin")) {
+                  return (
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="svgIcon">
+                      <defs>
+                        <linearGradient id="gradAdmin" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#ffd700" />
+                          <stop offset="100%" stopColor="#ff3366" />
+                        </linearGradient>
+                      </defs>
+                      <rect x="3" y="11" width="18" height="11" rx="3" stroke="url(#gradAdmin)" strokeWidth="2.5" />
+                      <path d="M7 11V7C7 5.67392 7.52678 4.40215 8.46447 3.46447C9.40215 2.52678 10.6739 2 12 2C13.3261 2 14.5979 2.52678 15.5355 3.46447C16.4732 4.40215 17 5.67392 17 7V11" stroke="url(#gradAdmin)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <circle cx="12" cy="16.5" r="1.5" fill="url(#gradAdmin)" />
+                    </svg>
+                  );
+                }
+
+                return <span>{q.icon || "🔗"}</span>;
+              };
+
+              return (
+                <Link key={q.id || i} to={q.path} className="mobileQuickCard">
+                  <span className="mobileQuickIcon">{getQuickIcon(q.label)}</span>
+                  <span className="mobileQuickLabel">{q.label}</span>
+                  <span className="mobileQuickChevron">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 18l6-6-6-6" />
+                    </svg>
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+
       </motion.div>
     </section>
   );

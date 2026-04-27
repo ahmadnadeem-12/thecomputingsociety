@@ -233,7 +233,27 @@ export default function UsersTab() {
                     </div>
                   </div>
 
-                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.2rem', cursor: 'pointer' }}>⋮</div>
+                  {!isAdmin && (
+                    <button 
+                      className="btn actionBtnDelete" 
+                      onClick={(e) => handleDelete(u._id, u.name, e)}
+                      disabled={deletingId === u._id}
+                      style={{ alignSelf: 'center' }}
+                      aria-label="Delete User"
+                    >
+                      {deletingId === u._id ? (
+                        <span className="loader-small"></span>
+                      ) : (
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M3 6h18"></path>
+                          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                        </svg>
+                      )}
+                    </button>
+                  )}
+
+                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.2rem', cursor: 'pointer', alignSelf: 'center' }}>⋮</div>
                 </div>
 
                 {!isAdmin && (
@@ -290,24 +310,6 @@ export default function UsersTab() {
                         </button>
                       </>
                     )}
-                    <button 
-                      className="btn" 
-                      style={{ 
-                        padding: '0.6rem', 
-                        background: 'rgba(255,77,77,0.05)', 
-                        border: '1px solid rgba(255,77,77,0.2)',
-                        color: '#ff4d4d',
-                        borderRadius: '10px',
-                        minWidth: '46px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                      onClick={(e) => handleDelete(u._id, u.name, e)}
-                      disabled={deletingId === u._id}
-                    >
-                      {deletingId === u._id ? "..." : "🗑️"}
-                    </button>
                   </div>
                 )}
               </div>
@@ -323,10 +325,11 @@ export default function UsersTab() {
       <style>{`
         .userCard {
           transform-origin: left;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .selectableCard:hover {
           border-color: var(--accent-pink) !important;
-          background: rgba(255,45,149,0.02) !important;
+          background: rgba(255,45,149,0.03) !important;
           transform: translateX(5px);
         }
         .selectedCard {
@@ -335,6 +338,44 @@ export default function UsersTab() {
         }
         .adminCard {
           opacity: 0.85;
+          border-color: rgba(255,255,255,0.05) !important;
+        }
+        .actionBtnDelete {
+          width: 44px;
+          height: 44px;
+          padding: 0 !important;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 77, 77, 0.08) !important;
+          border: 1.5px solid rgba(255, 77, 77, 0.2) !important;
+          color: #ff4d4d !important;
+          border-radius: 12px !important;
+          transition: all 0.2s ease !important;
+          box-shadow: 0 4px 12px rgba(255, 77, 77, 0.1);
+        }
+        .actionBtnDelete:hover:not(:disabled) {
+          background: #ff4d4d !important;
+          color: #fff !important;
+          border-color: #ff4d4d !important;
+          box-shadow: 0 0 20px rgba(255, 77, 77, 0.4);
+          transform: translateY(-2px);
+        }
+        .actionBtnDelete:active {
+          transform: scale(0.95);
+        }
+        .loader-small {
+          width: 18px;
+          height: 18px;
+          border: 2px solid currentColor;
+          border-bottom-color: transparent;
+          border-radius: 50%;
+          display: inline-block;
+          animation: rotation 1s linear infinite;
+        }
+        @keyframes rotation {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
         }
       `}</style>
     </div>

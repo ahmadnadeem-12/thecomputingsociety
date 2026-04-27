@@ -145,19 +145,31 @@ export default function Dashboard() {
 
   // Events
   const openEventCreate = () => {
-    setEditing({ title: "", date: "2025-12-31", time: "18:00", venue: "", status: "open", featured: false, capacity: 100, seatsRemaining: 100, tags: "", description: "", certificateDescription: "" });
+    setEditing({ title: "", date: new Date().toISOString().split("T")[0], time: "18:00", venue: "", status: "open", featured: false, advertise: false, capacity: 100, seatsRemaining: 100, tags: "", description: "", certificateDescription: "", adPoster: "", registrationDeadline: "" });
     setModalType("event");
     setModalOpen(true);
   };
 
-  const openEventEdit = (e) => {
-    setEditing({
-      ...e,
-      tags: Array.isArray(e.tags) ? e.tags.join(", ") : (e.tags || ""),
-      certificateDescription: e.certificateDescription || ""
-    });
+  const openEventEdit = async (e) => {
     setModalType("event");
     setModalOpen(true);
+    try {
+      const res = await api.get(`/events/${e._id}`);
+      const full = res.data.data;
+      setEditing({
+        ...full,
+        tags: Array.isArray(full.tags) ? full.tags.join(", ") : (full.tags || ""),
+        certificateDescription: full.certificateDescription || "",
+        isHero: full.isHero || false
+      });
+    } catch (err) {
+      console.error("Fetch Event Details Failed:", err);
+      setEditing({
+        ...e,
+        tags: Array.isArray(e.tags) ? e.tags.join(", ") : (e.tags || ""),
+        certificateDescription: e.certificateDescription || ""
+      });
+    }
   };
 
   const saveEvent = async () => {
@@ -496,11 +508,51 @@ export default function Dashboard() {
       <Modal open={modalOpen} title={getModalTitle()} onClose={() => setModalOpen(false)} maxWidth="720px">
         {/* Event Modal */}
         {modalType === "event" && editing && (
-          <div style={{ display: "grid", gap: ".7rem" }}>
-            <div><div className="label">Title</div><input className="input" value={editing.title} onChange={e => setEditing({ ...editing, title: e.target.value })} aria-label="Event title" /></div>
+          <div style={{ maxHeight: "75vh", overflowY: "auto", paddingRight: "0.8rem", paddingBottom: "1.5rem" }}>
+            <div style={{ display: "grid", gap: "1rem" }}>
+              <div><div className="label">Title</div><input className="input" value={editing.title} onChange={e => setEditing({ ...editing, title: e.target.value })} aria-label="Event title" /></div>
             <div className="formRow">
-              <div><div className="label">Date</div><input type="date" className="input" value={editing.date} onChange={e => setEditing({ ...editing, date: e.target.value })} aria-label="Event date" /></div>
-              <div><div className="label">Time</div><input type="time" className="input" value={editing.time} onChange={e => setEditing({ ...editing, time: e.target.value })} aria-label="Event time" /></div>
+              <div><div className="label">Event Date</div><input type="date" className="input" min={new Date().toISOString().split("T")[0]} value={editing.date} onChange={e => setEditing({ ...editing, date: e.target.value })} onClick={(e) => e.target.showPicker && e.target.showPicker()} aria-label="Event date" /></div>
+              <div>
+                <div className="label">Event Time</div>
+                <div style={{ display: "flex", gap: "0.4rem" }}>
+                  <select 
+                    className="input" 
+                    style={{ flex: 1 }}
+                    value={editing.time.split(":")[0]} 
+                    onChange={e => {
+                      const mins = editing.time.split(":")[1] || "00";
+                      setEditing({ ...editing, time: `${e.target.value}:${mins}` });
+                    }}
+                  >
+                    {Array.from({ length: 24 }).map((_, i) => {
+                      const h = i.toString().padStart(2, "0");
+                      const displayH = i === 0 ? "12 AM" : i < 12 ? `${i} AM` : i === 12 ? "12 PM" : `${i-12} PM`;
+                      return <option key={h} value={h}>{displayH}</option>;
+                    })}
+                  </select>
+                  <select 
+                    className="input" 
+                    style={{ flex: 1 }}
+                    value={editing.time.split(":")[1] || "00"} 
+                    onChange={e => {
+                      const hours = editing.time.split(":")[0] || "00";
+                      setEditing({ ...editing, time: `${hours}:${e.target.value}` });
+                    }}
+                  >
+                    {Array.from({ length: 60 }).map((_, i) => (
+                      <option key={i} value={i.toString().padStart(2, "0")}>
+                        {i.toString().padStart(2, "0")}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div>
+               <div className="label" style={{ color: "var(--accent-red)", fontWeight: 900 }}>⌛ Registration Deadline</div>
+               <input type="date" className="input" min={new Date().toISOString().split("T")[0]} max={editing.date} value={editing.registrationDeadline} onChange={e => setEditing({ ...editing, registrationDeadline: e.target.value })} onClick={(e) => e.target.showPicker && e.target.showPicker()} aria-label="Registration deadline" />
+               <div style={{ fontSize: ".7rem", color: "var(--text-muted)", marginTop: ".3rem" }}>Deadline cannot be later than the event date ({editing.date}).</div>
             </div>
             <div><div className="label">Venue</div><input className="input" value={editing.venue} onChange={e => setEditing({ ...editing, venue: e.target.value })} aria-label="Event venue" /></div>
             <div className="formRow">
@@ -511,15 +563,49 @@ export default function Dashboard() {
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
                 <input type="checkbox" id="featured" checked={editing.featured} onChange={e => setEditing({ ...editing, featured: e.target.checked })} />
-                <label htmlFor="featured" className="sectionSubtitle">Featured</label>
+                <label htmlFor="featured" className="sectionSubtitle">Highlight in Events</label>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
+                <input type="checkbox" id="advertise" checked={editing.advertise} onChange={e => setEditing({ ...editing, advertise: e.target.checked })} />
+                <label htmlFor="advertise" className="sectionSubtitle" style={{ color: "var(--accent-gold)", fontWeight: 900 }}>🚀 Activate Advertising</label>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
+                <input type="checkbox" id="isHero" checked={editing.isHero || false} onChange={e => setEditing({ ...editing, isHero: e.target.checked })} />
+                <label htmlFor="isHero" className="sectionSubtitle" style={{ color: "var(--accent-cyan)", fontWeight: 900 }}>🏆 Pin to Hero Section</label>
               </div>
             </div>
             <div><div className="label">Tags (comma separated)</div><input className="input" value={editing.tags || ""} onChange={e => setEditing({ ...editing, tags: e.target.value })} aria-label="Event tags" placeholder="e.g. Workshop, Tech, Social" /></div>
             <div><div className="label">Description</div><textarea className="input" style={{ minHeight: 80, borderRadius: 12 }} value={editing.description} onChange={e => setEditing({ ...editing, description: e.target.value })} aria-label="Event description" /></div>
             <div><div className="label">Certificate Description (Appears on certificates only)</div><textarea className="input" style={{ minHeight: 80, borderRadius: 12 }} value={editing.certificateDescription} onChange={e => setEditing({ ...editing, certificateDescription: e.target.value })} aria-label="Certificate description" placeholder="For participating in..." /></div>
-            <div style={{ display: "flex", gap: ".5rem", justifyContent: "flex-end" }}>
+            
+            {editing.advertise && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }} 
+                animate={{ opacity: 1, y: 0 }}
+                style={{ padding: "1.2rem", background: "rgba(255,215,0,0.05)", border: "1px solid rgba(255,215,0,0.2)", borderRadius: "20px", marginTop: ".5rem" }}
+              >
+                <div style={{ fontSize: "0.85rem", fontWeight: 950, color: "var(--accent-gold)", marginBottom: "1rem", display: "flex", alignItems: "center", gap: ".5rem" }}>
+                  ✨ UPLOAD ADVERTISEMENT POSTER
+                </div>
+                <div style={{ maxWidth: "280px", margin: "0 auto" }}>
+                  <ImageUploader 
+                    value={editing.adPoster} 
+                    onChange={(url) => setEditing({ ...editing, adPoster: url })} 
+                    placeholder="Drop Ad Poster Here" 
+                    aspectRatio="3/4" 
+                    maxSize={2048} 
+                  />
+                </div>
+                <div style={{ fontSize: ".7rem", color: "var(--text-muted)", textAlign: "center", marginTop: "0.8rem", lineHeight: 1.4 }}>
+                  This poster will appear as a <b>Floating Popup</b> on the Home Page to drive registrations.
+                </div>
+              </motion.div>
+            )}
+
+            <div style={{ display: "flex", gap: ".5rem", justifyContent: "flex-end", marginTop: "1rem", position: "sticky", bottom: 0, background: "var(--modal-bg)", padding: "10px 0", zIndex: 10 }}>
               <button className="btn btnGhost" onClick={() => setModalOpen(false)}>Cancel</button>
               <button className="btn btnPrimary" onClick={saveEvent}>Save</button>
+            </div>
             </div>
           </div>
         )}
