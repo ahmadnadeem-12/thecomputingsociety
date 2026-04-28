@@ -363,7 +363,7 @@
   margin-top: 1.5rem;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .offeringsGrid {
     grid-template-columns: 1fr;
   }
@@ -618,13 +618,17 @@
    MAJESTIC RESPONSIVE CORE 
    ========================================================= */
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .welcomeBanner {
     grid-template-columns: 1fr;
-    gap: 3rem;
+    gap: 2rem;
     text-align: center;
     justify-items: center;
-    padding: 4rem 2rem;
+    padding: 1rem 0.5rem 1rem !important;
+    margin-top: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
   }
 }
 
@@ -638,13 +642,13 @@
   .statsGrid {
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
-    gap: 0 !important;
-    padding: 2rem 1rem !important;
+    gap: 0.3rem !important;
+    padding: 0.85rem 0.4rem !important;
     background: rgba(15, 8, 25, 0.6) !important;
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 24px;
-    margin-top: 2.5rem;
+    border-radius: 20px;
+    margin-top: 0.5rem !important;
     align-items: center;
     max-width: 100%;
   }
@@ -1291,77 +1295,7 @@
    SMALL MOBILE OPTIMIZATIONS (Under 480px)
    ========================================================= */
 @media (max-width: 480px) {
-  .welcomeBanner {
-    padding: 0.75rem 0.45rem 0.75rem !important; 
-    margin-top: 0 !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    overflow: hidden !important;
-  }
-
-  .majesticBadgeMobile {
-    padding: 0.45rem 1rem !important;
-    font-size: clamp(0.5rem, 2.5vw, 0.58rem) !important;
-    margin-bottom: 1.2rem !important;
-    width: auto !important;
-    display: inline-flex !important;
-    white-space: nowrap !important;
-    letter-spacing: 0.02em !important;
-  }
-
-  .theText {
-    font-size: 1.9rem !important;
-    line-height: 1 !important;
-  }
-
-  .mainText {
-    font-size: clamp(1.7rem, 9vw, 2.4rem) !important; /* Scaled up slightly for 360px */
-    line-height: 1.1 !important;
-    display: block !important;
-    white-space: normal !important; /* Allow wrapping to prevent clipping */
-    word-wrap: break-word !important;
-    letter-spacing: -0.01em !important;
-    padding-bottom: 0.1em !important;
-  }
-
-  .majesticDescMobile {
-    font-size: 0.88rem !important;
-    padding: 0 !important;
-    margin-bottom: 1.5rem !important;
-    line-height: 1.5 !important;
-    color: rgba(255, 255, 255, 0.6) !important;
-  }
-
-  .heroButtons {
-    gap: 0.6rem !important;
-    width: 100% !important;
-    flex-wrap: nowrap !important;
-  }
-
-  .heroButtons .btn {
-    font-size: 0.7rem !important;
-    padding: 0.55rem 0.8rem !important;
-    height: 48px !important;
-    flex: 1 !important;
-    white-space: nowrap !important;
-  }
-
-  .statsGrid {
-    padding: 0.75rem 0.25rem !important;
-    border-radius: 18px !important;
-    gap: 0.3rem !important; 
-    margin-top: 0.1rem !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-
-  .statNumber {
-    font-size: 1.4rem !important;
-  }
-
-  .statLabel {
-    font-size: 0.62rem !important;
-    letter-spacing: 0.02em !important;
-    white-space: nowrap !important;
+  .mobileMenu {
+    width: 260px;
   }
 }

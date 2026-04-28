@@ -173,7 +173,7 @@ textarea {
   position: relative;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .layout {
     grid-template-columns: 1fr;
   }
@@ -442,12 +442,43 @@ textarea {
 }
 
 
-/* ===== MOBILE & TABLET RESPONSIVE ===== */
-@media (max-width: 1024px) {
+/* ===== MOBILE & TABLET RESPONSIVE (Up to 1200px) ===== */
+@media (max-width: 1200px) {
   .hamburgerBtn {
     display: flex;
+    flex-direction: column; /* Vertical stack for lines */
+    gap: 6px;
     align-items: center;
     justify-content: center;
+    width: 44px;
+    height: 44px;
+    top: 8px !important;
+    left: 8px !important;
+    border-radius: 12px;
+    background: rgba(15, 8, 25, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px) !important;
+    z-index: 9999;
+  }
+
+  .hamLine {
+    height: 3px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #ff3366, #00ebff);
+    box-shadow: 0 0 15px rgba(255, 51, 102, 0.4);
+    transition: all 0.3s ease;
+  }
+
+  .line-1 { width: 26px; }
+  .line-2 { 
+    width: 18px; 
+    box-shadow: 0 0 15px rgba(0, 235, 255, 0.4);
+  }
+  .line-3 { width: 30px; }
+
+  .hamburgerBtn:hover .hamLine {
+    width: 30px;
+    box-shadow: 0 0 20px rgba(0, 235, 255, 0.6);
   }
 
   .mobileMenu {
@@ -464,12 +495,12 @@ textarea {
 
   .layout {
     grid-template-columns: 1fr;
-    padding-top: 50px; /* Reduced and removed !important to allow small-mobile override */
+    padding-top: 15px !important; /* Minimal gap as requested for all mobile */
     min-width: 0;
   }
 
   .main {
-    padding: 1rem 0.75rem 2rem;
+    padding: 0.25rem 0.15rem 1.2rem; /* Clean edge-to-edge layout */
   }
 
   .sidebar::before {
@@ -478,8 +509,8 @@ textarea {
 
   /* Section */
   .section {
-    padding: 1.25rem;
-    border-radius: 16px;
+    padding: 0.8rem;
+    border-radius: 14px;
   }
 
   .sectionHeader {
@@ -570,33 +601,8 @@ textarea {
     gap: 0.5rem;
     text-align: center;
   }
-}
-
-/* ===== SMALL MOBILE (320-480) ===== */
-@media (max-width: 480px) {
-  .hamburgerBtn {
-    width: 42px;
-    height: 42px;
-    top: 6px !important;
-    left: 6px !important;
-    font-size: 1.3rem;
-    border-radius: 12px;
-    background: rgba(15, 8, 25, 0.8) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    backdrop-filter: blur(10px) !important;
-  }
-
   .mobileMenu {
     width: 260px;
-  }
-
-  .layout {
-    padding-top: 15px !important; /* Minimal but clean gap */
-    margin-top: 0 !important;
-  }
-
-  .main {
-    padding: 0.25rem 0.15rem 1.2rem; /* Restored slight top padding */
   }
 
   .section {
@@ -1641,174 +1647,7 @@ select optgroup {
 /* =========================================================
    ENHANCED MOBILE RESPONSIVENESS
    ========================================================= */
-@media (max-width: 768px) {
-  .hamburgerBtn {
-    position: fixed;
-    top: 1.25rem;
-    left: 1.25rem;
-    z-index: 1000;
-    background: transparent;
-    border: none;
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-    cursor: pointer;
-    padding: 10px;
-    transition: transform 0.3s ease;
-  }
-
-  .hamburgerBtn:hover {
-    transform: translateX(3px);
-  }
-
-  .hamLine {
-    height: 3px;
-    border-radius: 10px;
-    background: linear-gradient(90deg, #ff3366, #00ebff);
-    box-shadow: 0 0 15px rgba(255, 51, 102, 0.4);
-    transition: all 0.3s ease;
-  }
-
-  .line-1 { width: 28px; }
-  .line-2 { 
-    width: 20px; 
-    box-shadow: 0 0 15px rgba(0, 235, 255, 0.4);
-  }
-  .line-3 { width: 32px; }
-
-  .hamburgerBtn:hover .hamLine {
-    width: 32px;
-    box-shadow: 0 0 20px rgba(0, 235, 255, 0.6);
-  }
-
-  /* Sidebar improvements */
-  .sidebar {
-    padding: 0.75rem 1rem !important;
-  }
-
-  .sidebarHeader {
-    padding: 0.75rem !important;
-    margin: 0 0 0.75rem !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 0.75rem !important;
-  }
-
-  .logoCircle {
-    width: 50px !important;
-    height: 50px !important;
-    font-size: 0.9rem !important;
-  }
-
-  .nav {
-    overflow-x: auto !important;
-    flex-wrap: nowrap !important;
-    gap: 0.35rem !important;
-    padding-bottom: 0.5rem !important;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .navLink {
-    padding: 1.25rem 1.5rem 1rem !important;
-    font-size: 0.8rem !important;
-    flex-shrink: 0 !important;
-  }
-
-  /* Section improvements */
-  .section {
-    padding: 1rem !important;
-    border-radius: var(--radius-md) !important;
-  }
-
-  .sectionTitle {
-    font-size: 1.5rem !important;
-    text-align: center;
-    width: 100%;
-  }
-
-  .sectionSubtitle {
-    font-size: 0.85rem !important;
-    text-align: center;
-    width: 100%;
-  }
-
-  .sectionHeader {
-    text-align: center;
-    gap: 1rem !important;
-    padding-bottom: 1.5rem !important;
-  }
-
-/* --- Custom Checkbox --- */
-.tcs-check-wrap {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  user-select: none;
-}
-.tcs-checkbox {
-  appearance: none;
-  width: 18px;
-  height: 18px;
-  border: 1.5px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.05);
-  cursor: pointer;
-  position: relative;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-}
-.tcs-checkbox:checked {
-  background: var(--accent-pink);
-  border-color: var(--accent-pink);
-  box-shadow: 0 0 10px rgba(194, 52, 165, 0.4);
-}
-.tcs-checkbox:checked::after {
-  content: "✓";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 900;
-}
-.tcs-checkbox:hover { border-color: var(--accent-cyan); }
-
-  /* Responsive Utils */
-  .grid-2-1 { grid-template-columns: 1fr !important; }
-  .grid-3-1 { grid-template-columns: 1fr !important; }
-  .grid-4-1 { grid-template-columns: 1fr !important; }
-  
-  .flex-stack { flex-direction: column !important; }
-  .text-center-mobile { text-align: center !important; }
-
-  /* Card Grid */
-  .cardGrid {
-    grid-template-columns: 1fr !important;
-    gap: 1rem !important;
-  }
-
-  /* Notice Grid */
-  .noticeGrid {
-    grid-template-columns: 1fr !important;
-  }
-
-  /* Feature Grid */
-  .featureGrid {
-    grid-template-columns: 1fr !important;
-  }
-
-  /* Quick Links */
-  .quickLinks {
-    flex-direction: column !important;
-    gap: 0.5rem !important;
-  }
-
-  .quickLink {
-    width: 100% !important;
-    justify-content: center !important;
-  }
-}
+/* Consolidated into 1200px query */
 
 /* Very small screens */
 @media (max-width: 420px) {
