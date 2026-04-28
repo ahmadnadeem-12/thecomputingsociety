@@ -1292,7 +1292,7 @@
    ========================================================= */
 @media (max-width: 480px) {
   .welcomeBanner {
-    padding: 1.25rem 1rem 1rem !important; /* Reduced side padding */
+    padding: 0.75rem 0.45rem 0.75rem !important; 
     margin-top: 0 !important;
     width: 100% !important;
     box-sizing: border-box !important;
@@ -1315,7 +1315,7 @@
   }
 
   .mainText {
-    font-size: clamp(1.6rem, 8.5vw, 2.2rem) !important; /* Scaled down for 360px */
+    font-size: clamp(1.7rem, 9vw, 2.4rem) !important; /* Scaled up slightly for 360px */
     line-height: 1.1 !important;
     display: block !important;
     white-space: normal !important; /* Allow wrapping to prevent clipping */
@@ -1347,10 +1347,10 @@
   }
 
   .statsGrid {
-    padding: 1rem 0.5rem !important;
-    border-radius: 20px !important;
-    gap: 0.5rem !important; /* Small gap for items */
-    margin-top: 0.2rem !important;
+    padding: 0.75rem 0.25rem !important;
+    border-radius: 18px !important;
+    gap: 0.3rem !important; 
+    margin-top: 0.1rem !important;
     width: 100% !important;
     box-sizing: border-box !important;
   }

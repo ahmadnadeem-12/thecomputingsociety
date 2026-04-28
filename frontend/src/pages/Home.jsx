@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "../components/ui/Button";
 import { CountUp } from "../components/ui/CountUp";
@@ -8,6 +8,7 @@ import { getHomeContent } from "../services/homeService";
 import { Skeleton, SkeletonText, SkeletonTitle, SkeletonCard, SkeletonButton, SkeletonPill } from "../components/ui/Skeleton";
 import SEOHead from "../components/common/SEOHead";
 import HeroSpotlight from "../components/ui/HeroSpotlight";
+import { useAuth } from "../hooks/useAuth";
 import "../assets/styles/pages/home.css";
 
 // Simplified animations for better performance
@@ -17,6 +18,7 @@ const fadeIn = {
 };
 
 export default function Home() {
+  const navigate = useNavigate();
   const [content, setContent] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -36,7 +38,34 @@ export default function Home() {
     return () => { cancelled = true; };
   }, []);
 
-  const { heroTitle, heroBadge, heroDescription, stats, notices, features, quickLinks } = content;
+  const { heroTitle, heroBadge, heroDescription, stats, notices, features, quickLinks: rawQuickLinks } = content;
+  const { isAuthed, isAdmin, logout } = useAuth();
+
+  // Dynamic quick links based on auth
+  const quickLinks = (rawQuickLinks || []).filter(link => {
+    // Hide Admin for regular users if they are logged in
+    if (link.label?.toLowerCase().includes("admin") && isAuthed && !isAdmin) return false;
+    return true;
+  }).map(link => {
+    // Change Admin to Logout for regular users (if desired by logic) or just add Logout
+    return link;
+  });
+
+  // If authed, we might want to add Logout to quick links too if user wants
+  // The user said: "un ke jagha par logout ka ajaye button"
+  const finalQuickLinks = [...quickLinks];
+  const adminIdx = finalQuickLinks.findIndex(l => l.label?.toLowerCase().includes("admin"));
+  
+  if (isAuthed) {
+    if (!isAdmin && adminIdx !== -1) {
+      // Replace Admin with Logout for simple user
+      finalQuickLinks[adminIdx] = { id: "logout", label: "Logout", path: "#", isLogout: true };
+    } else if (isAdmin) {
+      // Keep Admin, but maybe add Logout below? User said "admin ka b wahin raha or us k nicha he logout"
+      // But for Quick Access (usually a grid/list), adding at the end is safer.
+      finalQuickLinks.push({ id: "logout", label: "Logout", path: "#", isLogout: true });
+    }
+  }
 
   if (loading) {
     return (
@@ -532,22 +561,39 @@ export default function Home() {
             <div className="barDivider"></div>
             
             <div className="quickLinksContainer">
-              {(quickLinks || []).map((q, i) => {
-                const get3DIcon = (label) => {
-                  const l = label.toLowerCase();
-                  if (l.includes("cabinet")) return "🏛️";
-                  if (l.includes("faculty")) return "🎓";
-                  if (l.includes("gallery")) return "📸";
-                  if (l.includes("admin")) return "🔐";
-                  return "🔗";
-                };
+              {(finalQuickLinks || []).map((q, i) => {
+                const icon3D = q.label ? (
+                  q.label.toLowerCase().includes("cabinet") ? "🏛️" :
+                  q.label.toLowerCase().includes("faculty") ? "🎓" :
+                  q.label.toLowerCase().includes("gallery") ? "📸" :
+                  q.label.toLowerCase().includes("admin") ? "🔐" : "🔗"
+                ) : "🔗";
+
+                if (q.isLogout) {
+                  return (
+                    <button 
+                      type="button"
+                      key="logout-desktop" 
+                      onClick={() => {
+                        logout();
+                        navigate("/");
+                      }}
+                      className="quickLinkItem"
+                      style={{ background: "none", border: "none", cursor: "pointer", color: "#ff3366", font: "inherit", display: "flex", alignItems: "center", gap: "0.5rem" }}
+                    >
+                      <span className="quickIcon3D">🚪</span>
+                      Logout
+                    </button>
+                  );
+                }
+
                 return (
                   <React.Fragment key={q.id || i}>
                     <Link to={q.path} className="quickLinkItem">
-                      <span className="quickIcon3D">{get3DIcon(q.label)}</span>
+                      <span className="quickIcon3D">{icon3D}</span>
                       {q.label}
                     </Link>
-                    {i < quickLinks.length - 1 && <div className="barDivider"></div>}
+                    {i < finalQuickLinks.length - 1 && <div className="barDivider"></div>}
                   </React.Fragment>
                 );
               })}
@@ -565,12 +611,11 @@ export default function Home() {
         <div className="mobileOnly mobileQuickAccess">
           <h3 className="mobileQuickHeader">QUICK ACCESS</h3>
           <div className="mobileQuickList">
-            {(quickLinks || []).map((q, i) => {
-              // Custom SVG Icons with Gradients
-              const getQuickIcon = (label) => {
-                const l = label.toLowerCase();
-
-                if (l.includes("cabinet")) {
+            {(finalQuickLinks || []).map((q, i) => {
+              const label = q.label?.toLowerCase() || "";
+              
+              const getMobileIconSVG = () => {
+                if (label.includes("cabinet")) {
                   return (
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="svgIcon">
                       <defs>
@@ -586,8 +631,7 @@ export default function Home() {
                     </svg>
                   );
                 }
-
-                if (l.includes("faculty")) {
+                if (label.includes("faculty")) {
                   return (
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="svgIcon">
                       <defs>
@@ -603,8 +647,7 @@ export default function Home() {
                     </svg>
                   );
                 }
-
-                if (l.includes("gallery")) {
+                if (label.includes("gallery")) {
                   return (
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="svgIcon">
                       <defs>
@@ -619,8 +662,7 @@ export default function Home() {
                     </svg>
                   );
                 }
-
-                if (l.includes("admin")) {
+                if (label.includes("admin")) {
                   return (
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="svgIcon">
                       <defs>
@@ -635,13 +677,32 @@ export default function Home() {
                     </svg>
                   );
                 }
-
                 return <span>{q.icon || "🔗"}</span>;
               };
 
-              return (
+              return q.isLogout ? (
+                <button 
+                  type="button"
+                  key="logout-mobile" 
+                  onClick={() => {
+                    logout();
+                    navigate("/");
+                  }}
+                  className="logoutBtn"
+                  style={{ width: "100%", textAlign: "left" }}
+                >
+                  <span className="mobileQuickIcon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="svgIcon">
+                      <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9" stroke="#ff3366" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M16 17L21 12L16 7" stroke="#ff3366" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M21 12H9" stroke="#ff3366" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                  <span className="mobileQuickLabel" style={{ color: "#ff3366" }}>Logout</span>
+                </button>
+              ) : (
                 <Link key={q.id || i} to={q.path} className="mobileQuickCard">
-                  <span className="mobileQuickIcon">{getQuickIcon(q.label)}</span>
+                  <span className="mobileQuickIcon">{getMobileIconSVG()}</span>
                   <span className="mobileQuickLabel">{q.label}</span>
                   <span className="mobileQuickChevron">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

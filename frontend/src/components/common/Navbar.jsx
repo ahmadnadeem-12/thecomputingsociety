@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../hooks/useAuth";
 
@@ -30,27 +30,41 @@ const itemVariants = {
 };
 
 export default function Navbar() {
-  const { isAuthed, isAdmin, loading } = useAuth();
+  const { isAuthed, isAdmin, loading, user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  if (loading) return null;
 
   // Dynamic nav items based on auth
-  const navItems = NAV_ITEMS.map(item => {
+  const baseNavItems = NAV_ITEMS.filter(item => {
+    // If logged in as regular user, hide Admin
+    if (item.key === "admin" && isAuthed && !isAdmin) return false;
+    return true;
+  }).map(item => {
+    // If admin, update label
     if (item.key === "admin" && isAuthed && isAdmin) {
       return { ...item, label: "Admin Panel", path: "/admin/dashboard", icon: "🛠️" };
     }
     return item;
   });
 
-  // Insert Profile link ONLY if authed AND verified
-  const { user } = useAuth();
   const isVerified = user?.isVerified || isAdmin;
+  
+  // Build the final nav list
+  const filteredNavItems = [...baseNavItems];
 
   if (isAuthed && isVerified) {
-    const ticketsIdx = navItems.findIndex(i => i.key === "tickets");
-    navItems.splice(ticketsIdx + 1, 0, { key: "profile", label: "My Profile", path: "/profile", icon: "👤" });
+    const ticketsIdx = filteredNavItems.findIndex(i => i.key === "tickets");
+    if (ticketsIdx !== -1) {
+      filteredNavItems.splice(ticketsIdx + 1, 0, { key: "profile", label: "My Profile", path: "/profile", icon: "👤" });
+    }
   }
 
-  const filteredNavItems = navItems;
+  // Add Logout at the end if authed
+  if (isAuthed) {
+    filteredNavItems.push({ key: "logout", label: "Logout", path: "#", icon: "🚪", isLogout: true });
+  }
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
@@ -101,36 +115,25 @@ export default function Navbar() {
               exit={{ x: -280, opacity: 0 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
             >
-              <button 
-                className="mobileMenuClose" 
-                onClick={() => setMobileMenuOpen(false)}
-                aria-label="Close menu"
-              >
-                ✕
-              </button>
+              {/* Header with Close Button and Centered Logo */}
+              <div className="mobileMenuHeader">
+                <button 
+                  className="mobileMenuClose" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  aria-label="Close menu"
+                >
+                  ✕
+                </button>
 
-              {/* Logo */}
-              <div className="mobileMenuLogo">
-                <div className="logoCircle" style={{ width: 65, height: 65 }}>
-                  <span className="logoText" style={{ fontSize: "1.1rem" }}>TCS</span>
-                </div>
-                <div style={{ marginTop: "0.25rem", textAlign: "center" }}>
-                  <div style={{ fontSize: "1rem", fontWeight: 950, color: "#ff3366", letterSpacing: "0.1rem", lineHeight: 1 }}>THE</div>
-                  <div style={{ 
-                    fontSize: "1rem", 
-                    fontWeight: 950, 
-                    color: "#c234a5",
-                    letterSpacing: "0.02em",
-                    lineHeight: 1,
-                    margin: "1px 0"
-                  }}>COMPUTING</div>
-                  <div style={{ 
-                    fontSize: "1rem", 
-                    fontWeight: 950, 
-                    color: "#00d9ff",
-                    letterSpacing: "0.02em",
-                    lineHeight: 1
-                  }}>SOCIETY</div>
+                <div className="mobileMenuLogo">
+                  <div className="logoCircle" style={{ width: 68, height: 68 }}>
+                    <span className="logoText" style={{ fontSize: "1.1rem" }}>TCS</span>
+                  </div>
+                  <div className="mobileMenuBranding">
+                    <div className="brandingWord wordThe">THE</div>
+                    <div className="brandingWord wordComputing">COMPUTING</div>
+                    <div className="brandingWord wordSociety">SOCIETY</div>
+                  </div>
                 </div>
               </div>
 
@@ -139,19 +142,32 @@ export default function Navbar() {
                 {filteredNavItems.map((item, idx) => (
                   <motion.div
                     key={item.key}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.05 }}
+                    variants={itemVariants}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    <NavLink
-                      to={item.path}
-                      className={({ isActive }) => `mobileNavLink ${isActive ? "active" : ""}`}
-                      end={item.path === "/"}
-                      onClick={handleNavClick}
-                    >
-                      <span className="mobileNavIcon">{item.icon}</span>
-                      <span>{item.label}</span>
-                    </NavLink>
+                    {item.isLogout ? (
+                      <button 
+                        type="button"
+                        className="logoutBtn" 
+                        onClick={() => {
+                          logout();
+                          navigate("/");
+                        }}
+                      >
+                        <span className="mobileNavIcon">🚪</span>
+                        Logout
+                      </button>
+                    ) : (
+                      <NavLink
+                        to={item.path}
+                        className={({ isActive }) => `mobileNavLink ${isActive ? "active" : ""}`}
+                        end={item.path === "/"}
+                        onClick={handleNavClick}
+                      >
+                        <span className="mobileNavIcon">{item.icon}</span>
+                        <span>{item.label}</span>
+                      </NavLink>
+                    )}
                   </motion.div>
                 ))}
               </nav>
@@ -213,14 +229,29 @@ export default function Navbar() {
               whileHover={{ x: 4 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <NavLink
-                to={item.path}
-                className={({ isActive }) => `navLink ${isActive ? "navLinkActive" : ""}`}
-                end={item.path === "/"}
-              >
-                <span style={{ fontSize: "1.25rem" }}>{item.icon}</span>
-                <span className="navLabel">{item.label}</span>
-              </NavLink>
+              {item.isLogout ? (
+                <button
+                  type="button"
+                  className="navLink logoutBtnSidebar"
+                  onClick={() => {
+                    logout();
+                    navigate("/");
+                  }}
+                  style={{ width: "100%", textAlign: "left", cursor: "pointer", border: "none", background: "none" }}
+                >
+                  <span style={{ fontSize: "1.25rem" }}>{item.icon}</span>
+                  <span className="navLabel">{item.label}</span>
+                </button>
+              ) : (
+                <NavLink
+                  to={item.path}
+                  className={({ isActive }) => `navLink ${isActive ? "navLinkActive" : ""}`}
+                  end={item.path === "/"}
+                >
+                  <span style={{ fontSize: "1.25rem" }}>{item.icon}</span>
+                  <span className="navLabel">{item.label}</span>
+                </NavLink>
+              )}
             </motion.div>
           ))}
         </nav>
