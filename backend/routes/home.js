@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const HomeContent = require("../models/HomeContent");
+const Announcement = require("../models/Announcement");
+const Event = require("../models/Event");
+const Ticket = require("../models/Ticket");
 const { protect, adminOnly } = require("../middleware/auth");
 
 // Default home content
@@ -16,7 +19,7 @@ const DEFAULT_HOME = {
     notices: [
         { title: "Latest Announcement", meta: "Midterm schedule uploaded • PDF", icon: "📢", gradient: "linear-gradient(135deg, #dc2743, #c234a5)" },
         { title: "Upcoming Event", meta: "Tech & Entrepreneurship Summit 4.0", icon: "🎤", gradient: "linear-gradient(135deg, #9b59b6, #00d9ff)" },
-        { title: "Tickets Open", meta: "Generate QR ticket in seconds", icon: "🎟️", gradient: "linear-gradient(135deg, #00d9ff, #00ff88)" },
+        { title: "Get Tickets", meta: "Generate QR ticket in seconds", icon: "🎟️", gradient: "linear-gradient(135deg, #00d9ff, #00ff88)" },
     ],
     features: [
         { icon: "🚀", title: "Workshops", desc: "Hands-on learning sessions" },
@@ -39,8 +42,26 @@ router.get("/", async (req, res) => {
     if (!content) {
         content = await HomeContent.create(DEFAULT_HOME);
     }
+    
+    let data = content.toJSON();
+    
+    try {
+        const latestAnn = await Announcement.findOne().sort({ createdAt: -1 });
+        const latestEvent = await Event.findOne().sort({ createdAt: -1 });
+        const latestTicket = await Ticket.findOne().sort({ createdAt: -1 });
+        
+        if (data.notices && data.notices.length >= 3) {
+            if (latestAnn) data.notices[0].timestamp = latestAnn.createdAt;
+            if (latestEvent) data.notices[1].timestamp = latestEvent.createdAt;
+            if (latestTicket) data.notices[2].timestamp = latestTicket.createdAt;
+            else if (latestEvent) data.notices[2].timestamp = latestEvent.createdAt;
+        }
+    } catch(err) {
+        console.error("Error fetching timestamps for notices:", err);
+    }
+
     console.log("DEBUG: Sending home content, stats count:", content.stats?.length || 0);
-    res.json({ success: true, data: content });
+    res.json({ success: true, data });
 });
 
 // @route   PUT /api/home

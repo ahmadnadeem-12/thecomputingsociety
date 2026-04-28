@@ -55,7 +55,7 @@ export default function Home() {
   // The user said: "un ke jagha par logout ka ajaye button"
   const finalQuickLinks = [...quickLinks];
   const adminIdx = finalQuickLinks.findIndex(l => l.label?.toLowerCase().includes("admin"));
-  
+
   if (isAuthed) {
     if (!isAdmin && adminIdx !== -1) {
       // Replace Admin with Logout for simple user
@@ -319,10 +319,10 @@ export default function Home() {
               );
             })}
           </div>
-          
+
           {/* Hero Spotlight for Mobile */}
           <div style={{ marginTop: "2rem" }}>
-             <HeroSpotlight />
+            <HeroSpotlight />
           </div>
         </div>
 
@@ -353,10 +353,16 @@ export default function Home() {
               return "#00f5d4";
             };
 
-            const getTimeAgo = (idx) => {
-              if (idx === 0) return "2h ago";
-              if (idx === 1) return "1d ago";
-              return "2d ago";
+            const getTimeAgo = (timestamp) => {
+              if (!timestamp) return "2h ago"; // fallback
+              const seconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
+              if (seconds < 60) return "just now";
+              const minutes = Math.floor(seconds / 60);
+              if (minutes < 60) return `${minutes}m ago`;
+              const hours = Math.floor(minutes / 60);
+              if (hours < 24) return `${hours}h ago`;
+              const days = Math.floor(hours / 24);
+              return `${days}d ago`;
             };
 
             return (
@@ -373,11 +379,11 @@ export default function Home() {
                       </div>
                       <div className="noticeTime">
                         <div className="timeDot" style={{ background: getDotColor(index), boxShadow: `0 0 10px ${getDotColor(index)}` }} />
-                        {getTimeAgo(index)}
+                        {getTimeAgo(n.timestamp)}
                       </div>
                     </div>
                     <div className="noticeActions">
-                      <span className="btn btnNoticeOpen">Open</span>
+                      <span className="btn btnNoticeOpen">View</span>
                       <span className="btn btnNoticeDetails">Details</span>
                     </div>
                   </div>
@@ -425,11 +431,17 @@ export default function Home() {
               );
             };
 
-            // Hardcoded time-ago for mock, in real app this would come from backend
-            const getTimeAgo = (idx) => {
-              if (idx === 0) return "2h ago";
-              if (idx === 1) return "1d ago";
-              return "2d ago";
+            // Dynamic time-ago from real activity
+            const getTimeAgo = (timestamp) => {
+              if (!timestamp) return "2h ago"; // fallback
+              const seconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
+              if (seconds < 60) return "just now";
+              const minutes = Math.floor(seconds / 60);
+              if (minutes < 60) return `${minutes}m ago`;
+              const hours = Math.floor(minutes / 60);
+              if (hours < 24) return `${hours}h ago`;
+              const days = Math.floor(hours / 24);
+              return `${days}d ago`;
             };
 
             const getDotColor = (idx) => {
@@ -446,7 +458,7 @@ export default function Home() {
                   </div>
                   <div className="mobileNoticeTime">
                     <div className="timeDot" style={{ background: getDotColor(index) }} />
-                    {getTimeAgo(index)}
+                    {getTimeAgo(n.timestamp)}
                   </div>
                 </div>
 
@@ -455,7 +467,7 @@ export default function Home() {
 
                 <div className="mobileNoticeActions">
                   <Link to={getPath()} className="mobileBtnOpen" style={{ background: n.gradient }}>
-                    {getActionIcon(n.title)} OPEN
+                    {getActionIcon(n.title)} VIEW
                   </Link>
                   <Link to={getPath()} className="mobileBtnDetails">
                     DETAILS
@@ -492,7 +504,7 @@ export default function Home() {
                 return { icon: "✨", grad: "linear-gradient(135deg, #8BC6EC, #9599E2)" };
               };
               const style = getFeatureIconAndColor(f.title);
-              
+
               return (
                 <div key={f.id || idx} className="offeringCard">
                   <div className="offeringIconBox" style={{ background: style.grad }}>
@@ -559,21 +571,21 @@ export default function Home() {
           <div className="quickAccessFooterBar">
             <div className="quickLabel">QUICK ACCESS</div>
             <div className="barDivider"></div>
-            
+
             <div className="quickLinksContainer">
               {(finalQuickLinks || []).map((q, i) => {
                 const icon3D = q.label ? (
                   q.label.toLowerCase().includes("cabinet") ? "🏛️" :
-                  q.label.toLowerCase().includes("faculty") ? "🎓" :
-                  q.label.toLowerCase().includes("gallery") ? "📸" :
-                  q.label.toLowerCase().includes("admin") ? "🔐" : "🔗"
+                    q.label.toLowerCase().includes("faculty") ? "🎓" :
+                      q.label.toLowerCase().includes("gallery") ? "📸" :
+                        q.label.toLowerCase().includes("admin") ? "🔐" : "🔗"
                 ) : "🔗";
 
                 if (q.isLogout) {
                   return (
-                    <button 
+                    <button
                       type="button"
-                      key="logout-desktop" 
+                      key="logout-desktop"
                       onClick={() => {
                         logout();
                         navigate("/");
@@ -613,7 +625,7 @@ export default function Home() {
           <div className="mobileQuickList">
             {(finalQuickLinks || []).map((q, i) => {
               const label = q.label?.toLowerCase() || "";
-              
+
               const getMobileIconSVG = () => {
                 if (label.includes("cabinet")) {
                   return (
@@ -681,9 +693,9 @@ export default function Home() {
               };
 
               return q.isLogout ? (
-                <button 
+                <button
                   type="button"
-                  key="logout-mobile" 
+                  key="logout-mobile"
                   onClick={() => {
                     logout();
                     navigate("/");

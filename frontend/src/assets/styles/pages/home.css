@@ -341,7 +341,7 @@
 
 .btnNoticeOpen:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(194, 52, 165, 0.3);
+  box-shadow: 0 10px 25px rgba(194, 52, 165, 0.5), 0 0 20px rgba(0, 217, 255, 0.4);
 }
 
 .btnNoticeDetails {
@@ -696,7 +696,7 @@
     border-radius: 50px !important;
     font-size: 0.65rem !important;
     font-weight: 800 !important;
-    color: #ff3366 !important;
+    color: white !important;
     letter-spacing: 0.05em;
     margin-bottom: 2rem !important;
     position: relative;
@@ -717,13 +717,13 @@
 
   .theText {
     color: white !important;
-    font-size: 2.2rem !important;
+    font-size: clamp(1.8rem, 10vw, 2.2rem) !important;
     font-weight: 700 !important;
     line-height: 1;
   }
 
   .mainText {
-    font-size: 2.8rem !important;
+    font-size: clamp(2.2rem, 13vw, 2.8rem) !important;
     font-weight: 900 !important;
     line-height: 1.1;
     background: linear-gradient(90deg, #ff3366 10%, #c234a5 40%, #00ebff 90%);
@@ -737,7 +737,7 @@
 
   .majesticDescMobile {
     color: rgba(255, 255, 255, 0.55) !important;
-    font-size: 0.95rem !important;
+    font-size: clamp(0.85rem, 4vw, 0.95rem) !important;
     line-height: 1.5 !important;
     text-align: left !important;
     margin-bottom: 2rem !important;
@@ -748,12 +748,12 @@
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
     gap: 0 !important;
-    padding: 2rem 0.5rem !important;
+    padding: 1rem 0.5rem !important;
     background: rgba(15, 8, 25, 0.6) !important;
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 24px;
-    margin-top: 2.5rem;
+    margin-top: 0.5rem;
     align-items: center;
   }
 
@@ -781,7 +781,7 @@
   }
 
   .statNumber {
-    font-size: 1.8rem !important;
+    font-size: clamp(1.4rem, 8vw, 1.8rem) !important;
     font-weight: 800 !important;
     line-height: 1 !important;
     margin-bottom: 0.5rem !important;
@@ -791,7 +791,7 @@
   }
 
   .statLabel {
-    font-size: 0.6rem !important;
+    font-size: clamp(0.55rem, 3vw, 0.6rem) !important;
     font-weight: 700 !important;
     color: rgba(255, 255, 255, 0.52) !important;
     text-transform: uppercase;
@@ -810,7 +810,7 @@
 
   .mobileSectionTitle {
     font-family: 'Outfit', sans-serif;
-    font-size: 2.5rem;
+    font-size: clamp(2rem, 10vw, 2.5rem);
     font-weight: 900;
     margin-bottom: 0.5rem;
     background: linear-gradient(90deg, #ff3366 0%, #00ebff 100%);
@@ -821,7 +821,7 @@
 
   .mobileSectionSubtitle {
     color: #9a8fa6;
-    font-size: 1rem;
+    font-size: clamp(0.85rem, 4vw, 1rem);
     line-height: 1.4;
     margin-bottom: 1.2rem;
     max-width: 90%;
@@ -919,7 +919,8 @@
     gap: 0.75rem !important;
     margin-top: 1.5rem;
     width: 100%;
-    margin-bottom: 0 !important; /* Force tight gap */
+    margin-bottom: 0 !important;
+    /* Force tight gap */
   }
 
   .heroButtons.mobileOnly a {
@@ -942,7 +943,8 @@
   .statsGrid {
     padding: 1.5rem 0.25rem !important;
     border-radius: 24px;
-    margin-top: 0.35rem !important; /* Synced with small mobile */
+    margin-top: 0.35rem !important;
+    /* Synced with small mobile */
   }
 
   .statNumber {
@@ -1074,7 +1076,7 @@
 
   .mobileNoticeTitle {
     color: white;
-    font-size: 1.35rem;
+    font-size: clamp(1.15rem, 5vw, 1.35rem);
     font-weight: 800;
     margin-bottom: 0.25rem;
     font-family: 'Outfit', sans-serif;
@@ -1107,6 +1109,12 @@
     letter-spacing: 0.05em;
     border: none;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .mobileBtnOpen:hover, .mobileBtnOpen:active {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(194, 52, 165, 0.5), 0 0 20px rgba(0, 217, 255, 0.4);
   }
 
   .mobileBtnDetails {
@@ -1146,6 +1154,7 @@
     display: none !important;
   }
 }
+
 /* Unified Quick Access & Footer Bar */
 .quickAccessFooterBar {
   margin-top: 4rem;
@@ -1159,7 +1168,7 @@
   backdrop-filter: blur(25px) saturate(180%);
   position: relative;
   overflow: hidden;
-  box-shadow: 
+  box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.5),
     0 0 30px rgba(0, 235, 255, 0.1),
     inset 0 1px 1px rgba(255, 255, 255, 0.1);
@@ -1172,12 +1181,10 @@
   left: -100%;
   width: 50%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.05),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.05),
+      transparent);
   transition: 0.6s;
   pointer-events: none;
 }
@@ -1206,34 +1213,34 @@
 }
 
 .barDivider {
- width: 1px;
- height: 24px;
- background: rgba(255, 255, 255, 0.1);
- flex-shrink: 0;
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
 }
 
 .quickLinksContainer {
- display: flex;
- align-items: center;
- gap: 1.5rem;
- flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex: 1;
 }
 
 .quickLinkItem {
- display: flex;
- align-items: center;
- gap: 0.75rem;
- color: #fff;
- text-decoration: none;
- font-size: 0.85rem;
- font-weight: 700;
- transition: all 0.3s ease;
- white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
 .quickLinkItem:hover {
- transform: translateY(-2px);
- color: var(--accent-cyan);
+  transform: translateY(-2px);
+  color: var(--accent-cyan);
 }
 
 .quickIcon3D {
@@ -1248,8 +1255,8 @@
 }
 
 .barFooterContent {
- text-align: right;
- flex-shrink: 0;
+  text-align: right;
+  flex-shrink: 0;
 }
 
 .barFooterTitle {
@@ -1264,31 +1271,31 @@
 }
 
 .barFooterSub {
- font-size: 0.68rem;
- color: rgba(255, 255, 255, 0.4);
- font-weight: 500;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 500;
 }
 
 .barFooterMeta {
- font-size: 0.65rem;
- color: rgba(255, 255, 255, 0.25);
- margin-top: 0.1rem;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.25);
+  margin-top: 0.1rem;
 }
 
 @media (max-width: 1200px) {
- .quickAccessFooterBar {
- flex-wrap: wrap;
- justify-content: center;
- padding: 1.5rem;
- gap: 1.5rem;
- }
- 
- .barFooterContent {
- text-align: center;
- width: 100%;
- border-top: 1px solid rgba(255, 255, 255, 0.05);
- padding-top: 1rem;
- }
+  .quickAccessFooterBar {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .barFooterContent {
+    text-align: center;
+    width: 100%;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 1rem;
+  }
 }
 
 /* =========================================================
@@ -1297,5 +1304,103 @@
 @media (max-width: 480px) {
   .mobileMenu {
     width: 260px;
+  }
+
+  .btnExplore {
+    height: 50px !important;
+    border-radius: 40px !important;
+  }
+
+  .btnSecondary {
+    height: 46px !important;
+    border-radius: 40px !important;
+  }
+}
+
+/* =========================================================
+   EXTRA SMALL MOBILE (Under 360px) - Prevent Overflow
+   ========================================================= */
+@media (max-width: 359px) {
+  .majesticBadgeMobile {
+    font-size: 0.5rem !important;
+    padding: 0.45rem 0.6rem !important;
+    margin-bottom: 1.5rem !important;
+    letter-spacing: 0.02em !important;
+  }
+
+  .theText {
+    font-size: 1.4rem !important;
+  }
+
+  .mainText {
+    font-size: 1.8rem !important;
+  }
+
+  .majesticDescMobile {
+    font-size: 0.75rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .statNumber {
+    font-size: 1.2rem !important;
+  }
+
+  .statLabel {
+    font-size: 0.5rem !important;
+  }
+
+  .btnExplore {
+    font-size: 0.85rem !important;
+    padding: 0 1.2rem !important;
+    height: 40px !important;
+  }
+  
+  .btnSecondary {
+    font-size: 0.65rem !important;
+    padding: 0 1rem !important;
+    height: 40px !important;
+  }
+}
+
+/* =========================================================
+   EXTRA SMALL MOBILE (Under 360px) - Prevent Overflow
+   ========================================================= */
+@media (max-width: 359px) {
+  .majesticBadgeMobile {
+    font-size: 0.5rem !important;
+    padding: 0.45rem 0.6rem !important;
+    margin-bottom: 1.5rem !important;
+    letter-spacing: 0.02em !important;
+  }
+
+  .theText {
+    font-size: 1.4rem !important;
+  }
+
+  .mainText {
+    font-size: 1.8rem !important;
+  }
+
+  .majesticDescMobile {
+    font-size: 0.75rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .statNumber {
+    font-size: 1.2rem !important;
+  }
+
+  .statLabel {
+    font-size: 0.5rem !important;
+  }
+
+  .btnExplore {
+    font-size: 0.85rem !important;
+    padding: 0 1.2rem !important;
+  }
+  
+  .btnSecondary {
+    font-size: 0.65rem !important;
+    padding: 0 1rem !important;
   }
 }
