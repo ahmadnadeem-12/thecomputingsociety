@@ -640,8 +640,10 @@
 
 @media (max-width: 768px) {
   .welcomeBanner {
-    padding: 1rem 0 !important;
+    padding: 1.5rem 12px !important;
     justify-items: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .statsGrid {
@@ -726,13 +728,13 @@
 
   .theText {
     color: white !important;
-    font-size: clamp(1.8rem, 10vw, 2.2rem) !important;
+    font-size: clamp(1.5rem, 8vw, 1.8rem) !important;
     font-weight: 700 !important;
     line-height: 1;
   }
 
   .mainText {
-    font-size: clamp(2.2rem, 13vw, 2.8rem) !important;
+    font-size: clamp(1.8rem, 10vw, 2.2rem) !important;
     font-weight: 900 !important;
     line-height: 1.1;
     background: linear-gradient(90deg, #ff3366 10%, #c234a5 40%, #00ebff 90%);
@@ -746,7 +748,7 @@
 
   .majesticDescMobile {
     color: rgba(255, 255, 255, 0.55) !important;
-    font-size: clamp(0.85rem, 4vw, 0.95rem) !important;
+    font-size: clamp(0.75rem, 4vw, 0.85rem) !important;
     line-height: 1.5 !important;
     text-align: left !important;
     margin-bottom: 2rem !important;
@@ -781,16 +783,21 @@
   }
 
   .statIcon {
-    margin-bottom: 0.75rem !important;
+    margin-bottom: 0.5rem !important;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  .statIcon svg {
+    width: 24px !important;
+    height: 24px !important;
   }
 
   .statNumber {
-    font-size: clamp(1.4rem, 8vw, 1.8rem) !important;
+    font-size: clamp(1.2rem, 6vw, 1.4rem) !important;
     font-weight: 800 !important;
     line-height: 1 !important;
     margin-bottom: 0.5rem !important;
@@ -800,7 +807,7 @@
   }
 
   .statLabel {
-    font-size: clamp(0.55rem, 3vw, 0.6rem) !important;
+    font-size: clamp(0.5rem, 2.5vw, 0.55rem) !important;
     font-weight: 700 !important;
     color: rgba(255, 255, 255, 0.52) !important;
     text-transform: uppercase;
@@ -854,23 +861,23 @@
   .mobileOfferCard {
     display: flex;
     align-items: center;
-    gap: 1.2rem;
+    gap: 1rem;
     background: linear-gradient(145deg, rgba(20, 15, 35, 0.8) 0%, rgba(10, 8, 20, 0.9) 100%);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 24px;
-    padding: 1.25rem;
+    border-radius: 18px;
+    padding: 1rem;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   }
 
   .mobileIconContainer {
-    width: 64px;
-    height: 64px;
+    width: 48px;
+    height: 48px;
     background: linear-gradient(135deg, rgba(220, 39, 67, 0.5), rgba(194, 52, 165, 0.5));
-    border-radius: 18px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
+    font-size: 1.5rem;
     flex-shrink: 0;
     box-shadow: 0 8px 10px rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -883,7 +890,7 @@
   .mobileOfferTitle {
     font-family: 'Outfit', sans-serif;
     color: white;
-    font-size: 1.25rem;
+    font-size: 1.05rem;
     font-weight: 800;
     margin-bottom: 0.25rem;
   }
@@ -957,18 +964,23 @@
   }
 
   .statNumber {
-    font-size: 1.8rem !important;
+    font-size: clamp(1.2rem, 6vw, 1.4rem) !important;
   }
 
   .statLabel {
-    font-size: 0.65rem !important;
+    font-size: clamp(0.5rem, 2.5vw, 0.55rem) !important;
   }
 
   .btnExplore,
   .btnSecondary {
-    height: 58px;
+    height: 50px;
     width: 100%;
-    padding: 0 1.5rem !important;
+    padding: 0 0.5rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  .btnSecondary {
+    font-size: 0.65rem !important;
   }
 
   .sideBySide {
@@ -992,11 +1004,11 @@
   .mobileQuickCard {
     display: flex;
     align-items: center;
-    gap: 1.2rem;
+    gap: 1rem;
     background: linear-gradient(145deg, rgba(20, 15, 35, 0.4) 0%, rgba(10, 8, 20, 0.6) 100%);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
-    padding: 1.2rem 1.5rem;
+    padding: 1rem 1.2rem;
     text-decoration: none;
     transition: all 0.3s ease;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
@@ -1019,7 +1031,7 @@
   .mobileQuickLabel {
     flex: 1;
     color: white;
-    font-size: 1.05rem;
+    font-size: 0.9rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -1042,8 +1054,8 @@
   .mobileNoticeCard {
     background: rgba(15, 8, 25, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 32px;
-    padding: 1.5rem;
+    border-radius: 24px;
+    padding: 1rem;
     position: relative;
     overflow: hidden;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
@@ -1057,13 +1069,13 @@
   }
 
   .mobileNoticeIconBox {
-    width: 70px;
-    height: 70px;
-    border-radius: 20px;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.2rem;
+    font-size: 1.5rem;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
@@ -1378,7 +1390,7 @@
     height: 42px !important;
     border-radius: 40px !important;
   }
-  
+
   .btnSecondary {
     font-size: 0.65rem !important;
     padding: 0 0.8rem !important;

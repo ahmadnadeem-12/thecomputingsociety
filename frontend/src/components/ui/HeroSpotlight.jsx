@@ -13,7 +13,7 @@ export default function HeroSpotlight() {
                 const res = await api.get("/events");
                 // Get events marked as isHero and status not 'past'
                 const heroEvents = res.data.data.filter(e => e.isHero && e.status !== "past");
-                
+
                 if (heroEvents.length > 0) {
                     // Sort by nearest date
                     heroEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -53,7 +53,7 @@ export default function HeroSpotlight() {
     if (!event) return null;
 
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, scale: 0.9, x: 50 }}
             animate={{ opacity: 1, scale: 1, x: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
@@ -82,23 +82,23 @@ export default function HeroSpotlight() {
                     <span style={{ fontSize: "1.2rem" }}>🔥</span>
                     <span style={{ fontSize: "0.8rem", fontWeight: 900, color: "var(--accent-gold)", letterSpacing: "2px", textTransform: "uppercase" }}>Happening Soon</span>
                 </div>
-                
+
                 <h2 style={{ fontSize: "1.8rem", fontWeight: 950, color: "#fff", marginBottom: "1rem", lineHeight: 1.2 }}>
                     {event.title.toUpperCase()}
                 </h2>
 
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0.8rem", marginBottom: "1.5rem" }}>
-                   {[
-                       { label: "DAYS", val: timeLeft.days },
-                       { label: "HRS", val: timeLeft.hours },
-                       { label: "MINS", val: timeLeft.mins },
-                       { label: "SECS", val: timeLeft.secs }
-                   ].map((t, i) => (
-                       <div key={i} style={{ textAlign: "center", background: "rgba(255,255,255,0.05)", padding: "0.8rem 0.4rem", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.08)" }}>
-                           <div style={{ fontSize: "1.4rem", fontWeight: 950, color: i % 2 === 0 ? "var(--accent-cyan)" : "var(--accent-pink)" }}>{t.val.toString().padStart(2, "0")}</div>
-                           <div style={{ fontSize: "0.6rem", fontWeight: 900, opacity: 0.6, marginTop: "2px" }}>{t.label}</div>
-                       </div>
-                   ))}
+                    {[
+                        { label: "DAYS", val: timeLeft.days },
+                        { label: "HRS", val: timeLeft.hours },
+                        { label: "MINS", val: timeLeft.mins },
+                        { label: "SECS", val: timeLeft.secs }
+                    ].map((t, i) => (
+                        <div key={i} style={{ textAlign: "center", background: "rgba(255,255,255,0.05)", padding: "0.8rem 0.4rem", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.08)" }}>
+                            <div style={{ fontSize: "1.4rem", fontWeight: 950, color: i % 2 === 0 ? "var(--accent-cyan)" : "var(--accent-pink)" }}>{t.val.toString().padStart(2, "0")}</div>
+                            <div style={{ fontSize: "0.6rem", fontWeight: 900, opacity: 0.6, marginTop: "2px" }}>{t.label}</div>
+                        </div>
+                    ))}
                 </div>
 
                 <div style={{ fontSize: "0.9rem", color: "rgba(255,255,255,0.7)", marginBottom: "2rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -112,7 +112,7 @@ export default function HeroSpotlight() {
                     whileTap={{ scale: 0.98 }}
                     style={{ position: "relative", zIndex: 5 }}
                 >
-                    <Link 
+                    <Link
                         to={`/tickets?eventId=${event._id}`}
                         style={{
                             display: "block",
