@@ -76,6 +76,8 @@
         scrollbar-width: thin;
         scrollbar-color: var(--accent-pink) rgba(255, 255, 255, 0.05);
         margin-left: 0;
+        -webkit-mask-image: linear-gradient(to right, #000 90%, transparent);
+        mask-image: linear-gradient(to right, #000 90%, transparent);
     }
 
     .adminTabs::-webkit-scrollbar {

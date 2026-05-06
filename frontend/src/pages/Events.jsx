@@ -217,8 +217,8 @@ export default function Events() {
                     View Details
                   </motion.button>
                   {e.status === "open" && (
-                    <Link to="/tickets">
-                      <Button>Get Ticket</Button>
+                    <Link to="/tickets" style={{ display: "contents" }}>
+                      <Button style={{ width: "100%" }}>Get Ticket</Button>
                     </Link>
                   )}
                 </div>

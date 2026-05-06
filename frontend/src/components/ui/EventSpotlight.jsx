@@ -187,21 +187,20 @@ export default function EventSpotlight() {
                 <div 
                   style={{ 
                     width: "100%", 
-                    maxHeight: "60vh", 
+                    height: "380px", 
                     background: "rgba(0,0,0,0.6)",
                     overflow: "hidden", 
                     cursor: "pointer",
                     position: "relative",
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                    padding: "5px"
+                    justifyContent: "center"
                   }}
                   onClick={() => setShowPreview(true)}
                   title="Click to zoom"
                 >
                   {/* Background Blur Fill */}
-                  <div style={{ position: "absolute", inset: 0, backgroundImage: `url(${currentEvent.adPoster})`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(40px) saturate(1.8)", opacity: 0.35 }} />
+                  <div style={{ position: "absolute", inset: 0, backgroundImage: `url(${currentEvent.adPoster})`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(40px) saturate(1.8)", opacity: 0.6 }} />
                   
                   <img 
                     key={currentEvent._id}
@@ -209,11 +208,9 @@ export default function EventSpotlight() {
                     alt={currentEvent.title} 
                     style={{ 
                       width: "100%",
-                      height: "auto",
-                      maxHeight: "60vh",
+                      height: "100%",
                       objectFit: "contain", 
                       display: "block",
-                      margin: "0 auto",
                       position: "relative", 
                       zIndex: 1,
                       imageRendering: "auto",

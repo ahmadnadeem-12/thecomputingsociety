@@ -94,6 +94,26 @@
 html {
   /* Allow mobile viewport to scale correctly on auth pages */
   min-width: 0;
+  /* Professional UI Base Scaling (naturally compacts oversized elements) */
+  font-size: 75%;
+}
+
+@media (max-width: 1024px) {
+  html {
+    font-size: 90%;
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 95%;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 100%;
+  }
 }
 
 html,
@@ -161,14 +181,14 @@ textarea {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 0 1.5rem;
 }
 
 .layout {
   display: grid;
-  grid-template-columns: 300px minmax(0, 1fr);
+  grid-template-columns: 220px minmax(0, 1fr);
   min-height: 100vh;
   position: relative;
 }
@@ -189,7 +209,7 @@ textarea {
   position: sticky;
   top: 0;
   height: 100vh;
-  padding: 2rem 1.5rem;
+  padding: 1.5rem 1.5rem 1.5rem 1.25rem;
   background: var(--sidebar-bg);
   backdrop-filter: blur(30px);
   border-right: 1px solid var(--sidebar-border);
@@ -202,6 +222,25 @@ textarea {
   z-index: 100;
   overflow-y: auto;
   overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .sidebar::before {
@@ -579,7 +618,6 @@ textarea {
   /* Grids go single column */
   .ticketsGrid,
   .featureGrid,
-  .noticeGrid,
   .quickLinks {
     grid-template-columns: 1fr !important;
   }
@@ -665,21 +703,21 @@ textarea {
 
 .sidebarHeader {
   display: flex;
-  align-items: flex-end;
-  gap: 1.2rem;
+  align-items: flex-start;
+  gap: 0.85rem;
   padding-bottom: 0.5rem;
 }
 
 .logoCircle {
   position: relative;
-  width: 75px;
-  height: 75px;
+  width: 55px;
+  height: 55px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 900;
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   letter-spacing: 0.08em;
   color: var(--text-main);
   background: linear-gradient(145deg, var(--tcs-logo-start) 0%, var(--tcs-logo-middle) 50%, var(--tcs-logo-end) 100%);
@@ -798,7 +836,7 @@ textarea {
 }
 
 .brandThe {
-  font-size: 0.9rem;
+  font-size: 0.75rem;
   background: linear-gradient(90deg, #ff4d6d 0%, #ff6b8a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -808,7 +846,7 @@ textarea {
 }
 
 .brandComputing {
-  font-size: 1.2rem;
+  font-size: 0.95rem;
   background: linear-gradient(90deg, #c77dff 0%, #9b59b6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -818,7 +856,7 @@ textarea {
 }
 
 .brandSociety {
-  font-size: 1.1rem;
+  font-size: 0.85rem;
   background: linear-gradient(90deg, #00d9ff 0%, #00b4d8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -828,11 +866,11 @@ textarea {
 }
 
 .brandingSubtitle {
-  font-size: 0.72rem;
+  font-size: 0.55rem;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  margin-top: 0.3rem;
+  margin-top: 0.1rem;
   opacity: 0.8;
   font-weight: 500;
 }
@@ -941,7 +979,7 @@ textarea {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding: 1.25rem 2rem;
+  padding: 1rem 1.5rem;
   overflow: hidden;
 }
 
@@ -967,7 +1005,7 @@ textarea {
   backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-card);
-  padding: 2rem;
+  padding: 1.5rem;
   overflow: hidden;
 }
 
@@ -1463,8 +1501,8 @@ select optgroup {
    AVATAR
    ========================================================= */
 .avatar {
-  width: 80px;
-  height: 80px;
+  width: 65px;
+  height: 65px;
   border-radius: var(--radius-md);
   object-fit: cover;
   border: 2px solid rgba(255, 255, 255, 0.15);
@@ -1661,7 +1699,7 @@ select optgroup {
   }
 
   .modalContent {
-    max-height: 95vh !important;
+    max-height: 80vh !important;
   }
 }
 

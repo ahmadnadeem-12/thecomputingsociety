@@ -119,7 +119,7 @@ export default function Home() {
       <motion.div initial="hidden" animate="visible" variants={fadeIn}>
         {/* Welcome Banner */}
         <div className="welcomeBanner">
-          <div className="heroContentContainer" style={{ position: "relative", zIndex: 1, textAlign: "left" }}>
+          <div className="heroContentContainer" style={{ position: "relative", zIndex: 1 }}>
             {/* Desktop Top Badge */}
             <div className="desktopOnly heroSubtitleDesktop">
               OFFICIAL SOCIETY • DEPT. OF COMPUTER SCIENCE • UAF
@@ -127,9 +127,9 @@ export default function Home() {
 
             {/* Desktop Title - 3 Lines (Refined Weight 600) */}
             <div className="heroTitle desktopOnly" style={{
-              fontSize: "clamp(3.5rem, 6vw, 4.8rem)",
+              fontSize: "clamp(2.5rem, 4.5vw, 3.8rem)",
               lineHeight: "0.92",
-              marginBottom: "1.5rem",
+              marginBottom: "1.2rem",
               fontWeight: "600",
             }}>
               <div style={{ color: "var(--accent-red)" }}>THE</div>
@@ -138,7 +138,7 @@ export default function Home() {
             </div>
 
             <div className="heroDescription desktopOnly" style={{
-              maxWidth: "550px",
+              maxWidth: "450px",
               textAlign: "left",
               fontSize: "1.05rem",
               lineHeight: "1.8",
@@ -165,8 +165,8 @@ export default function Home() {
               and future tech leaders.
             </div>
 
-            <div className="heroButtons desktopOnly" style={{ display: "flex", flexWrap: "nowrap", gap: "0.5rem", marginTop: "1.25rem", width: "100%", alignItems: "center" }}>
-              <Link to="/events" className="btnExplore" style={{ height: "40px", padding: "0 0.75rem", fontSize: "0.65rem", whiteSpace: "nowrap" }}>
+            <div className="heroButtons desktopOnly" style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "1.25rem", width: "100%", alignItems: "center" }}>
+              <Link to="/events" className="btnExplore" style={{ height: "2.5rem", padding: "0 0.75rem", fontSize: "0.65rem", whiteSpace: "nowrap" }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
                 </svg>
@@ -176,13 +176,13 @@ export default function Home() {
                 </svg>
               </Link>
 
-              <Link to="/tickets" className="btnSecondary btnTickets" style={{ height: "40px", padding: "0 0.7rem", fontSize: "0.62rem", whiteSpace: "nowrap" }}>
+              <Link to="/tickets" className="btnSecondary btnTickets" style={{ height: "2.5rem", padding: "0 0.7rem", fontSize: "0.62rem", whiteSpace: "nowrap" }}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" /><path d="M13 5v2" /><path d="M13 17v2" /><path d="M13 11v2" />
                 </svg>
                 GET TICKETS
               </Link>
-              <Link to="/programs" className="btnSecondary btnPrograms" style={{ height: "40px", padding: "0 0.7rem", fontSize: "0.62rem", whiteSpace: "nowrap" }}>
+              <Link to="/programs" className="btnSecondary btnPrograms" style={{ height: "2.5rem", padding: "0 0.7rem", fontSize: "0.62rem", whiteSpace: "nowrap" }}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
                 </svg>

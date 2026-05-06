@@ -64,7 +64,7 @@ export default function HeroSpotlight() {
                 border: "1px solid rgba(255, 255, 255, 0.1)",
                 padding: "2rem",
                 width: "100%",
-                maxWidth: "420px",
+                maxWidth: "100%",
                 boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
                 display: "flex",
                 flexDirection: "column",
@@ -101,9 +101,8 @@ export default function HeroSpotlight() {
                     ))}
                 </div>
 
-                <div style={{ fontSize: "0.9rem", color: "rgba(255,255,255,0.7)", marginBottom: "2rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <div style={{ fontSize: "0.9rem", color: "rgba(255,255,255,0.7)", marginBottom: "2rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <span>📍 {event.venue || "Society Hall"}</span>
-                    <span style={{ opacity: 0.3 }}>|</span>
                     <span>📅 {new Date(event.date).toLocaleDateString()}</span>
                 </div>
 
