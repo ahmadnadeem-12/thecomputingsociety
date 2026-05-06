@@ -28,6 +28,7 @@
   background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(194, 52, 165, 0.08) 0%, transparent 50%);
   opacity: 0;
   transition: opacity var(--transition-normal);
+  pointer-events: none;
 }
 
 .profileCard::after {
@@ -36,8 +37,14 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  height: 2px;
+  background: var(--gradient-main);
+  opacity: 0.55;
+  transition: opacity var(--transition-normal);
+}
+
+.profileCard:hover::after {
+  opacity: 1;
 }
 
 .profileCard:hover {
@@ -59,9 +66,8 @@
   height: 100px;
   border-radius: 50%;
   padding: 4px;
-  background: var(--gradient-border);
-  background-size: 300% 300%;
-  animation: borderRotate 4s linear infinite;
+  background: rgba(255, 255, 255, 0.15);
+  transition: all var(--transition-normal);
 }
 
 .dpWrap::before {
@@ -71,9 +77,25 @@
   border-radius: 50%;
   background: var(--gradient-border);
   background-size: 300% 300%;
-  animation: borderRotate 4s linear infinite reverse;
-  opacity: 0.5;
+  opacity: 0;
   filter: blur(8px);
+  transition: opacity var(--transition-normal);
+}
+
+/* Activate glowing rotating border only on hover of the card or wrap */
+.profileCard:hover .dpWrap,
+.facultyCard:hover .dpWrap,
+.dpWrap:hover {
+  background: var(--gradient-border);
+  background-size: 300% 300%;
+  animation: borderRotate 4s linear infinite;
+}
+
+.profileCard:hover .dpWrap::before,
+.facultyCard:hover .dpWrap::before,
+.dpWrap:hover::before {
+  opacity: 0.6;
+  animation: borderRotate 4s linear infinite reverse;
 }
 
 .dpInner {
@@ -117,6 +139,8 @@
   display: flex;
   gap: 0.75rem;
   margin-top: 1.25rem;
+  position: relative;
+  z-index: 5;
 }
 
 .socialIcon {

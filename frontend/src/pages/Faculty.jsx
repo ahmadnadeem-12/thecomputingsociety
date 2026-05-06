@@ -1,6 +1,7 @@
-
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+
+const DEFAULT_AVATAR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%238c7f9c'><path fill-rule='evenodd' d='M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z' clip-rule='evenodd' /></svg>";
 import { Modal } from "../components/ui/Modal";
 import { Skeleton, SkeletonCircle, SkeletonTitle, SkeletonText, SkeletonPill } from "../components/ui/Skeleton";
 import { listFaculty } from "../services/facultyService";
@@ -133,7 +134,11 @@ export default function Faculty() {
                       whileHover={{ scale: 1.05 }}
                     >
                       <div className="dpInner">
-                        <img src={f.avatar} alt={f.name} />
+                        <img 
+                          src={f.avatar || DEFAULT_AVATAR} 
+                          alt={f.name} 
+                          onError={(e) => { e.target.src = DEFAULT_AVATAR; }}
+                        />
                       </div>
                     </motion.div>
                     <div className={`facultyRoleBadge ${roleType}`}>
@@ -215,8 +220,9 @@ export default function Faculty() {
                   background: "var(--bg-darker)",
                 }}>
                   <img
-                    src={selected.avatar}
+                    src={selected.avatar || DEFAULT_AVATAR}
                     alt={selected.name}
+                    onError={(e) => { e.target.src = DEFAULT_AVATAR; }}
                     style={{
                       width: "100%",
                       height: "100%",

@@ -485,9 +485,12 @@ router.put("/users/:id/manual-verify", protect, adminOnly, async (req, res) => {
 });
 
 // @route   POST /api/auth/users/:id/resend-verify
-// @desc    Admin resends verification email to a user
-// @access  Private (Admin Only)
-router.post("/users/:id/resend-verify", protect, adminOnly, async (req, res) => {
+// @desc    Resends verification email to a user (Admin or Self)
+// @access  Private
+router.post("/users/:id/resend-verify", protect, async (req, res) => {
+    if (req.user.role !== "admin" && req.user.id !== req.params.id) {
+        return res.status(403).json({ success: false, message: "Access denied" });
+    }
     const targetUser = await User.findById(req.params.id);
     if (!targetUser) return res.status(404).json({ message: "User not found" });
 

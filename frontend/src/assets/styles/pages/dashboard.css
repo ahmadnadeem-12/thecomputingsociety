@@ -7,13 +7,30 @@
     gap: 0.5rem;
     flex-wrap: nowrap;
     overflow-x: auto;
-    padding-bottom: 0.75rem;
+    padding-bottom: 0.85rem;
     margin-bottom: 1.5rem;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-pink) rgba(255, 255, 255, 0.05);
 }
 
 .adminTabs::-webkit-scrollbar {
-    display: none;
+    display: block;
+    height: 5px;
+}
+
+.adminTabs::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-full);
+}
+
+.adminTabs::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, var(--accent-red), var(--accent-purple));
+    border-radius: var(--radius-full);
+}
+
+.adminTabs::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(90deg, var(--accent-pink), var(--accent-red));
 }
 
 .adminTabs .pill {
@@ -56,13 +73,14 @@
         padding-left: 0;
         padding-right: 1.5rem; /* Only peek at the end (right side) */
         gap: 0.6rem;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
+        scrollbar-width: thin;
+        scrollbar-color: var(--accent-pink) rgba(255, 255, 255, 0.05);
         margin-left: 0;
     }
 
     .adminTabs::-webkit-scrollbar {
-        display: none; /* Keep it clean as requested */
+        display: block;
+        height: 4px;
     }
 
     .adminTabs .pill {

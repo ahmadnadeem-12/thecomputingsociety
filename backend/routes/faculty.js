@@ -11,17 +11,29 @@ router.get("/", async (req, res) => {
 
 // @route   POST /api/faculty
 router.post("/", protect, adminOnly, async (req, res) => {
-    const count = await Faculty.countDocuments();
-    req.body.order = count;
-    const item = await Faculty.create(req.body);
-    res.status(201).json({ success: true, data: item });
+    try {
+        console.log("POST /api/faculty payload:", req.body);
+        const count = await Faculty.countDocuments();
+        req.body.order = count;
+        const item = await Faculty.create(req.body);
+        res.status(201).json({ success: true, data: item });
+    } catch (err) {
+        console.error("Error creating faculty:", err);
+        res.status(400).json({ success: false, message: err.message, error: err });
+    }
 });
 
 // @route   PUT /api/faculty/:id
 router.put("/:id", protect, adminOnly, async (req, res) => {
-    const item = await Faculty.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-    if (!item) return res.status(404).json({ success: false, message: "Faculty member not found" });
-    res.json({ success: true, data: item });
+    try {
+        console.log("PUT /api/faculty payload:", req.body);
+        const item = await Faculty.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+        if (!item) return res.status(404).json({ success: false, message: "Faculty member not found" });
+        res.json({ success: true, data: item });
+    } catch (err) {
+        console.error("Error updating faculty:", err);
+        res.status(400).json({ success: false, message: err.message, error: err });
+    }
 });
 
 // @route   DELETE /api/faculty/:id

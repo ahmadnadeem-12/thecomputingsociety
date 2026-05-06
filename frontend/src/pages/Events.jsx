@@ -187,23 +187,22 @@ export default function Events() {
                   {e.featured && <span className="eventTag featured">⭐ Featured</span>}
                 </div>
 
-                {/* Capacity Bar */}
                 {e.capacity && e.seatsRemaining !== undefined && (
-                  <div className="capacityBar">
-                    <div className="capacityLabel">
-                      <span>Capacity</span>
-                      <span>{e.capacity - e.seatsRemaining}/{e.capacity} registered</span>
-                    </div>
-                    <div className="capacityTrack">
-                      <motion.div
-                        className="capacityFill"
-                        initial={{ width: 0 }}
-                        animate={{
-                          width: `${((e.capacity - e.seatsRemaining) / e.capacity) * 100}%`
-                        }}
-                        transition={{ delay: 0.3 + index * 0.1, duration: 0.8 }}
-                      />
-                    </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginTop: "1rem", background: "rgba(34, 211, 238, 0.05)", border: "1px solid rgba(34, 211, 238, 0.15)", padding: "0.5rem 0.9rem", borderRadius: "8px", width: "fit-content" }}>
+                    <span 
+                      style={{ 
+                        width: "8px", 
+                        height: "8px", 
+                        borderRadius: "50%", 
+                        background: "var(--accent-cyan)", 
+                        boxShadow: "0 0 10px var(--accent-cyan)", 
+                        display: "inline-block",
+                        animation: "pulse 2s infinite" 
+                      }} 
+                    />
+                    <span style={{ fontSize: "0.8rem", fontWeight: 800, color: "var(--accent-cyan)", textShadow: "0 0 10px rgba(34, 211, 238, 0.2)", letterSpacing: "0.5px", textTransform: "uppercase" }}>
+                      {e.capacity - e.seatsRemaining} Participants Registered
+                    </span>
                   </div>
                 )}
 
@@ -307,22 +306,24 @@ export default function Events() {
               </div>
             )}
 
-            {/* Capacity */}
             {selectedEvent.capacity && (
-              <div style={{ background: "rgba(0,0,0,0.3)", padding: "1rem", borderRadius: "10px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: ".5rem" }}>
-                  <span style={{ fontSize: ".8rem", color: "var(--text-muted)" }}>CAPACITY</span>
-                  <span style={{ fontWeight: 600 }}>
-                    {selectedEvent.capacity - (selectedEvent.seatsRemaining || 0)}/{selectedEvent.capacity} registered
-                  </span>
-                </div>
-                <div className="capacityTrack">
-                  <div className="capacityFill" style={{
-                    width: `${((selectedEvent.capacity - (selectedEvent.seatsRemaining || 0)) / selectedEvent.capacity) * 100}%`
-                  }} />
-                </div>
-                <div style={{ marginTop: ".5rem", fontSize: ".85rem", color: "var(--accent-cyan)" }}>
-                  {selectedEvent.seatsRemaining || 0} seats remaining
+              <div style={{ background: "rgba(34, 211, 238, 0.05)", border: "1px solid rgba(34, 211, 238, 0.2)", padding: "1.2rem", borderRadius: "12px", display: "flex", alignItems: "center", gap: "1rem" }}>
+                <span 
+                  style={{ 
+                    width: "12px", 
+                    height: "12px", 
+                    borderRadius: "50%", 
+                    background: "var(--accent-cyan)", 
+                    boxShadow: "0 0 15px var(--accent-cyan)", 
+                    display: "inline-block",
+                    animation: "pulse 2s infinite" 
+                  }} 
+                />
+                <div>
+                  <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 800, letterSpacing: "1px" }}>REGISTRATIONS STATUS</div>
+                  <div style={{ fontWeight: 900, color: "var(--accent-cyan)", fontSize: "1.1rem", marginTop: "0.2rem", letterSpacing: "0.5px" }}>
+                    {selectedEvent.capacity - (selectedEvent.seatsRemaining || 0)} PARTICIPANTS REGISTERED
+                  </div>
                 </div>
               </div>
             )}

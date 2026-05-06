@@ -228,24 +228,59 @@ export default function Dashboard() {
   };
 
   const savePerson = async () => {
-    if (!editing?.name) return;
-    const id = editing._id || editing.id;
-
-    // Process expertise string into array if it's faculty
-    let payload = { ...editing };
-    if (modalType === "faculty" && typeof payload.expertise === "string") {
-      payload.expertise = payload.expertise.split(",").map(s => s.trim()).filter(Boolean);
+    if (!editing?.name?.trim()) {
+      showAlert("Validation Error", "Name is required! Please enter a name.", "warning");
+      return;
     }
-
-    if (modalType === "cabinet") {
-      if (id) await updateCabinetMember(id, payload);
-      else await createCabinetMember(payload);
-    } else {
-      if (id) await updateFaculty(id, payload);
-      else await createFaculty(payload);
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (modalType === "faculty") {
+      if (!editing?.email?.trim()) {
+        showAlert("Validation Error", "Email is required! Please enter an email address.", "warning");
+        return;
+      }
+      if (!emailRegex.test(editing.email)) {
+        showAlert("Validation Error", "Invalid Email format! Please enter a valid email (e.g. teacher@example.com).", "warning");
+        return;
+      }
+    } else if (modalType === "cabinet") {
+      if (editing?.email?.trim() && !emailRegex.test(editing.email)) {
+        showAlert("Validation Error", "Invalid Email format! Please enter a valid email (e.g. adan@example.com).", "warning");
+        return;
+      }
     }
-    setModalOpen(false);
-    refresh();
+    try {
+      const id = editing._id || editing.id;
+
+      // Process expertise string into array if it's faculty
+      let payload = { ...editing };
+      if (modalType === "faculty" && typeof payload.expertise === "string") {
+        payload.expertise = payload.expertise.split(",").map(s => s.trim()).filter(Boolean);
+      }
+
+      if (modalType === "cabinet") {
+        if (id) {
+          await updateCabinetMember(id, payload);
+          showAlert("Member updated successfully!", "success");
+        } else {
+          await createCabinetMember(payload);
+          showAlert("Member added successfully!", "success");
+        }
+      } else {
+        if (id) {
+          await updateFaculty(id, payload);
+          showAlert("Faculty updated successfully!", "success");
+        } else {
+          await createFaculty(payload);
+          showAlert("Faculty added successfully!", "success");
+        }
+      }
+      setModalOpen(false);
+      refresh();
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || "Failed to save member";
+      console.error("Save Person Failed:", msg, err);
+      showAlert("Operation Failed", msg, "error");
+    }
   };
 
   const deletePerson = async (id, type) => {
@@ -617,9 +652,12 @@ export default function Dashboard() {
               <div style={{ width: 130, flexShrink: 0, margin: "0 auto" }}>
                 <div className="label" style={{ marginBottom: ".5rem", textAlign: "center" }}>Profile Photo</div>
                 <ImageUploader value={editing.avatar} onChange={(url) => setEditing({ ...editing, avatar: url })} placeholder="Upload Photo" aspectRatio="1" maxSize={256} />
+                <div style={{ fontSize: "0.7rem", color: "rgba(255, 255, 255, 0.45)", textAlign: "center", marginTop: "0.45rem", lineHeight: "1.3" }}>
+                  Use 1:1 Square Pic<br/>Max File Size &lt; 1MB
+                </div>
               </div>
               <div style={{ flex: 1, width: "100%" }}>
-                <div><div className="label">Name</div><input className="input" value={editing.name} onChange={e => setEditing({ ...editing, name: e.target.value })} aria-label="Name" /></div>
+                <div><div className="label">Name <span style={{ color: "var(--accent-red)" }}>*</span></div><input className="input" value={editing.name} onChange={e => setEditing({ ...editing, name: e.target.value })} aria-label="Name" /></div>
               </div>
             </div>
             {modalType === "cabinet" && (
@@ -632,7 +670,49 @@ export default function Dashboard() {
                   <div><div className="label">AG No</div><input className="input" value={editing.agNo} onChange={e => setEditing({ ...editing, agNo: e.target.value })} aria-label="AG Number" /></div>
                   <div><div className="label">Phone</div><input className="input" value={editing.phone} onChange={e => setEditing({ ...editing, phone: e.target.value })} aria-label="Phone" /></div>
                 </div>
-                <div><div className="label">Email</div><input type="email" className="input" value={editing.email} onChange={e => setEditing({ ...editing, email: e.target.value })} aria-label="Email" /></div>
+                <div><div className="label">Email <span style={{ color: "var(--accent-red)" }}>*</span></div><input type="email" className="input" value={editing.email} onChange={e => setEditing({ ...editing, email: e.target.value })} aria-label="Email" /></div>
+                
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.5rem" }}>
+                  <div>
+                    <div className="label">LinkedIn URL</div>
+                    <input 
+                      className="input" 
+                      value={editing.socials?.linkedin || ""} 
+                      onChange={e => setEditing({ 
+                        ...editing, 
+                        socials: { ...(editing.socials || {}), linkedin: e.target.value } 
+                      })} 
+                      placeholder="https://..."
+                      aria-label="LinkedIn URL"
+                    />
+                  </div>
+                  <div>
+                    <div className="label">Instagram URL</div>
+                    <input 
+                      className="input" 
+                      value={editing.socials?.instagram || ""} 
+                      onChange={e => setEditing({ 
+                        ...editing, 
+                        socials: { ...(editing.socials || {}), instagram: e.target.value } 
+                      })} 
+                      placeholder="https://..."
+                      aria-label="Instagram URL"
+                    />
+                  </div>
+                  <div>
+                    <div className="label">Facebook URL</div>
+                    <input 
+                      className="input" 
+                      value={editing.socials?.facebook || ""} 
+                      onChange={e => setEditing({ 
+                        ...editing, 
+                        socials: { ...(editing.socials || {}), facebook: e.target.value } 
+                      })} 
+                      placeholder="https://..."
+                      aria-label="Facebook URL"
+                    />
+                  </div>
+                </div>
               </>
             )}
             {modalType === "faculty" && (
@@ -646,6 +726,10 @@ export default function Dashboard() {
                   <div><div className="label">Experience Years</div><input type="number" className="input" value={editing.experienceYears} onChange={e => setEditing({ ...editing, experienceYears: +e.target.value })} aria-label="Experience years" /></div>
                 </div>
                 <div><div className="label">Education</div><input className="input" value={editing.education} onChange={e => setEditing({ ...editing, education: e.target.value })} aria-label="Education" /></div>
+                <div className="formRow">
+                  <div><div className="label">Email <span style={{ color: "var(--accent-red)" }}>*</span></div><input type="email" className="input" value={editing.email || ""} onChange={e => setEditing({ ...editing, email: e.target.value })} aria-label="Email" /></div>
+                  <div><div className="label">Phone</div><input className="input" value={editing.phone || ""} onChange={e => setEditing({ ...editing, phone: e.target.value })} aria-label="Phone" /></div>
+                </div>
                 <div><div className="label">Expertise (comma sep)</div><input className="input" value={editing.expertise || ""} onChange={e => setEditing({ ...editing, expertise: e.target.value })} aria-label="Expertise areas" /></div>
               </>
             )}

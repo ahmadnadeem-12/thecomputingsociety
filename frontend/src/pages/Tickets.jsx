@@ -21,6 +21,51 @@ export default function Tickets() {
   const [isLoading, setIsLoading] = useState(false);
   const [err, setErr] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState("");
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    const lastResend = localStorage.getItem("verification_resend_cooldown");
+    if (lastResend) {
+      const remaining = Math.ceil((parseInt(lastResend) - Date.now()) / 1000);
+      if (remaining > 0) {
+        setCooldown(remaining);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setInterval(() => {
+        setCooldown(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [cooldown]);
+
+  const handleResendMail = async () => {
+    if (cooldown > 0) return;
+    setResendLoading(true);
+    setResendMessage("");
+    try {
+      await api.post(`/auth/users/${user._id || user.id}/resend-verify`);
+      setResendMessage("✉️ Verification email resent successfully!");
+      const targetTime = Date.now() + 120 * 1000;
+      localStorage.setItem("verification_resend_cooldown", targetTime);
+      setCooldown(120);
+    } catch (err) {
+      setResendMessage(err.response?.data?.message || "Failed to resend email.");
+    } finally {
+      setResendLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (isAuthed) {
@@ -179,7 +224,22 @@ export default function Tickets() {
           <p className="sectionSubtitle" style={{ maxWidth: "500px", margin: "0 auto 2.5rem" }}>
             Please check your email and verify your account to access the official ticketing platform.
           </p>
-          <button className="btn btnPrimary" style={{ padding: "1rem 3rem", borderRadius: "15px" }} onClick={() => window.location.reload()}>🔄 I'VE VERIFIED</button>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
+            <button className="btn btnPrimary" style={{ padding: "1rem 3rem", borderRadius: "15px" }} onClick={() => window.location.reload()}>🔄 I'VE VERIFIED</button>
+            <button 
+              className="btn btnGhost" 
+              style={{ padding: "0.8rem 2.5rem", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.15)", fontSize: "0.9rem", cursor: cooldown > 0 ? "not-allowed" : "pointer" }} 
+              onClick={handleResendMail}
+              disabled={resendLoading || cooldown > 0}
+            >
+              {resendLoading ? "⏳ SENDING..." : cooldown > 0 ? `📧 RESEND IN ${Math.floor(cooldown / 60)}:${(cooldown % 60).toString().padStart(2, "0")}` : "📧 RESEND EMAIL"}
+            </button>
+            {resendMessage && (
+              <p style={{ fontSize: "0.9rem", color: "var(--accent-cyan)", fontWeight: 700, margin: "0.5rem 0 0 0" }}>
+                {resendMessage}
+              </p>
+            )}
+          </div>
         </div>
       ) : (
         <>
