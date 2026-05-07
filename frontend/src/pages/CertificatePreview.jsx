@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { downloadCertificatePDF } from "../services/pdfService";
 import "../assets/styles/pages/certificate-preview.css";
+import awardSealImg from "../assets/images/award-seal.png";
 
 /* ── Small SVG icons (exactly like the reference image) ── */
 const CalendarSvg = () => (
@@ -11,6 +12,14 @@ const CalendarSvg = () => (
     <line x1="8" y1="2" x2="8" y2="6" />
     <line x1="3" y1="10" x2="21" y2="10" />
     <rect x="7" y="14" width="3" height="3" rx="0.5" fill="currentColor" stroke="none" />
+  </svg>
+);
+
+const LocationSvg = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+    <circle cx="12" cy="10" r="3" />
   </svg>
 );
 
@@ -28,14 +37,14 @@ const Dots = ({ n = 18 }) =>
 export default function CertificatePreview() {
   const location = useLocation();
   const nav = useNavigate();
-  
+
   // Get data from location state or fallback to hardcoded (for testing)
   const d = location.state || {
-    name: "Sample Name",
-    agNo: "20xx-AG-xxxx",
+    name: "AHMAD NADEEM",
+    agNo: "2022-AG-0909",
     eventTitle: "Industry Expert Talk Series",
     eventDate: "2026-01-10",
-    description: 'For participating in "Industry Expert Talk Series" organized by The Computing Society, University of Agriculture Faisalabad.'
+    description: 'For participating in "Industry Expert Talk Series"  organized by The Computing Society, University of Agriculture Faisalabad.'
   };
 
   return (
@@ -44,7 +53,10 @@ export default function CertificatePreview() {
         <div className="certFrame">
           <div className="certCard">
             {/* corners */}
-            <div className="cornerTL" />
+            <div className="cornerTL">
+              <div className="top-left-accent" />
+              <div className="top-left-dots" />
+            </div>
             <div className="cornerBL" />
             <div className="cornerBR" />
             <div className="accentBar" />
@@ -85,13 +97,18 @@ export default function CertificatePreview() {
               <h2 className="certName">{d.name}</h2>
 
               {/* AG pill */}
-              <div className="certAg">AG No: {d.agNo}</div>
+              <div className="certAg"><span className="agDot agDot--pink">♦</span> AG No: {d.agNo} <span className="agDot agDot--blue">♦</span></div>
 
-              {/* Description */}
               <p className="certDesc">
-                For participating in <strong>"{d.eventTitle}"</strong> organized by
-                The Computing Society, University of Agriculture Faisalabad.
+                For participating in <strong>"{d.eventTitle}"</strong> organized by The Computing Society, University of Agriculture Faisalabad.
               </p>
+
+              {/* Centered Diamond and Lines Divider in natural flow */}
+              <div className="certDescDivider">
+                <div className="descDivLine descDivLine--left" />
+                <div className="descDivDiamond" />
+                <div className="descDivLine descDivLine--right" />
+              </div>
 
               {/* ══ Footer ══ */}
               <div className="certFooter">
@@ -105,22 +122,12 @@ export default function CertificatePreview() {
 
                 <div className="fDiv" />
 
-                {/* Centre — Date + Badge */}
+                {/* Centre — Venue */}
                 <div className="fCol fCentre">
-                  <div className="fIcon"><CalendarSvg /></div>
-                  <div className="fLabel fLabel--blue">DATE</div>
-                  <div className="fValue" style={{ marginBottom: "0.8rem" }}>
-                    {d.eventDate}
-                  </div>
-
-                  {/* Badge seal */}
-                  <div className="badgeSeal">
-                    <div className="badgeStar" />
-                    <div className="badgeRing">
-                      <span className="badgeStars">★ ★ ★</span>
-                      <span className="badgeCode">&lt;/&gt;</span>
-                    </div>
-                  </div>
+                  <div className="fIcon"><LocationSvg /></div>
+                  <div className="fLabel fLabel--blue">VENUE</div>
+                  <div className="fValue">according to event</div>
+                  <div className="fValue">{d.eventDate}</div>
                 </div>
 
                 <div className="fDiv" />
@@ -132,6 +139,9 @@ export default function CertificatePreview() {
                   <div className="fSig">The Computing Society</div>
                   <div className="fSigLine" />
                 </div>
+
+                {/* Badge seal — positioned absolutely at bottom center overlapping the border */}
+                <img src={awardSealImg} className="badgeSeal" alt="Award Seal Badge" />
               </div>
             </div>
           </div>
