@@ -383,126 +383,186 @@ export default function Tickets() {
                 const ev = t.eventId || t.programId;
                 const publicId = t.publicTicketId || t._id;
                 return (
-                  <div key={t._id} className="expandableTicket expanded" style={{ border: "1px solid rgba(255,255,255,0.1)", borderRadius: "24px", overflow: "hidden", background: "rgba(10,15,35,0.5)", marginBottom: "1.5rem", position: "relative", boxShadow: "0 15px 35px rgba(0,0,0,0.4)" }}>
-                    <div className="horizontalTicket expandedHorizontal horizontalTicketMobile" style={{ background: "transparent", margin: 0, width: "100%", padding: "1.5rem 2rem", display: "flex", alignItems: "center" }}>
+                  <div key={t._id} className="expandableTicket expanded group" style={{ 
+                    border: "1.5px solid rgba(255, 45, 149, 0.5)", 
+                    borderRadius: "24px", 
+                    overflow: "hidden", 
+                    background: "linear-gradient(145deg, rgba(20, 22, 35, 0.8) 0%, rgba(10, 12, 20, 0.95) 100%)", 
+                    backdropFilter: "blur(20px)",
+                    marginBottom: "2rem", 
+                    position: "relative", 
+                    boxShadow: "0 0 15px rgba(255, 45, 149, 0.15), 0 25px 50px rgba(0,0,0,0.5), inset 0 2px 0 rgba(255,255,255,0.08)",
+                    transition: "all 0.3s ease"
+                  }}>
+                    {/* Soft Glowing Background Orbs */}
+                    <div style={{ position: "absolute", top: "-20%", left: "-10%", width: "50%", height: "50%", background: "var(--accent-pink)", filter: "blur(100px)", opacity: 0.15, pointerEvents: "none" }} />
+                    <div style={{ position: "absolute", bottom: "-20%", right: "-10%", width: "50%", height: "50%", background: "var(--accent-cyan)", filter: "blur(100px)", opacity: 0.15, pointerEvents: "none" }} />
 
-                      {/* QR SECTION */}
-                      <div className="ticketQrSection" style={{ width: "200px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", borderRight: "1px solid rgba(255,255,255,0.1)", paddingRight: "2rem" }}>
-                        <div style={{ background: "#fff", padding: "12px", borderRadius: "20px", boxShadow: "0 8px 25px rgba(0,0,0,0.3)" }}>
+                    <div className="horizontalTicket expandedHorizontal horizontalTicketMobile" style={{ background: "transparent", margin: 0, width: "100%", padding: 0, display: "flex", alignItems: "stretch" }}>
+
+                      {/* QR SECTION (Tear-away stub) */}
+                      <div className="ticketQrSection" style={{ 
+                        width: "220px", 
+                        padding: "1.5rem", 
+                        display: "flex", 
+                        flexDirection: "column", 
+                        alignItems: "center", 
+                        justifyContent: "center", 
+                        borderRight: "2px dashed rgba(255,255,255,0.25)", 
+                        background: "rgba(0,0,0,0.2)",
+                        position: "relative"
+                      }}>
+                        {/* Notch Top */}
+                        <div style={{ position: "absolute", top: "-16px", right: "-16px", width: "30px", height: "30px", background: "var(--bg-main, #090e1e)", borderRadius: "50%", borderBottom: "1.5px solid rgba(255, 45, 149, 0.5)" }} />
+                        {/* Notch Bottom */}
+                        <div style={{ position: "absolute", bottom: "-16px", right: "-16px", width: "30px", height: "30px", background: "var(--bg-main, #090e1e)", borderRadius: "50%", borderTop: "1.5px solid rgba(255, 45, 149, 0.5)" }} />
+
+                        <div style={{ background: "#fff", padding: "12px", borderRadius: "16px", boxShadow: "0 10px 30px rgba(0,0,0,0.3)" }}>
                           <QRCodeCanvas value={publicId} size={130} level="H" />
                         </div>
-                        <div style={{ marginTop: "12px", letterSpacing: "2px", fontSize: "0.7rem", color: "rgba(255,255,255,0.4)", fontWeight: 800, textTransform: "uppercase" }}>SCAN AT ENTRY</div>
+                        <div style={{ marginTop: "1rem", letterSpacing: "3px", fontSize: "0.7rem", color: "rgba(255,255,255,0.4)", fontWeight: 800, textTransform: "uppercase" }}>SCAN TO VERIFY</div>
                       </div>
 
                       {/* INFO SECTION */}
-                      <div className="ticketInfoCol" style={{ flex: 1, padding: "0 2.5rem", display: "flex", flexDirection: "column", gap: "1.2rem" }}>
-                        <h3 className="ticketTitle" style={{ fontSize: "1.8rem", fontWeight: 950, color: "var(--accent-pink)", margin: 0, letterSpacing: "0.5px", textShadow: "0 0 20px rgba(255, 45, 149, 0.2)" }}>{ev?.title || "VERIFIED PASS"}</h3>
+                      <div className="ticketInfoCol" style={{ flex: 1, padding: "1.5rem", display: "flex", flexDirection: "column", justifyContent: "space-between", zIndex: 1 }}>
+                        
+                        {/* Top Area: Title & ID */}
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem", paddingBottom: "1.2rem", borderBottom: "1px solid rgba(255, 255, 255, 0.1)", gap: "1rem", flexWrap: "wrap" }}>
+                          <div>
+                            <div style={{ display: "inline-block", padding: "4px 12px", background: "rgba(34, 211, 238, 0.08)", border: "1px solid rgba(34, 211, 238, 0.2)", borderRadius: "100px", color: "var(--accent-cyan)", fontSize: "0.65rem", fontWeight: 800, letterSpacing: "1.5px", textTransform: "uppercase", marginBottom: "0.8rem" }}>
+                              Official Delegate Pass
+                            </div>
+                            <h3 className="ticketTitle" style={{ fontSize: "1.8rem", fontWeight: 900, color: "#fff", margin: 0, letterSpacing: "-0.5px", lineHeight: 1.1 }}>{ev?.title || "VERIFIED EVENT PASS"}</h3>
+                          </div>
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                            <span style={{ color: "rgba(255,255,255,0.3)", fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", marginBottom: "6px" }}>TICKET ID</span>
+                            <div style={{ fontFamily: "monospace", fontSize: "1.05rem", color: "#fff", fontWeight: 800, letterSpacing: "1.5px", background: "linear-gradient(90deg, #ff2d95, #a855f7)", padding: "6px 16px", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.2)", boxShadow: "0 0 15px rgba(255, 45, 149, 0.3)", textShadow: "0 2px 4px rgba(0,0,0,0.4)" }}>
+                              {publicId}
+                            </div>
+                          </div>
+                        </div>
 
-                        <div className="ticketContentGrid" style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "1.5rem" }}>
+                        {/* Middle Area: Grid Data */}
+                        <div className="ticketContentGrid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "1.5rem", marginBottom: "1rem", padding: "1.2rem", background: "rgba(255,255,255,0.03)", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "inset 0 0 20px rgba(0,0,0,0.2)" }}>
                           <div style={{ display: "flex", flexDirection: "column" }}>
-                            <span style={{ fontSize: "0.7rem", fontWeight: 900, color: "rgba(255,255,255,0.3)", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "1px" }}>DATE</span>
+                            <span style={{ fontSize: "0.7rem", fontWeight: 600, color: "rgba(255,255,255,0.4)", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "1px" }}>DATE</span>
                             <span style={{ color: "#fff", fontSize: "1rem", fontWeight: 700 }}>{ev?.date ? formatDate(ev.date) : (ev?.startDate || "TBA")}</span>
                           </div>
                           <div style={{ display: "flex", flexDirection: "column" }}>
-                            <span style={{ fontSize: "0.7rem", fontWeight: 900, color: "rgba(255,255,255,0.3)", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "1px" }}>TIME/DURATION</span>
+                            <span style={{ fontSize: "0.7rem", fontWeight: 600, color: "rgba(255,255,255,0.4)", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "1px" }}>TIME / DURATION</span>
                             <span style={{ color: "#fff", fontSize: "1rem", fontWeight: 700 }}>{ev?.time || ev?.duration || "TBA"}</span>
                           </div>
                           <div style={{ display: "flex", flexDirection: "column" }}>
-                            <span style={{ fontSize: "0.7rem", fontWeight: 900, color: "rgba(255,255,255,0.3)", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "1px" }}>DEPARTMENT</span>
-                            <span style={{ color: "#fff", fontSize: "1rem", fontWeight: 700 }}>{t.department}</span>
+                            <span style={{ fontSize: "0.7rem", fontWeight: 600, color: "rgba(255,255,255,0.4)", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "1px" }}>DEPARTMENT</span>
+                            <span style={{ color: "var(--accent-cyan)", fontSize: "1rem", fontWeight: 700 }}>{t.department}</span>
                           </div>
                           <div style={{ display: "flex", flexDirection: "column" }}>
-                            <span style={{ fontSize: "0.7rem", fontWeight: 900, color: "rgba(255,255,255,0.3)", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "1px" }}>SEMESTER</span>
-                            <span style={{ color: "#fff", fontSize: "1.1rem", fontWeight: 800 }}>{t.semester}</span>
-                          </div>
-                          <div style={{ display: "flex", flexDirection: "column" }}>
-                            <span style={{ fontSize: "0.7rem", fontWeight: 900, color: "rgba(255,255,255,0.3)", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "1px" }}>AG NO</span>
-                            <span style={{ color: "#fff", fontSize: "1.1rem", fontWeight: 800 }}>{t.agNo}</span>
+                            <span style={{ fontSize: "0.7rem", fontWeight: 600, color: "rgba(255,255,255,0.4)", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "1px" }}>SEMESTER</span>
+                            <span style={{ color: "#fff", fontSize: "1rem", fontWeight: 700 }}>{t.semester}</span>
                           </div>
                         </div>
 
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>
-                          <div>
-                            <span style={{ fontSize: "0.7rem", fontWeight: 900, color: "rgba(255,255,255,0.3)", marginBottom: "4px", display: "block", textTransform: "uppercase", letterSpacing: "1px" }}>EMAIL</span>
-                            <span style={{ color: "rgba(255,255,255,0.8)", fontSize: "1.1rem", fontWeight: 600 }}>{t.email}</span>
+                        {/* Bottom Area: User Info & Actions */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1.5rem", flexWrap: "wrap", borderTop: "1px solid rgba(255, 255, 255, 0.1)", paddingTop: "1.2rem" }}>
+                          
+                          {/* User Details */}
+                          <div style={{ display: "flex", alignItems: "center", gap: "1.2rem" }}>
+                            <div style={{ width: "42px", height: "42px", borderRadius: "12px", background: "linear-gradient(135deg, var(--accent-pink), var(--accent-cyan))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", fontWeight: 800, color: "#fff", boxShadow: "0 8px 16px rgba(0,0,0,0.3)" }}>
+                              {t.name?.charAt(0).toUpperCase()}
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column" }}>
+                              <span style={{ fontSize: "0.65rem", fontWeight: 600, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "2px" }}>ISSUED TO</span>
+                              <strong style={{ color: "#fff", fontSize: "1.05rem", fontWeight: 800, letterSpacing: "-0.2px", lineHeight: 1.2 }}>{capitalizeTitle(t.name)}</strong>
+                              <span style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.8rem", fontWeight: 500, marginTop: "2px" }}>{t.agNo} • {t.email}</span>
+                            </div>
                           </div>
-                          <div style={{ fontSize: "1.1rem" }}>
-                            <span style={{ color: "rgba(255,255,255,0.5)", fontWeight: 500 }}>Issued to: </span>
-                            <strong style={{ color: "#fff", fontWeight: 900 }}>{capitalizeTitle(t.name)}</strong>
+
+                          {/* Action Buttons */}
+                          <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
+                            <button
+                              style={{
+                                borderRadius: "12px",
+                                padding: "10px 20px",
+                                fontSize: "0.85rem",
+                                fontWeight: 700,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: "8px",
+                                background: "rgba(255,255,255,0.05)",
+                                border: "1px solid rgba(255,255,255,0.15)",
+                                color: "#fff",
+                                cursor: "pointer",
+                                transition: "all 0.3s ease",
+                                backdropFilter: "blur(10px)"
+                              }}
+                              onClick={(e) => {
+                                const canvas = e.currentTarget.closest(".expandableTicket").querySelector("canvas");
+                                const data = {
+                                  ...t,
+                                  eventTitle: ev?.title,
+                                  eventDate: ev?.date ? formatDate(ev.date) : (ev?.startDate || "TBA"),
+                                  eventTime: ev?.time || ev?.duration || "TBA",
+                                  id: t.publicTicketId || t._id
+                                };
+                                downloadTicketPDF(data, canvas?.toDataURL());
+                              }}
+                              onMouseOver={(e) => {
+                                e.currentTarget.style.background = "rgba(255,255,255,0.1)";
+                                e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)";
+                                e.currentTarget.style.transform = "translateY(-2px)";
+                              }}
+                              onMouseOut={(e) => {
+                                e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+                                e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+                                e.currentTarget.style.transform = "translateY(0)";
+                              }}
+                            >
+                              <span style={{ fontSize: "1.1rem" }}>📥</span> DOWNLOAD PDF
+                            </button>
+
+                            {t.checkedIn && (
+                              <button
+                                style={{
+                                  borderRadius: "12px",
+                                  padding: "10px 20px",
+                                  fontSize: "0.85rem",
+                                  fontWeight: 700,
+                                  color: "#10b981",
+                                  background: "rgba(16, 185, 129, 0.08)",
+                                  border: "1px solid rgba(16, 185, 129, 0.2)",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  cursor: "pointer",
+                                  gap: "8px",
+                                  transition: "all 0.3s ease",
+                                  boxShadow: "0 0 20px rgba(16, 185, 129, 0.1)"
+                                }}
+                                onClick={() => {
+                                  const certData = {
+                                    ...t,
+                                    eventTitle: ev?.title,
+                                    eventDate: ev?.date ? formatDate(ev.date) : (ev?.startDate || "TBA")
+                                  };
+                                  downloadCertificatePDF(certData);
+                                }}
+                                onMouseOver={(e) => {
+                                  e.currentTarget.style.background = "rgba(16, 185, 129, 0.15)";
+                                  e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.3)";
+                                  e.currentTarget.style.transform = "translateY(-2px)";
+                                }}
+                                onMouseOut={(e) => {
+                                  e.currentTarget.style.background = "rgba(16, 185, 129, 0.08)";
+                                  e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.2)";
+                                  e.currentTarget.style.transform = "translateY(0)";
+                                }}
+                              >
+                                <span style={{ fontSize: "1.1rem" }}>📜</span> CERTIFICATE
+                              </button>
+                            )}
                           </div>
                         </div>
 
-                        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "0.5rem" }}>
-                          <span style={{ color: "rgba(255,255,255,0.3)", fontSize: "0.85rem", fontWeight: 600 }}>Ticket ID:</span>
-                          <div style={{ background: "rgba(34, 211, 238, 0.05)", border: "1px solid rgba(34, 211, 238, 0.2)", padding: "6px 18px", borderRadius: "100px", color: "var(--accent-cyan)", fontSize: "0.85rem", fontWeight: 600, letterSpacing: "0.5px" }}>
-                            {publicId}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* ACTION SECTION */}
-                      <div className="ticketActionCol" style={{ width: "260px", display: "flex", flexDirection: "column", gap: "12px", justifyContent: "center", alignItems: "flex-end", paddingLeft: "1rem" }}>
-                        <button
-                          className="btn btnPrimary"
-                          style={{
-                            borderRadius: "50px",
-                            height: "60px",
-                            padding: "0 2rem",
-                            fontSize: "1rem",
-                            fontWeight: 900,
-                            width: "100%",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: "10px",
-                            background: "linear-gradient(90deg, #ff2d95, #a855f7)",
-                            border: "none",
-                            boxShadow: "0 0 35px rgba(168, 85, 247, 0.3)",
-                            transition: "all 0.3s ease"
-                          }}
-                          onClick={(e) => {
-                            const canvas = e.currentTarget.closest(".expandableTicket").querySelector("canvas");
-                            const data = {
-                              ...t,
-                              eventTitle: ev?.title,
-                              eventDate: ev?.date ? formatDate(ev.date) : (ev?.startDate || "TBA"),
-                              eventTime: ev?.time || ev?.duration || "TBA",
-                              id: t.publicTicketId || t._id
-                            };
-                            downloadTicketPDF(data, canvas?.toDataURL());
-                          }}
-                          onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.03)"}
-                          onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
-                        >
-                          <span style={{ fontSize: "1.4rem" }}>📥</span> DOWNLOAD PDF
-                        </button>
-
-                        {t.checkedIn && (
-                          <button
-                            className="btn"
-                            style={{
-                              width: "100%",
-                              borderRadius: "50px",
-                              padding: "10px 20px",
-                              fontSize: "0.85rem",
-                              fontWeight: 900,
-                              color: "#ffd700",
-                              background: "rgba(255, 215, 0, 0.1)",
-                              border: "1px solid rgba(255, 215, 0, 0.3)",
-                              boxShadow: "0 0 15px rgba(255, 215, 0, 0.1)"
-                            }}
-                            onClick={() => {
-                              const certData = {
-                                ...t,
-                                eventTitle: ev?.title,
-                                eventDate: ev?.date ? formatDate(ev.date) : (ev?.startDate || "TBA")
-                              };
-                              downloadCertificatePDF(certData);
-                            }}
-                          >
-                            📜 DOWNLOAD CERTIFICATE
-                          </button>
-                        )}
                       </div>
                     </div>
                   </div>

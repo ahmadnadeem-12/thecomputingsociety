@@ -127,10 +127,11 @@ export default function Home() {
 
             {/* Desktop Title - 3 Lines (Refined Weight 600) */}
             <div className="heroTitle desktopOnly" style={{
-              fontSize: "clamp(2.5rem, 4.5vw, 3.8rem)",
-              lineHeight: "0.92",
-              marginBottom: "1.2rem",
-              fontWeight: "600",
+              fontSize: "clamp(3.5rem, 6vw, 5.5rem)",
+              lineHeight: "0.95",
+              marginBottom: "1.5rem",
+              fontWeight: "700",
+              letterSpacing: "-0.02em"
             }}>
               <div style={{ color: "var(--accent-red)" }}>THE</div>
               <div style={{ color: "var(--accent-pink)" }}>COMPUTING</div>
@@ -138,12 +139,12 @@ export default function Home() {
             </div>
 
             <div className="heroDescription desktopOnly" style={{
-              maxWidth: "450px",
+              maxWidth: "600px",
               textAlign: "left",
-              fontSize: "1.05rem",
+              fontSize: "1.3rem",
               lineHeight: "1.8",
-              color: "rgba(255,255,255,0.5)",
-              marginBottom: "1.5rem",
+              color: "rgba(255,255,255,0.7)",
+              marginBottom: "2rem",
               fontWeight: "500"
             }}>
               The official hub for Computer Science excellence at UAF.
@@ -486,10 +487,10 @@ export default function Home() {
 
         {/* Features - Desktop Version */}
         <div className="desktopOnly">
-          <div className="sectionHeader" style={{ marginBottom: "1rem" }}>
+          <div className="sectionHeader" style={{ marginBottom: "1.5rem" }}>
             <div>
-              <div className="sectionTitle" style={{ fontSize: "1.3rem" }}>What We Offer</div>
-              <div className="sectionSubtitle">Programs designed to elevate your skills</div>
+              <div className="sectionTitle" style={{ fontSize: "1.8rem", fontWeight: "800" }}>What We Offer</div>
+              <div className="sectionSubtitle" style={{ fontSize: "1.05rem", color: "rgba(255,255,255,0.6)", marginTop: "0.25rem" }}>Programs designed to elevate your skills</div>
             </div>
           </div>
 
@@ -613,7 +614,7 @@ export default function Home() {
 
             <div className="barFooterContent">
               <div className="barFooterTitle">THE COMPUTING SOCIETY</div>
-              <div className="barFooterSub">Built with ❤️ for UAF • Final Year Project</div>
+              <div className="barFooterSub">Built with ❤️ for UAF</div>
               <div className="barFooterMeta">© 2025-26 Cabinet • Dept. of Computer Science</div>
             </div>
           </div>

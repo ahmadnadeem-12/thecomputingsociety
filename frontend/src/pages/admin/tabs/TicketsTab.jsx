@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Html5Qrcode } from "html5-qrcode";
-import { checkInByQrCode } from "../../../services/ticketService";
+import { checkInByQrCode, deleteTicket } from "../../../services/ticketService";
 import "../../../assets/styles/pages/adminTickets.css";
 
 export default function TicketsTab({
@@ -21,6 +20,9 @@ export default function TicketsTab({
     const [torchActive, setTorchActive] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
 
+    // Custom Delete Modal State
+    const [deleteModal, setDeleteModal] = useState({ show: false, ticketId: null, ticketName: "", ticketAgNo: "" });
+
     // Filter tickets based on search
     const filteredTickets = tickets.filter(t => {
         if (!searchQuery.trim()) return true;
@@ -33,6 +35,20 @@ export default function TicketsTab({
             (t.email || "").toLowerCase().includes(q)
         );
     });
+
+    const handleDelete = (ticketId, ticketName, ticketAgNo) => {
+        setDeleteModal({ show: true, ticketId, ticketName, ticketAgNo });
+    };
+
+    const confirmDelete = async () => {
+        const success = await deleteTicket(deleteModal.ticketId);
+        if (success) {
+            setDeleteModal({ show: false, ticketId: null, ticketName: "", ticketAgNo: "" });
+            refresh();
+        } else {
+            alert("Failed to delete ticket.");
+        }
+    };
 
     // Start QR Scanner
     const startScanner = async () => {
@@ -420,6 +436,14 @@ export default function TicketsTab({
                                 <span className={`ticketStatus ${t.checkedIn ? 'checked' : 'pending'}`}>
                                     {t.checkedIn ? '✓ Checked In' : '⏳ Pending'}
                                 </span>
+                                <button
+                                    className="deleteBtn"
+                                    onClick={() => handleDelete(t.id, t.name, t.agNo)}
+                                    title="Delete Ticket"
+                                    style={{ marginLeft: '10px' }}
+                                >
+                                    🗑️ Delete
+                                </button>
                             </div>
                         </div>
                     );
@@ -437,6 +461,98 @@ export default function TicketsTab({
                     </div>
                 )}
             </div>
+
+            {/* Custom Delete Confirmation Modal */}
+            {deleteModal.show && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)',
+                    zIndex: 9999,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '1rem'
+                }} onClick={() => setDeleteModal({ show: false })}>
+                    <div style={{
+                        background: 'linear-gradient(145deg, #1a1025 0%, #0f0819 100%)',
+                        border: '1px solid rgba(255, 77, 109, 0.3)',
+                        borderRadius: '16px',
+                        width: '100%',
+                        maxWidth: '400px', /* Small and compact */
+                        padding: '1.5rem',
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.5), 0 0 20px rgba(255,77,109,0.1)',
+                        textAlign: 'center',
+                        position: 'relative',
+                        animation: 'fadeIn 0.2s ease-out'
+                    }} onClick={(e) => e.stopPropagation()}>
+                        
+                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🗑️</div>
+                        
+                        <h3 style={{ 
+                            color: '#fff', 
+                            fontSize: '1.25rem', 
+                            margin: '0 0 0.5rem 0',
+                            fontWeight: '700'
+                        }}>
+                            Delete Registration?
+                        </h3>
+                        
+                        <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.95rem', margin: '0 0 0.5rem 0' }}>
+                            Are you sure you want to delete <strong style={{color: '#fff'}}>{deleteModal.ticketName}</strong>?
+                        </p>
+                        
+                        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', margin: '0 0 1.25rem 0', fontFamily: 'monospace' }}>
+                            {deleteModal.ticketAgNo}
+                        </p>
+
+                        <div style={{ 
+                            display: 'flex', 
+                            gap: '0.75rem', 
+                            justifyContent: 'center',
+                            flexWrap: 'wrap'
+                        }}>
+                            <button 
+                                onClick={() => setDeleteModal({ show: false })}
+                                style={{
+                                    flex: '1',
+                                    minWidth: '120px',
+                                    padding: '0.6rem 1rem',
+                                    borderRadius: '8px',
+                                    border: '1px solid rgba(255,255,255,0.2)',
+                                    background: 'transparent',
+                                    color: '#fff',
+                                    cursor: 'pointer',
+                                    fontWeight: '600',
+                                    fontSize: '0.9rem'
+                                }}
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                onClick={confirmDelete}
+                                style={{
+                                    flex: '1',
+                                    minWidth: '120px',
+                                    padding: '0.6rem 1rem',
+                                    borderRadius: '8px',
+                                    border: 'none',
+                                    background: 'linear-gradient(90deg, #ff4d6d, #dc2743)',
+                                    color: '#fff',
+                                    cursor: 'pointer',
+                                    fontWeight: '600',
+                                    fontSize: '0.9rem',
+                                    boxShadow: '0 4px 15px rgba(255,77,109,0.3)'
+                                }}
+                            >
+                                Yes, Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

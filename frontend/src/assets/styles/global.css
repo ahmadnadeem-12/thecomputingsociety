@@ -188,7 +188,7 @@ textarea {
 
 .layout {
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
+  grid-template-columns: 20% minmax(0, 1fr);
   min-height: 100vh;
   position: relative;
 }
@@ -223,7 +223,7 @@ textarea {
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  scrollbar-color: #c234a5 transparent;
 }
 
 .sidebar::-webkit-scrollbar {
@@ -235,12 +235,12 @@ textarea {
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(180deg, #dc2743, #c234a5);
   border-radius: 10px;
 }
 
 .sidebar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: linear-gradient(180deg, #ff4d6d, #d142b6);
 }
 
 .sidebar::before {
@@ -710,14 +710,14 @@ textarea {
 
 .logoCircle {
   position: relative;
-  width: 55px;
-  height: 55px;
+  width: 75px;
+  height: 75px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 900;
-  font-size: 0.95rem;
+  font-size: 1.35rem;
   letter-spacing: 0.08em;
   color: var(--text-main);
   background: linear-gradient(145deg, var(--tcs-logo-start) 0%, var(--tcs-logo-middle) 50%, var(--tcs-logo-end) 100%);
@@ -907,11 +907,11 @@ textarea {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0.9rem;
-  padding: 0.85rem 1.25rem;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
   border-radius: var(--radius-full);
   color: var(--sidebar-text);
-  font-size: 1.05rem;
+  font-size: 1.25rem;
   font-weight: 500;
   letter-spacing: 0.01em;
   border: 1px solid transparent;

@@ -198,24 +198,24 @@ export default function Navbar() {
             <div className="logoShine" />
           </motion.div>
           <div className="sidebarBranding">
-            <div className="brandingTitle" style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-              <div className="brandThe" style={{ color: "#ff3366", fontSize: "1.3rem", fontWeight: 900, letterSpacing: "0.18em", lineHeight: "1" }}>THE</div>
+            <div className="brandingTitle" style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+              <div className="brandThe" style={{ color: "#ff3366", fontSize: "1.6rem", fontWeight: 900, letterSpacing: "0.18em", lineHeight: "1" }}>THE</div>
               <div className="brandComputing" style={{ 
-                fontSize: "1.3rem", 
+                fontSize: "1.6rem", 
                 fontWeight: 900,
                 color: "#c234a5",
                 letterSpacing: "0.12em",
                 lineHeight: "1"
               }}>COMPUTING</div>
               <div className="brandSociety" style={{ 
-                fontSize: "1.3rem", 
+                fontSize: "1.6rem", 
                 fontWeight: 900,
                 color: "#00d9ff",
                 letterSpacing: "0.12em",
                 lineHeight: "1"
               }}>SOCIETY</div>
             </div>
-            <div className="brandingSubtitle" style={{ fontSize: "0.65rem", marginTop: "4px" }}>DEPT. OF COMPUTER SCIENCE</div>
+            <div className="brandingSubtitle" style={{ fontSize: "0.85rem", marginTop: "8px", fontWeight: "600", color: "rgba(255,255,255,0.7)" }}>DEPT. OF COMPUTER SCIENCE</div>
           </div>
           <div className="headerGlow" />
         </motion.div>
@@ -267,9 +267,9 @@ export default function Navbar() {
         >
           <div style={{
             color: "var(--text-dim)",
-            fontSize: "0.72rem",
+            fontSize: "1.2rem",
             textAlign: "center",
-            opacity: 0.75,
+            opacity: 1,
           }}>
             <div style={{ marginBottom: "0.25rem" }}>© TCS • UAF</div>
             <div style={{

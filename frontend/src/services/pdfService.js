@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
 import footerLogo from '../assets/images/footer-logo.png';
 import headerLogo from '../assets/images/header-logo.png';
+import pageBorder from '../assets/images/page-border.png';
 
 // ════════════════════════════════════════════════════════════
 //  HELPERS
@@ -30,19 +31,67 @@ function drawPageHeader(doc, W, H) {
   doc.setFillColor(TK_BG[0], TK_BG[1], TK_BG[2]);
   doc.rect(0, 0, W, H, 'F');
 
-  // Draw the gorgeous custom header image at the top center
-  const headW = 150;
-  const headH = 30;
-  doc.addImage(headerLogo, 'PNG', W / 2 - headW / 2, 4, headW, headH);
+  // Draw the custom cyberpunk page border image covering the entire A4 canvas
+  doc.addImage(pageBorder, 'PNG', 0, 0, W, H);
 
-  return 35;
+  // Draw the gorgeous custom header image at the top center with a 5% (15mm) top margin
+  const headW = 150;
+  const headH = 34;
+  doc.addImage(headerLogo, 'PNG', W / 2 - headW / 2, 13, headW, headH);
+
+  return 55;
 }
 
 function drawPageFooter(doc, W, H) {
-  // Push the logo further down to overflow its empty black bottom padding off the page, aligning the actual logo content right to the bottom edge
+  // 1. Center Footer Logo (Adjusted to sit precisely at 8mm bottom margin)
   const logoW = 85;
   const logoH = 45;
-  doc.addImage(footerLogo, 'PNG', W / 2 - logoW / 2, H - logoH + 10, logoW, logoH);
+  doc.addImage(footerLogo, 'PNG', W / 2 - logoW / 2, H - logoH + 3, logoW, logoH);
+
+  // 2. Left Side Slogan: "Thank you for being a" & "part of our community."
+  doc.setFontSize(10.5);
+  doc.setFont('helvetica', 'bold');
+  const footerY1 = H - 20; // Set precisely with a 10mm bottom margin
+  const footerY2 = H - 15;
+  const footerX = 23;
+
+  // Line 1: "Thank you for being a" (White)
+  doc.setTextColor(255, 255, 255);
+  doc.text("Thank you for being a", footerX, footerY1);
+
+  // Line 2: "part of our community."
+  doc.setTextColor(255, 255, 255);
+  doc.text("part of ", footerX, footerY2);
+  let curX = footerX + doc.getTextWidth("part of ");
+
+  doc.setTextColor(TK_PRP[0], TK_PRP[1], TK_PRP[2]); // Purple
+  doc.text("our ", curX, footerY2);
+  curX += doc.getTextWidth("our ");
+
+  doc.setTextColor(TK_PINK[0], TK_PINK[1], TK_PINK[2]); // Pink
+  doc.text("community.", curX, footerY2);
+
+  // 3. Right Side Slogan: "Learn. Connect. Innovate." with dynamic word spacing
+  doc.setFontSize(11.5);
+  doc.setFont('helvetica', 'bold');
+
+  const rightXEnd = W - 15;
+  const wLearn = doc.getTextWidth("Learn. ");
+  const wConnect = doc.getTextWidth("Connect. ");
+  const wInnovate = doc.getTextWidth("Innovate.");
+  const totalRightW = wLearn + wConnect + wInnovate;
+
+  const startRightX = rightXEnd - totalRightW;
+  const rightY = H - 16; // Perfectly aligned with a 10mm bottom margin
+
+  doc.setTextColor(TK_PINK[0], TK_PINK[1], TK_PINK[2]); // Pink
+  doc.text("Learn. ", startRightX, rightY);
+
+  doc.setTextColor(TK_PRP[0], TK_PRP[1], TK_PRP[2]); // Purple
+  doc.text("Connect. ", startRightX + wLearn, rightY);
+
+  doc.setTextColor(TK_CYAN[0], TK_CYAN[1], TK_CYAN[2]); // Cyan
+  doc.text("Innovate.", startRightX + wLearn + wConnect, rightY);
 }
 
 function drawOneTicketCard(doc, t, qrUrl, x, y, w, h) {
@@ -209,9 +258,15 @@ function drawOneTicketCard(doc, t, qrUrl, x, y, w, h) {
     doc.text(restWords, dX + curOffset, y + 9.5);
   }
 
-  // 6. DETAILS GRID (With 100% mathematically equal spacing and full DEPARTMENT name)
+  // 6. DETAILS GRID (With even distribution and a small comfortable gap between Department and Semester)
   const gy = y + 21;
-  const colW = dW / 5;
+  const colXOffsets = [
+    0,                  // DATE (0% offset)
+    dW * 0.20,          // TIME/DURATION (20% offset)
+    dW * 0.40,          // DEPARTMENT (40% offset)
+    dW * 0.64,          // SEMESTER (64% offset - giving DEPARTMENT a 4% extra gap to prevent collision)
+    dW * 0.82           // AG NO (82% offset)
+  ];
   const items = [
     { L: 'DATE', V: t.eventDate, C: TK_PRP }, // Purple
     { L: 'TIME/DURATION', V: t.eventTime, C: TK_PINK }, // Pink
@@ -221,7 +276,7 @@ function drawOneTicketCard(doc, t, qrUrl, x, y, w, h) {
   ];
 
   items.forEach((item, i) => {
-    const ix = dX + i * colW;
+    const ix = dX + colXOffsets[i];
 
     // Label (Increased font size)
     doc.setFontSize(7.6);
@@ -309,9 +364,9 @@ export function downloadTicketPDF(t, qr) {
   const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
   drawPageHeader(doc, W, H);
 
-  // Position ticket (at 35mm Y-coordinate)
+  // Position ticket (at 55mm Y-coordinate, centered with 180mm width)
   const ch = 48;
-  drawOneTicketCard(doc, t, qr, 10, 40, 190, ch);
+  drawOneTicketCard(doc, t, qr, 15, 55, 180, ch);
 
   drawPageFooter(doc, W, H);
   doc.save(`TCS_Pass_${t.name || 'User'}.pdf`);
@@ -338,11 +393,11 @@ export function downloadAllTicketsPDF(tickets, qrs) {
       drawPageFooter(doc, W, H);
     }
 
-    // Position tickets with a consistent, premium 10mm gap to keep them perfectly grouped and compact
-    const gap = 10;
-    const py = 40 + itemOnPageIndex * (ch + gap);
+    // Position tickets with a consistent, premium 8mm gap to keep them perfectly grouped and compact
+    const gap = 6;
+    const py = 50 + itemOnPageIndex * (ch + gap);
 
-    drawOneTicketCard(doc, t, qrs[i], 10, py, 190, ch);
+    drawOneTicketCard(doc, t, qrs[i], 15, py, 180, ch);
   });
 
   doc.save('TCS_Pass_Batch.pdf');

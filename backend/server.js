@@ -123,9 +123,20 @@ app.use(errorHandler);
 // ========================
 const PORT = process.env.PORT || 5000;
 
+const Ticket = require("./models/Ticket");
+
 const startServer = async () => {
     try {
         await connectDB();
+        
+        // Automatically sync and drop stale Mongoose indexes for Tickets
+        try {
+            await Ticket.syncIndexes();
+            console.log("  ✅ MongoDB Indexes Synchronized");
+        } catch (err) {
+            console.warn("  ⚠️ Warning: Could not sync Ticket indexes", err.message);
+        }
+
         app.listen(PORT, () => {
             console.log("");
             console.log("============================================");
