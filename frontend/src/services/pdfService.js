@@ -423,29 +423,68 @@ export async function downloadCertificatePDF(data) {
     return;
   }
 
-  const originalContainerStyle = container ? container.getAttribute('style') || '' : '';
-  const originalCardStyle = certCard ? certCard.getAttribute('style') || '' : '';
+  // Create a stunning premium loading overlay to hold the active rendering element
+  const overlay = document.createElement('div');
+  overlay.id = 'tcs-pdf-loading';
+  overlay.style.cssText = `
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: #050816 !important;
+    z-index: 999999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #ffffff !important;
+    font-family: 'Poppins', sans-serif !important;
+  `;
 
-  const isMobile = window.innerWidth <= 768;
-  const simulatedWidth = isMobile ? 1536 : window.innerWidth;
-  const simulatedHeight = isMobile ? 900 : window.innerHeight;
+  overlay.innerHTML = `
+    <div style="margin-bottom: 25px; font-size: 1.6rem; font-weight: 700; letter-spacing: 0.15em; background: linear-gradient(135deg, #ff2f92 0%, #00d9ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; padding: 0 20px;">
+      GENERATING SECURE PDF...
+    </div>
+    <div style="width: 45px; height: 45px; border: 3px solid rgba(255,255,255,0.08); border-top: 3px solid #ff2f92; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; box-shadow: 0 0 15px rgba(255,47,146,0.45);"></div>
+    <div style="color: #9a8fa6; font-size: 0.9rem; letter-spacing: 0.05em; text-align: center;">Please wait while we render your high-resolution certificate...</div>
+    
+    <style>
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  `;
+
+  // Create an active rendering container inside the overlay (forces active layout with 100% non-zero dimensions!)
+  const renderContainer = document.createElement('div');
+  renderContainer.style.cssText = `
+    position: absolute !important;
+    opacity: 0.01 !important;
+    pointer-events: none !important;
+    width: 1060px !important;
+    height: 720px !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    display: block !important;
+  `;
+
+  // Clone the certificate card and append it to the active overlay body
+  const clonedCard = certCard.cloneNode(true);
+  clonedCard.style.cssText = `
+    width: 1060px !important;
+    height: 720px !important;
+    display: block !important;
+  `;
+  renderContainer.appendChild(clonedCard);
+  overlay.appendChild(renderContainer);
+  document.body.appendChild(overlay);
 
   let canvas;
   try {
-    if (container) {
-      container.style.setProperty('display', 'block', 'important');
-      container.style.setProperty('position', 'absolute', 'important');
-      container.style.setProperty('left', '-9999px', 'important');
-      container.style.setProperty('top', '-9999px', 'important');
-      container.style.setProperty('width', '1060px', 'important');
-      container.style.setProperty('opacity', '0.001', 'important');
-    }
-    if (certCard) {
-      certCard.style.setProperty('width', '1060px', 'important');
-    }
-
-    // Wait for all images inside the card to be fully loaded and measured by the browser now that they are block!
-    const imgElements = Array.from(certCard.querySelectorAll('img'));
+    // Wait for all images inside the active cloned card to be fully loaded
+    const imgElements = Array.from(clonedCard.querySelectorAll('img'));
     await Promise.all(
       imgElements.map(img => {
         if (img.complete && img.naturalWidth > 0) return Promise.resolve();
@@ -456,16 +495,16 @@ export async function downloadCertificatePDF(data) {
       })
     );
 
-    canvas = await html2canvas(certCard, {
+    canvas = await html2canvas(clonedCard, {
       scale: 2,                 // Consistent 2x resolution on all devices for high-resolution crispness
       useCORS: true,
       allowTaint: false,
-      backgroundColor: '#ffffff',
+      backgroundColor: '#070726',
       logging: false,
       scrollX: 0,
       scrollY: 0,
-      windowWidth: simulatedWidth,        // Dynamically simulate standard laptop screen width (1536px) on mobile so clamp() and vw typography evaluate to their full large desktop proportions!
-      windowHeight: simulatedHeight,       // Dynamically simulate standard screen height
+      windowWidth: 1200,        // Force simulated desktop screen width so clamp() and vw typography evaluate with desktop proportions!
+      windowHeight: 800,       // Force simulated desktop screen height
       onclone: (clonedDoc) => {
       // ── 0. DISABLE PSEUDO-ELEMENT ROUND BACKGROUNDS & PREVENT CLIPPING ──
       const style = clonedDoc.createElement('style');
@@ -778,19 +817,8 @@ export async function downloadCertificatePDF(data) {
     console.error("Certificate PDF generation failed:", err);
     alert("Error downloading PDF: " + err.message);
   } finally {
-    if (container) {
-      if (originalContainerStyle) {
-        container.setAttribute('style', originalContainerStyle);
-      } else {
-        container.removeAttribute('style');
-      }
-    }
-    if (certCard) {
-      if (originalCardStyle) {
-        certCard.setAttribute('style', originalCardStyle);
-      } else {
-        certCard.removeAttribute('style');
-      }
+    if (overlay && overlay.parentNode) {
+      document.body.removeChild(overlay);
     }
   }
 }
