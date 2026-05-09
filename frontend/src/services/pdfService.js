@@ -444,6 +444,18 @@ export async function downloadCertificatePDF(data) {
       certCard.style.setProperty('width', '1060px', 'important');
     }
 
+    // Wait for all images inside the card to be fully loaded and measured by the browser now that they are block!
+    const imgElements = Array.from(certCard.querySelectorAll('img'));
+    await Promise.all(
+      imgElements.map(img => {
+        if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+        return new Promise(resolve => {
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+        });
+      })
+    );
+
     canvas = await html2canvas(certCard, {
       scale: 2,                 // Consistent 2x resolution on all devices for high-resolution crispness
       useCORS: true,
