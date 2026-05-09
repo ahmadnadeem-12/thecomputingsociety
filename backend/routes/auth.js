@@ -55,6 +55,9 @@ router.post("/register", async (req, res) => {
     
     const message = `Welcome to The Computing Society! Please verify your email address to complete your registration and start generating tickets.`;
     const html = `
+        <div style="font-size: 15px; color: #9a8fa6; line-height: 1.7; margin-bottom: 25px;">
+            ${message}
+        </div>
         <div style="text-align: center; margin: 30px 0;">
             <p style="color: #9a8fa6; margin-bottom: 20px;">Click the button below to verify your account:</p>
             <a href="${verifyUrl}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #dc2743, #c234a5); color: #fff; text-decoration: none; border-radius: 50px; font-weight: 700;">Verify My Account</a>
@@ -512,9 +515,13 @@ router.post("/users/:id/resend-verify", protect, async (req, res) => {
     console.log(`🔗 Link: ${verifyUrl}`);
     console.log("============================================\n");
     const html = `
+        <div style="font-size: 15px; color: #9a8fa6; line-height: 1.7; margin-bottom: 25px;">
+            Your email verification link has been resent. Please verify your email address to complete your registration and start generating tickets.
+        </div>
         <div style="text-align: center; margin: 30px 0;">
-            <p style="color: #9a8fa6; margin-bottom: 20px;">Your verification link has been resent by an admin. Click below to verify:</p>
+            <p style="color: #9a8fa6; margin-bottom: 20px;">Click the button below to verify your account:</p>
             <a href="${verifyUrl}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #dc2743, #c234a5); color: #fff; text-decoration: none; border-radius: 50px; font-weight: 700;">Verify My Account</a>
+            <p style="font-size: 11px; color: #6b5f78; margin-top: 20px;">Link expires in 24 hours.</p>
         </div>
     `;
 

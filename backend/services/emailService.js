@@ -168,8 +168,10 @@ async function sendResetEmail(toEmail, resetUrl, userName) {
 async function sendEmail(options) {
     const transporter = await getTransporter();
 
-    // Use default styled HTML if only 'message' is provided
-    const html = options.html || `
+    // Wrap custom HTML or use message
+    const innerContent = options.html || `<div class="message">${options.message}</div>`;
+
+    const html = `
     <!DOCTYPE html>
     <html>
     <head>
@@ -191,8 +193,8 @@ async function sendEmail(options) {
                 <h1>THE COMPUTING SOCIETY</h1>
             </div>
             <div class="body">
-                <div class="greeting">Hello!</div>
-                <div class="message">${options.message}</div>
+                <div class="greeting">Greetings,</div>
+                ${innerContent}
             </div>
             <div class="footer">
                 &copy; The Computing Society — UAF<br/>
