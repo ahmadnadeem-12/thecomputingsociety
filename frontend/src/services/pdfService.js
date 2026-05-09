@@ -416,22 +416,45 @@ export async function downloadCertificatePDF(data) {
   }
 
   // Find the actual rendered certificate frame on the page (includes gradient border)
+  const container = document.querySelector('.certFrameContainer');
   const certCard = document.querySelector('.certFrame');
   if (!certCard) {
     alert('Certificate preview not found on page. Please try again.');
     return;
   }
 
+  const originalContainerStyle = container ? container.getAttribute('style') || '' : '';
+  const originalCardStyle = certCard ? certCard.getAttribute('style') || '' : '';
+
   const isMobile = window.innerWidth <= 768;
-  const canvas = await html2canvas(certCard, {
-    scale: isMobile ? 1.2 : 2,               // 2x on desktop, 1.2x on mobile for much smaller sizes
-    useCORS: true,
-    allowTaint: false,
-    backgroundColor: '#ffffff',
-    logging: false,
-    scrollX: 0,
-    scrollY: 0,
-    onclone: (clonedDoc) => {
+  const simulatedWidth = isMobile ? 1536 : window.innerWidth;
+  const simulatedHeight = isMobile ? 900 : window.innerHeight;
+
+  let canvas;
+  try {
+    if (container) {
+      container.style.setProperty('display', 'block', 'important');
+      container.style.setProperty('position', 'absolute', 'important');
+      container.style.setProperty('left', '-9999px', 'important');
+      container.style.setProperty('top', '-9999px', 'important');
+      container.style.setProperty('width', '1060px', 'important');
+      container.style.setProperty('opacity', '0.001', 'important');
+    }
+    if (certCard) {
+      certCard.style.setProperty('width', '1060px', 'important');
+    }
+
+    canvas = await html2canvas(certCard, {
+      scale: 2,                 // Consistent 2x resolution on all devices for high-resolution crispness
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: '#ffffff',
+      logging: false,
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: simulatedWidth,        // Dynamically simulate standard laptop screen width (1536px) on mobile so clamp() and vw typography evaluate to their full large desktop proportions!
+      windowHeight: simulatedHeight,       // Dynamically simulate standard screen height
+      onclone: (clonedDoc) => {
       // ── 0. DISABLE PSEUDO-ELEMENT ROUND BACKGROUNDS & PREVENT CLIPPING ──
       const style = clonedDoc.createElement('style');
       style.innerHTML = `
@@ -446,7 +469,7 @@ export async function downloadCertificatePDF(data) {
           box-shadow: none !important;
         }
         .badgeSeal {
-          top: 53% !important;
+          top: 62% !important;
         }
       `;
       clonedDoc.head.appendChild(style);
@@ -522,6 +545,7 @@ export async function downloadCertificatePDF(data) {
         nameEl.style.filter = 'none';
         nameEl.style.width = '100%';
         nameEl.style.display = 'block';
+        nameEl.style.setProperty('margin', '0.7% 0 18px 0', 'important');
       }
 
       // D. AG No Hexagon Badge
@@ -551,8 +575,8 @@ export async function downloadCertificatePDF(data) {
         newAgEl.style.display = 'block';
         newAgEl.style.width = '100%';
         newAgEl.style.textAlign = 'center';
-        newAgEl.style.margin = '0.1% auto';
-        newAgEl.style.transform = 'translateY(-15px)';
+        newAgEl.style.margin = '0.2% auto 16px auto';
+        newAgEl.style.transform = 'translateY(-10px)';
         agEl.parentNode.insertBefore(newAgEl, agEl);
         agEl.style.setProperty('display', 'none', 'important');
       }
@@ -648,7 +672,7 @@ export async function downloadCertificatePDF(data) {
   roundedCanvas.width = canvas.width;
   roundedCanvas.height = canvas.height;
   const ctx = roundedCanvas.getContext('2d');
-  
+
   ctx.fillStyle = '#070726';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -700,5 +724,21 @@ export async function downloadCertificatePDF(data) {
   // Use FAST compression to aggressively minimize jsPDF blob size
   doc.addImage(imgData, 'JPEG', imgX, imgY, imgW, imgH, undefined, 'FAST');
   doc.save(`TCS_Certificate_${data.name || 'Student'}.pdf`);
+  } finally {
+    if (container) {
+      if (originalContainerStyle) {
+        container.setAttribute('style', originalContainerStyle);
+      } else {
+        container.removeAttribute('style');
+      }
+    }
+    if (certCard) {
+      if (originalCardStyle) {
+        certCard.setAttribute('style', originalCardStyle);
+      } else {
+        certCard.removeAttribute('style');
+      }
+    }
+  }
 }
 

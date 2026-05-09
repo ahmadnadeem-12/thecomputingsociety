@@ -41,7 +41,7 @@ export default function CertificatePreview() {
   // Get data from location state or fallback to hardcoded (for testing)
   const d = location.state || {
     name: "AHMAD NADEEM",
-    agNo: "2022-AG-0909",
+    agNo: "2022-AG-0000",
     eventTitle: "Industry Expert Talk Series",
     eventDate: "2026-01-10",
     description: 'For participating in "Industry Expert Talk Series"  organized by The Computing Society, University of Agriculture Faisalabad.'
@@ -68,89 +68,89 @@ export default function CertificatePreview() {
               <div className="cornerBR" />
               <div className="accentBar" />
 
-            {/* dot grids */}
-            <div className="dotGrid dotGrid--tl"><Dots /></div>
-            <div className="dotGrid dotGrid--br"><Dots /></div>
+              {/* dot grids */}
+              <div className="dotGrid dotGrid--tl"><Dots /></div>
+              <div className="dotGrid dotGrid--br"><Dots /></div>
 
-            {/* ── content ── */}
-            <div className="certBody">
-              {/* Society header */}
-              <div className="certSociety">THE COMPUTING SOCIETY</div>
-              <div className="certHeaderLines">
-                <div className="hLine hLine--pink" />
-                <div className="hDot hDot--pink" />
-                <div className="hDot hDot--blue" />
-                <div className="hLine hLine--blue" />
-              </div>
-              <div className="certDept">
-                DEPT. OF COMPUTER SCIENCE,<br />
-                UNIVERSITY OF AGRICULTURE FAISALABAD
-              </div>
-
-              {/* Title */}
-              <h1 className="certTitle">AWARD CERTIFICATE</h1>
-
-              {/* Subtitle */}
-              <div className="certSubRow">
-                <div className="diamLine diamLine--l" />
-                <div className="diam" />
-                <span className="certSubText">OF PARTICIPATION</span>
-                <div className="diam" />
-                <div className="diamLine diamLine--r" />
-              </div>
-
-              {/* Recipient */}
-              <div className="certPresented">PROUDLY PRESENTED TO</div>
-              <h2 className="certName">{d.name}</h2>
-
-              {/* AG pill */}
-              <div className="certAg"><span className="agDot agDot--pink">♦</span> AG No: {d.agNo} <span className="agDot agDot--blue">♦</span></div>
-
-              <p className="certDesc">
-                For participating in <strong>"{d.eventTitle}"</strong> organized by The Computing Society,<br />University of Agriculture Faisalabad.
-              </p>
-
-              {/* Centered Diamond and Lines Divider in natural flow */}
-              <div className="certDescDivider">
-                <div className="descDivLine descDivLine--left" />
-                <div className="descDivDiamond" />
-                <div className="descDivLine descDivLine--right" />
-              </div>
-
-              {/* ══ Footer ══ */}
-              <div className="certFooter">
-                {/* Left — Event Date */}
-                <div className="fCol">
-                  <div className="fIcon"><CalendarSvg /></div>
-                  <div className="fLabel fLabel--pink">EVENT DATE</div>
-                  <div className="fValue">{d.eventTitle}</div>
-                  <div className="fValue">{d.eventDate}</div>
+              {/* ── content ── */}
+              <div className="certBody">
+                {/* Society header */}
+                <div className="certSociety">THE COMPUTING SOCIETY</div>
+                <div className="certHeaderLines">
+                  <div className="hLine hLine--pink" />
+                  <div className="hDot hDot--pink" />
+                  <div className="hDot hDot--blue" />
+                  <div className="hLine hLine--blue" />
+                </div>
+                <div className="certDept">
+                  DEPT. OF COMPUTER SCIENCE,<br />
+                  UNIVERSITY OF AGRICULTURE FAISALABAD
                 </div>
 
-                <div className="fDiv" />
+                {/* Title */}
+                <h1 className="certTitle">AWARD CERTIFICATE</h1>
 
-                {/* Centre — Venue */}
-                <div className="fCol fCentre">
-                  <div className="fIcon"><LocationSvg /></div>
-                  <div className="fLabel fLabel--blue">VENUE</div>
-                  <div className="fValue">{d.eventVenue || "Location"}</div>
+                {/* Subtitle */}
+                <div className="certSubRow">
+                  <div className="diamLine diamLine--l" />
+                  <div className="diam" />
+                  <span className="certSubText">OF PARTICIPATION</span>
+                  <div className="diam" />
+                  <div className="diamLine diamLine--r" />
                 </div>
 
-                <div className="fDiv" />
+                {/* Recipient */}
+                <div className="certPresented">PROUDLY PRESENTED TO</div>
+                <h2 className="certName">{d.name}</h2>
 
-                {/* Right — Signature */}
-                <div className="fCol">
-                  <div className="fIcon"><PenSvg /></div>
-                  <div className="fLabel fLabel--blue">SIGNATURE</div>
-                  <div className="fSig">The Computing Society</div>
-                  <div className="fSigLine" />
+                {/* AG pill */}
+                <div className="certAg"><span className="agDot agDot--pink">♦</span> AG No: {d.agNo} <span className="agDot agDot--blue">♦</span></div>
+
+                <p className="certDesc">
+                  For participating in <strong>"{d.eventTitle}"</strong> organized by The Computing Society,<br />University of Agriculture Faisalabad.
+                </p>
+
+                {/* Centered Diamond and Lines Divider in natural flow */}
+                <div className="certDescDivider">
+                  <div className="descDivLine descDivLine--left" />
+                  <div className="descDivDiamond" />
+                  <div className="descDivLine descDivLine--right" />
                 </div>
 
-                {/* Badge seal — positioned absolutely at bottom center overlapping the border */}
-                <img src={awardSealImg} className="badgeSeal" alt="Award Seal Badge" />
+                {/* ══ Footer ══ */}
+                <div className="certFooter">
+                  {/* Left — Event Date */}
+                  <div className="fCol">
+                    <div className="fIcon"><CalendarSvg /></div>
+                    <div className="fLabel fLabel--pink">EVENT DATE</div>
+                    <div className="fValue">{d.eventTitle}</div>
+                    <div className="fValue">{d.eventDate}</div>
+                  </div>
+
+                  <div className="fDiv" />
+
+                  {/* Centre — Venue */}
+                  <div className="fCol fCentre">
+                    <div className="fIcon"><LocationSvg /></div>
+                    <div className="fLabel fLabel--blue">VENUE</div>
+                    <div className="fValue">{d.eventVenue || "Location"}</div>
+                  </div>
+
+                  <div className="fDiv" />
+
+                  {/* Right — Signature */}
+                  <div className="fCol">
+                    <div className="fIcon"><PenSvg /></div>
+                    <div className="fLabel fLabel--blue">SIGNATURE</div>
+                    <div className="fSig">The Computing Society</div>
+                    <div className="fSigLine" />
+                  </div>
+
+                  {/* Badge seal — positioned absolutely at bottom center overlapping the border */}
+                  <img src={awardSealImg} className="badgeSeal" alt="Award Seal Badge" />
+                </div>
               </div>
             </div>
-          </div>
           </div>
         </div>
 

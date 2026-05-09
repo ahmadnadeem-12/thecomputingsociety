@@ -279,7 +279,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 0.2% !important;
+  margin-bottom: 6px !important;
 }
 
 .certSubText {
@@ -322,6 +322,7 @@
   color: #555a7e;
   letter-spacing: 0.18em;
   margin-top: 1.2% !important;
+  margin-bottom: 8px !important;
   text-transform: uppercase;
 }
 
@@ -331,7 +332,7 @@
   font-size: clamp(2.4rem, 4.8vw, 4.8rem);
   font-weight: normal;
   text-transform: uppercase;
-  margin: 0.7% 0;
+  margin: 0.7% 0 18px 0 !important;
   line-height: 1.1;
   letter-spacing: 0.12em;
   background: linear-gradient(to right, #D92C8A 0%, #6A35B8 50%, #3C63D9 100%);
@@ -350,7 +351,7 @@
   font-size: clamp(0.58rem, 0.78vw, 1rem);
   font-weight: 500;
   padding: 0.5rem 2em;
-  margin: 0.2% 0 !important;
+  margin: 0.2% 0 16px 0 !important;
   letter-spacing: 0.3em;
   display: inline-flex;
   align-items: center;
@@ -418,6 +419,7 @@
   max-width: 75%;
   line-height: 1.6;
   margin-top: 8px;
+  margin-bottom: 16px !important;
   transform: translateY(-10px);
 }
 
@@ -570,7 +572,7 @@
 /* Value text styling */
 .fValue {
   font-family: 'Poppins', sans-serif;
-  font-size: clamp(0.48rem, 0.65vw, 1.65rem);
+  font-size: clamp(0.55rem, 0.72vw, 1.8rem);
   font-weight: 500;
   color: #4f566b;
   max-width: 150px;
@@ -605,24 +607,24 @@
 /* Center Column (Symmetrically aligned in flow) */
 .fCentre {
   flex: 1;
-  transform: translateY(-30px);
+  transform: translateY(-15px);
 }
 
 /* Event Date Column (Left) */
 .certFooter>.fCol:first-of-type {
-  transform: translateY(-40px);
+  transform: translateY(-5px);
 }
 
 /* Signature Column (Right) */
 .certFooter>.fCol:last-of-type {
-  transform: translateY(-25px);
+  transform: translateY(10px);
 }
 
 /* Embossed Scalloped Seal Badge (Custom transparent image overlapping the bottom border) */
 .badgeSeal {
   display: block !important;
   position: absolute;
-  top: 53% !important;
+  top: 62% !important;
   bottom: auto;
   left: 50%;
   transform: translateX(-50%);
@@ -635,7 +637,7 @@
 /* Elegant Handwriting Signature */
 .fSig {
   font-family: 'Dancing Script', cursive;
-  font-size: clamp(0.85rem, 1.25vw, 1.25vw) !important;
+  font-size: clamp(1rem, 1.45vw, 1.45vw) !important;
   font-weight: 500;
   color: #070726;
   transform: rotate(-2deg);
@@ -684,7 +686,7 @@
   text-align: center;
   color: #fff;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 2rem;
   border-radius: 16px;
   max-width: 400px;
