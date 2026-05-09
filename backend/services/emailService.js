@@ -27,7 +27,7 @@ async function getTransporter() {
 
     // If real SMTP credentials are set, use them (Gmail etc.)
     if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-        cachedTransporter = nodemailer.createTransport({
+        const transporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST || "smtp.gmail.com",
             port: parseInt(process.env.SMTP_PORT) || 587,
             secure: false, // true for 465, false for other ports
@@ -37,8 +37,15 @@ async function getTransporter() {
             },
         });
 
-        console.log("📧 Email: Using Gmail SMTP");
-        return cachedTransporter;
+        try {
+            await transporter.verify();
+            console.log("📧 Email: Using Gmail SMTP (Credentials Verified)");
+            cachedTransporter = transporter;
+            return cachedTransporter;
+        } catch (verifyErr) {
+            console.error("❌ SMTP Verification Failed. Gmail App Password might be invalid or revoked:", verifyErr.message);
+            console.log("⚠️ Falling back to Ethereal Test Account...");
+        }
     }
 
     // No credentials — create Ethereal test account automatically

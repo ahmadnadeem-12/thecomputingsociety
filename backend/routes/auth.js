@@ -48,6 +48,11 @@ router.post("/register", async (req, res) => {
     const backendUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get("host")}`;
     const verifyUrl = `${backendUrl}/api/auth/verify/${verificationToken}`;
     
+    console.log("\n============================================");
+    console.log("🚀 VERIFICATION URL GENERATED:");
+    console.log(`🔗 Link: ${verifyUrl}`);
+    console.log("============================================\n");
+    
     const message = `Welcome to The Computing Society! Please verify your email address to complete your registration and start generating tickets.`;
     const html = `
         <div style="text-align: center; margin: 30px 0;">
@@ -501,6 +506,11 @@ router.post("/users/:id/resend-verify", protect, async (req, res) => {
 
     const backendUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get("host")}`;
     const verifyUrl = `${backendUrl}/api/auth/verify/${verificationToken}`;
+    
+    console.log("\n============================================");
+    console.log("🚀 RESEND VERIFICATION URL GENERATED:");
+    console.log(`🔗 Link: ${verifyUrl}`);
+    console.log("============================================\n");
     const html = `
         <div style="text-align: center; margin: 30px 0;">
             <p style="color: #9a8fa6; margin-bottom: 20px;">Your verification link has been resent by an admin. Click below to verify:</p>
