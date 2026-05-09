@@ -81,6 +81,59 @@ async function getTransporter() {
     return etherealTransporter;
 }
 
+const https = require("https");
+
+async function sendEmailViaBrevo(toEmail, subject, html) {
+    return new Promise((resolve, reject) => {
+        const data = JSON.stringify({
+            sender: { 
+                name: "The Computing Society", 
+                email: process.env.SMTP_USER || "thecomputingsocietyuaf@gmail.com" 
+            },
+            to: [{ email: toEmail }],
+            subject: subject,
+            htmlContent: html
+        });
+
+        const options = {
+            hostname: "api.brevo.com",
+            port: 443,
+            path: "/v3/smtp/email",
+            method: "POST",
+            headers: {
+                "api-key": process.env.BREVO_API_KEY,
+                "Content-Type": "application/json",
+                "Content-Length": Buffer.byteLength(data)
+            }
+        };
+
+        const req = https.request(options, (res) => {
+            let responseData = "";
+            res.on("data", (chunk) => {
+                responseData += chunk;
+            });
+            res.on("end", () => {
+                if (res.statusCode >= 200 && res.statusCode < 300) {
+                    try {
+                        resolve(JSON.parse(responseData));
+                    } catch (e) {
+                        resolve({ success: true, message: responseData });
+                    }
+                } else {
+                    reject(new Error(`Brevo API Error: ${res.statusCode} - ${responseData}`));
+                }
+            });
+        });
+
+        req.on("error", (err) => {
+            reject(err);
+        });
+
+        req.write(data);
+        req.end();
+    });
+}
+
 /**
  * Send password reset email
  * @param {string} toEmail - Recipient email
@@ -88,7 +141,6 @@ async function getTransporter() {
  * @param {string} userName - User's name for personalization
  */
 async function sendResetEmail(toEmail, resetUrl, userName) {
-    const transporter = await getTransporter();
 
     const html = `
     <!DOCTYPE html>
@@ -140,6 +192,13 @@ async function sendResetEmail(toEmail, resetUrl, userName) {
     </html>
     `;
 
+    if (process.env.BREVO_API_KEY) {
+        console.log(`📧 Sending Reset Email via Brevo HTTP API to: ${toEmail}`);
+        return await sendEmailViaBrevo(toEmail, "🔐 Reset Your Password — TCS", html);
+    }
+
+    const transporter = await getTransporter();
+
     const mailOptions = {
         from: `"The Computing Society" <${process.env.SMTP_USER || "noreply@tcs.uaf"}>`,
         to: toEmail,
@@ -172,7 +231,6 @@ async function sendResetEmail(toEmail, resetUrl, userName) {
  * @param {Object} options - { email, subject, message, html }
  */
 async function sendEmail(options) {
-    const transporter = await getTransporter();
 
     // Wrap custom HTML or use message
     const innerContent = options.html || `<div class="message">${options.message}</div>`;
@@ -210,6 +268,13 @@ async function sendEmail(options) {
     </body>
     </html>
     `;
+
+    if (process.env.BREVO_API_KEY) {
+        console.log(`📧 Sending Email via Brevo HTTP API to: ${options.email}`);
+        return await sendEmailViaBrevo(options.email, options.subject || "Verification — TCS", html);
+    }
+
+    const transporter = await getTransporter();
 
     const mailOptions = {
         from: `"The Computing Society" <${process.env.SMTP_USER || "noreply@tcs.uaf"}>`,
