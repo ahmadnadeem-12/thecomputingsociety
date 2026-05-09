@@ -13,6 +13,11 @@
  */
 
 const nodemailer = require("nodemailer");
+const dns = require("dns");
+
+if (dns.setDefaultResultOrder) {
+    dns.setDefaultResultOrder("ipv4first");
+}
 
 // Cache the transporter so we only create it once
 let cachedTransporter = null;
