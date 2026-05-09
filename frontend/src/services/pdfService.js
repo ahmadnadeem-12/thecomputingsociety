@@ -423,6 +423,12 @@ export async function downloadCertificatePDF(data) {
     return;
   }
 
+  const originalContainerStyle = container ? container.getAttribute('style') || '' : '';
+  const originalCardStyle = certCard ? certCard.getAttribute('style') || '' : '';
+
+  const originalParent = container.parentNode;
+  const originalSibling = container.nextSibling;
+
   // Create a stunning premium loading overlay to hold the active rendering element
   const overlay = document.createElement('div');
   overlay.id = 'tcs-pdf-loading';
@@ -457,7 +463,7 @@ export async function downloadCertificatePDF(data) {
     </style>
   `;
 
-  // Create an active rendering container inside the overlay (forces active layout with 100% non-zero dimensions!)
+  // Create an active rendering container inside the overlay to hold the original container
   const renderContainer = document.createElement('div');
   renderContainer.style.cssText = `
     position: absolute !important;
@@ -470,21 +476,32 @@ export async function downloadCertificatePDF(data) {
     display: block !important;
   `;
 
-  // Clone the certificate card and append it to the active overlay body
-  const clonedCard = certCard.cloneNode(true);
-  clonedCard.style.cssText = `
-    width: 1060px !important;
-    height: 720px !important;
-    display: block !important;
-  `;
-  renderContainer.appendChild(clonedCard);
+  // Move the original container to the renderContainer inside overlay!
+  renderContainer.appendChild(container);
   overlay.appendChild(renderContainer);
   document.body.appendChild(overlay);
 
+  // Set original elements to full desktop block size actively
+  if (container) {
+    container.style.setProperty('display', 'block', 'important');
+    container.style.setProperty('position', 'relative', 'important');
+    container.style.setProperty('width', '1060px', 'important');
+    container.style.setProperty('height', '720px', 'important');
+    container.style.setProperty('left', '0', 'important');
+    container.style.setProperty('top', '0', 'important');
+    container.style.setProperty('opacity', '1', 'important');
+    container.style.setProperty('visibility', 'visible', 'important');
+  }
+  if (certCard) {
+    certCard.style.setProperty('width', '1060px', 'important');
+    certCard.style.setProperty('height', '720px', 'important');
+    certCard.style.setProperty('display', 'block', 'important');
+  }
+
   let canvas;
   try {
-    // Wait for all images inside the active cloned card to be fully loaded
-    const imgElements = Array.from(clonedCard.querySelectorAll('img'));
+    // Wait for all images inside the active card to be fully loaded and measured by the browser now that they are active!
+    const imgElements = Array.from(certCard.querySelectorAll('img'));
     await Promise.all(
       imgElements.map(img => {
         if (img.complete && img.naturalWidth > 0) return Promise.resolve();
@@ -495,7 +512,7 @@ export async function downloadCertificatePDF(data) {
       })
     );
 
-    canvas = await html2canvas(clonedCard, {
+    canvas = await html2canvas(certCard, {
       scale: 2,                 // Consistent 2x resolution on all devices for high-resolution crispness
       useCORS: true,
       allowTaint: false,
@@ -817,6 +834,27 @@ export async function downloadCertificatePDF(data) {
     console.error("Certificate PDF generation failed:", err);
     alert("Error downloading PDF: " + err.message);
   } finally {
+    // Put original container back to its place
+    if (container) {
+      if (originalSibling) {
+        originalParent.insertBefore(container, originalSibling);
+      } else {
+        originalParent.appendChild(container);
+      }
+      
+      if (originalContainerStyle) {
+        container.setAttribute('style', originalContainerStyle);
+      } else {
+        container.removeAttribute('style');
+      }
+    }
+    if (certCard) {
+      if (originalCardStyle) {
+        certCard.setAttribute('style', originalCardStyle);
+      } else {
+        certCard.removeAttribute('style');
+      }
+    }
     if (overlay && overlay.parentNode) {
       document.body.removeChild(overlay);
     }
