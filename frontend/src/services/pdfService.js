@@ -426,88 +426,25 @@ export async function downloadCertificatePDF(data) {
   const originalContainerStyle = container ? container.getAttribute('style') || '' : '';
   const originalCardStyle = certCard ? certCard.getAttribute('style') || '' : '';
 
-  const originalParent = container.parentNode;
-  const originalSibling = container.nextSibling;
-
-  // Create a stunning premium loading overlay to hold the active rendering element
-  const overlay = document.createElement('div');
-  overlay.id = 'tcs-pdf-loading';
-  overlay.style.cssText = `
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background: #050816 !important;
-    z-index: 999999 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    color: #ffffff !important;
-    font-family: 'Poppins', sans-serif !important;
-  `;
-
-  overlay.innerHTML = `
-    <div style="margin-bottom: 25px; font-size: 1.6rem; font-weight: 700; letter-spacing: 0.15em; background: linear-gradient(135deg, #ff2f92 0%, #00d9ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; padding: 0 20px;">
-      GENERATING SECURE PDF...
-    </div>
-    <div style="width: 45px; height: 45px; border: 3px solid rgba(255,255,255,0.08); border-top: 3px solid #ff2f92; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; box-shadow: 0 0 15px rgba(255,47,146,0.45);"></div>
-    <div style="color: #9a8fa6; font-size: 0.9rem; letter-spacing: 0.05em; text-align: center;">Please wait while we render your high-resolution certificate...</div>
-    
-    <style>
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    </style>
-  `;
-
-  // Create an active rendering container inside the overlay to hold the original container
-  const renderContainer = document.createElement('div');
-  renderContainer.style.cssText = `
-    position: absolute !important;
-    opacity: 0.01 !important;
-    pointer-events: none !important;
-    width: 1060px !important;
-    height: 720px !important;
-    left: -9999px !important;
-    top: -9999px !important;
-    display: block !important;
-  `;
-
-  // Move the original container to the renderContainer inside overlay!
-  renderContainer.appendChild(container);
-  overlay.appendChild(renderContainer);
-  document.body.appendChild(overlay);
-
-  // Set original elements to full desktop block size actively
-  if (container) {
-    container.style.setProperty('display', 'block', 'important');
-    container.style.setProperty('position', 'relative', 'important');
-    container.style.setProperty('width', '1060px', 'important');
-    container.style.setProperty('height', '720px', 'important');
-    container.style.setProperty('left', '0', 'important');
-    container.style.setProperty('top', '0', 'important');
-    container.style.setProperty('opacity', '1', 'important');
-    container.style.setProperty('visibility', 'visible', 'important');
-  }
-  if (certCard) {
-    certCard.style.setProperty('width', '1060px', 'important');
-    certCard.style.setProperty('height', '720px', 'important');
-    certCard.style.setProperty('display', 'block', 'important');
-  }
+  const isMobile = window.innerWidth <= 768;
+  const simulatedWidth = isMobile ? 1536 : window.innerWidth;
+  const simulatedHeight = isMobile ? 900 : window.innerHeight;
 
   let canvas;
   try {
-    // Force a synchronous layout reflow so the browser computes the new desktop styles immediately
-    if (container) container.getBoundingClientRect();
-    if (certCard) certCard.getBoundingClientRect();
+    if (container) {
+      container.style.setProperty('display', 'block', 'important');
+      container.style.setProperty('position', 'absolute', 'important');
+      container.style.setProperty('left', '-9999px', 'important');
+      container.style.setProperty('top', '-9999px', 'important');
+      container.style.setProperty('width', '1060px', 'important');
+      container.style.setProperty('opacity', '0.001', 'important');
+    }
+    if (certCard) {
+      certCard.style.setProperty('width', '1060px', 'important');
+    }
 
-    // Wait 150ms for the browser to fully complete the paint reflow of the newly displayed elements
-    await new Promise(resolve => setTimeout(resolve, 150));
-
-    // Wait for all images inside the active card to be fully loaded and measured by the browser now that they are active!
+    // Wait for all images inside the card to be fully loaded and measured by the browser now that they are block!
     const imgElements = Array.from(certCard.querySelectorAll('img'));
     await Promise.all(
       imgElements.map(img => {
@@ -523,12 +460,12 @@ export async function downloadCertificatePDF(data) {
       scale: 2,                 // Consistent 2x resolution on all devices for high-resolution crispness
       useCORS: true,
       allowTaint: false,
-      backgroundColor: '#070726',
+      backgroundColor: '#ffffff',
       logging: false,
       scrollX: 0,
       scrollY: 0,
-      windowWidth: 1200,        // Force simulated desktop screen width so clamp() and vw typography evaluate with desktop proportions!
-      windowHeight: 800,       // Force simulated desktop screen height
+      windowWidth: simulatedWidth,        // Dynamically simulate standard laptop screen width (1536px) on mobile so clamp() and vw typography evaluate to their full large desktop proportions!
+      windowHeight: simulatedHeight,       // Dynamically simulate standard screen height
       onclone: (clonedDoc) => {
       // ── 0. DISABLE PSEUDO-ELEMENT ROUND BACKGROUNDS & PREVENT CLIPPING ──
       const style = clonedDoc.createElement('style');
@@ -572,10 +509,6 @@ export async function downloadCertificatePDF(data) {
         }
         .badgeRing {
           inset: 12px !important;
-        }
-        .cornerTL {
-          background: none !important;
-          background-image: none !important;
         }
 
         /* Remove the unclipped rectangular gradient backgrounds rendered by html2canvas */
@@ -845,14 +778,7 @@ export async function downloadCertificatePDF(data) {
     console.error("Certificate PDF generation failed:", err);
     alert("Error downloading PDF: " + err.message);
   } finally {
-    // Put original container back to its place
     if (container) {
-      if (originalSibling) {
-        originalParent.insertBefore(container, originalSibling);
-      } else {
-        originalParent.appendChild(container);
-      }
-      
       if (originalContainerStyle) {
         container.setAttribute('style', originalContainerStyle);
       } else {
@@ -865,9 +791,6 @@ export async function downloadCertificatePDF(data) {
       } else {
         certCard.removeAttribute('style');
       }
-    }
-    if (overlay && overlay.parentNode) {
-      document.body.removeChild(overlay);
     }
   }
 }
