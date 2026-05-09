@@ -566,6 +566,10 @@ export async function downloadCertificatePDF(data) {
         .badgeRing {
           inset: 12px !important;
         }
+        .cornerTL {
+          background: none !important;
+          background-image: none !important;
+        }
 
         /* Remove the unclipped rectangular gradient backgrounds rendered by html2canvas */
         .certAg::before, .certAg::after {
