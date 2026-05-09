@@ -2,9 +2,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { useModal } from "../context/ModalContext";
 
 export default function Register() {
   const { register } = useAuth();
+  const { showConfirm } = useModal();
   const nav = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -14,16 +16,19 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [err, setErr] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const ALLOWED_DOMAINS = ["gmail.com", "outlook.com", "hotmail.com", "yahoo.com", "uaf.edu.pk", "icloud.com"];
   
   const onSubmit = async (e) => {
     e.preventDefault();
     setErr("");
+    setIsLoading(true);
 
     const emailDomain = email.split("@")[1]?.toLowerCase();
     if (!ALLOWED_DOMAINS.includes(emailDomain)) {
       setErr(`Registration restricted. Please use an official email (Gmail, Outlook, Hotmail, or UAF Official).`);
+      setIsLoading(false);
       return;
     }
 
@@ -31,8 +36,16 @@ export default function Register() {
       await register({ name, email, agNo, password, department, semester });
       // Store agNo for auto-fill in Login page
       localStorage.setItem("tcs_last_agNo", agNo);
-      nav("/verify-email");
+      
+      setIsLoading(false);
+      showConfirm(
+        "Email Sent Successfully",
+        "Verification email has been sent successfully!",
+        () => { nav("/verify-email"); },
+        { type: "success", confirmText: "PROCEED", cancelText: "CLOSE", onCancel: () => { nav("/verify-email"); } }
+      );
     } catch (e2) {
+      setIsLoading(false);
       setErr(e2.response?.data?.message || e2.message || "Registration failed.");
     }
   };
@@ -139,8 +152,10 @@ export default function Register() {
         {err && <div style={{ marginTop: ".7rem", color: "#ffd2d7" }}>{err}</div>}
 
         <div style={{ marginTop: "1rem", display: "flex", gap: ".6rem", flexWrap: "wrap" }}>
-          <button className="btn btnPrimary" type="submit">Create Account</button>
-          <button className="btn btnGhost" type="button" onClick={() => nav("/login")}>Back to login</button>
+          <button className="btn btnPrimary" type="submit" disabled={isLoading}>
+            {isLoading ? "⏳ Creating Account..." : "Create Account"}
+          </button>
+          <button className="btn btnGhost" type="button" onClick={() => nav("/login")} disabled={isLoading}>Back to login</button>
         </div>
       </form>
     </section>

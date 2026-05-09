@@ -45,7 +45,8 @@ router.post("/register", async (req, res) => {
     });
 
     // Send Verification Email
-    const verifyUrl = `${req.protocol}://${req.get("host")}/api/auth/verify/${verificationToken}`;
+    const backendUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get("host")}`;
+    const verifyUrl = `${backendUrl}/api/auth/verify/${verificationToken}`;
     
     const message = `Welcome to The Computing Society! Please verify your email address to complete your registration and start generating tickets.`;
     const html = `
@@ -56,16 +57,15 @@ router.post("/register", async (req, res) => {
         </div>
     `;
 
-    try {
-        await sendEmail({
-            email: user.email,
-            subject: "Verify Your Email - The Computing Society",
-            message,
-            html
-        });
-    } catch (err) {
-        console.log("Verification email could not be sent");
-    }
+    // Send email asynchronously in the background so registration finishes instantly on the client
+    sendEmail({
+        email: user.email,
+        subject: "Verify Your Email - The Computing Society",
+        message,
+        html
+    }).catch(err => {
+        console.log("Verification email could not be sent in background:", err.message);
+    });
     const token = user.getSignedJwtToken();
 
     res.status(201).json({
@@ -499,7 +499,8 @@ router.post("/users/:id/resend-verify", protect, async (req, res) => {
     targetUser.verificationTokenExpire = Date.now() + 24 * 60 * 60 * 1000;
     await targetUser.save();
 
-    const verifyUrl = `${req.protocol}://${req.get("host")}/api/auth/verify/${verificationToken}`;
+    const backendUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get("host")}`;
+    const verifyUrl = `${backendUrl}/api/auth/verify/${verificationToken}`;
     const html = `
         <div style="text-align: center; margin: 30px 0;">
             <p style="color: #9a8fa6; margin-bottom: 20px;">Your verification link has been resent by an admin. Click below to verify:</p>

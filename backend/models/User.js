@@ -114,8 +114,8 @@ userSchema.methods.getResetPasswordToken = function () {
     // Hash token and save to database (never store raw tokens in DB)
     this.resetToken = crypto.createHash("sha256").update(rawToken).digest("hex");
 
-    // Set expiry — 15 minutes from now
-    this.resetTokenExpire = Date.now() + 15 * 60 * 1000;
+    // Set expiry — 60 minutes from now
+    this.resetTokenExpire = Date.now() + 60 * 60 * 1000;
 
     // Return the UNHASHED token (this goes in the email link)
     return rawToken;

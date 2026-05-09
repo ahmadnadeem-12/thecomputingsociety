@@ -16,22 +16,6 @@ Welcome to the ultimate repository and official developer documentation manual f
 
 ---
 
-## 🔑 Pre-Seeded Test Accounts
-
-To bypass manual registrations and test the entire system instantly, use the following pre-seeded credentials:
-
-### 🛡️ Administrator Panel
-* **Access URL**: `http://localhost:5173/admin/login` (or select **Admin Portal** from the landing page)
-* **Email**: `admin@tcs.uaf`
-* **Password**: `admin123`
-
-### 🎓 Student Portal
-* **Access URL**: `http://localhost:5173/login`
-* **Email**: `student@tcs.uaf`
-* **Password**: `student123`
-
----
-
 ## 💻 System Prerequisites & Software Requirements
 
 Before getting started with local setup, verify that your development environment satisfies the following system configurations:

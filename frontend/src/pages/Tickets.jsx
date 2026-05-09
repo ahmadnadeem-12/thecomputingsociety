@@ -79,7 +79,7 @@ export default function Tickets() {
     if (showSuccess) {
       const timer = setTimeout(() => {
         setShowSuccess(false);
-      }, 3500); // 3.5 seconds
+      }, 6500); // 6.5 seconds
       return () => clearTimeout(timer);
     }
   }, [showSuccess]);
@@ -200,7 +200,7 @@ export default function Tickets() {
                 <motion.div
                   initial={{ width: "100%" }}
                   animate={{ width: "0%" }}
-                  transition={{ duration: 3.5, ease: "linear" }}
+                  transition={{ duration: 6.5, ease: "linear" }}
                   style={{ height: "100%", background: "var(--accent-cyan)", boxShadow: "0 0 15px var(--accent-cyan)" }}
                 />
               </div>
