@@ -51,12 +51,12 @@ async function getTransporter() {
         }
     }
 
-    // No credentials — create Ethereal test account automatically
+    // No credentials — create Ethereal test account automatically (never cache Ethereal fallback)
     console.log("📧 Email: No SMTP credentials found — creating Ethereal test account...");
 
     const testAccount = await nodemailer.createTestAccount();
 
-    cachedTransporter = nodemailer.createTransport({
+    const etherealTransporter = nodemailer.createTransport({
         host: "smtp.ethereal.email",
         port: 587,
         secure: false,
@@ -72,7 +72,7 @@ async function getTransporter() {
     console.log("   🌐 Preview emails at: https://ethereal.email/login");
     console.log("");
 
-    return cachedTransporter;
+    return etherealTransporter;
 }
 
 /**
