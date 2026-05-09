@@ -724,6 +724,9 @@ export async function downloadCertificatePDF(data) {
   // Use FAST compression to aggressively minimize jsPDF blob size
   doc.addImage(imgData, 'JPEG', imgX, imgY, imgW, imgH, undefined, 'FAST');
   doc.save(`TCS_Certificate_${data.name || 'Student'}.pdf`);
+  } catch (err) {
+    console.error("Certificate PDF generation failed:", err);
+    alert("Error downloading PDF: " + err.message);
   } finally {
     if (container) {
       if (originalContainerStyle) {
