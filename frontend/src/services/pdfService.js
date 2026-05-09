@@ -500,6 +500,13 @@ export async function downloadCertificatePDF(data) {
 
   let canvas;
   try {
+    // Force a synchronous layout reflow so the browser computes the new desktop styles immediately
+    if (container) container.getBoundingClientRect();
+    if (certCard) certCard.getBoundingClientRect();
+
+    // Wait 150ms for the browser to fully complete the paint reflow of the newly displayed elements
+    await new Promise(resolve => setTimeout(resolve, 150));
+
     // Wait for all images inside the active card to be fully loaded and measured by the browser now that they are active!
     const imgElements = Array.from(certCard.querySelectorAll('img'));
     await Promise.all(
