@@ -518,18 +518,17 @@ router.post("/users/:id/resend-verify", protect, async (req, res) => {
         </div>
     `;
 
-    try {
-        const { sendEmail } = require("../services/emailService");
-        await sendEmail({
-            email: targetUser.email,
-            subject: "Verify Your Email - The Computing Society",
-            message: "Verify your email link resent.",
-            html
-        });
-        res.json({ success: true, message: "Verification email resent successfully." });
-    } catch (err) {
-        res.status(500).json({ message: "Failed to send email." });
-    }
+    const { sendEmail } = require("../services/emailService");
+    sendEmail({
+        email: targetUser.email,
+        subject: "Verify Your Email - The Computing Society",
+        message: "Verify your email link resent.",
+        html
+    }).catch(err => {
+        console.error("Resend verification email could not be sent in background:", err.message);
+    });
+
+    res.json({ success: true, message: "Verification email resent successfully." });
 });
 
 module.exports = router;
