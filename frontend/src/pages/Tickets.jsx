@@ -540,11 +540,12 @@ export default function Tickets() {
                                 }}
                                 onClick={() => {
                                   const certData = {
-                                    ...t,
+                                    name: t.name || user.name,
+                                    agNo: t.agNo || user.agNo,
                                     eventTitle: ev?.title,
                                     eventDate: ev?.date ? formatDate(ev.date) : (ev?.startDate || "TBA")
                                   };
-                                  downloadCertificatePDF(certData);
+                                  nav("/certificate-preview", { state: certData });
                                 }}
                                 onMouseOver={(e) => {
                                   e.currentTarget.style.background = "rgba(16, 185, 129, 0.15)";

@@ -174,7 +174,7 @@ export default function Navbar() {
 
               {/* Footer */}
               <div className="mobileMenuFooter">
-                © TCS • UAF • 2024–25
+                © TCS • UAF • 2025–26
               </div>
             </motion.div>
           </>
@@ -278,7 +278,7 @@ export default function Navbar() {
               WebkitTextFillColor: "transparent",
               fontWeight: 600,
             }}>
-              2024–25 Cabinet
+              2025–26 Cabinet
             </div>
           </div>
         </motion.div>

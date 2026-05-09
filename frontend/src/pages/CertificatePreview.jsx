@@ -3,29 +3,29 @@ import { downloadCertificatePDF } from "../services/pdfService";
 import "../assets/styles/pages/certificate-preview.css";
 import awardSealImg from "../assets/images/award-seal.png";
 
-/* ── Small SVG icons (exactly like the reference image) ── */
+/* ── Clean, Standard Inline SVGs with explicit stroke="#ffffff" for perfect html2canvas capture ── */
 const CalendarSvg = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+    stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ display: "block", margin: "auto" }}>
     <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
     <line x1="16" y1="2" x2="16" y2="6" />
     <line x1="8" y1="2" x2="8" y2="6" />
     <line x1="3" y1="10" x2="21" y2="10" />
-    <rect x="7" y="14" width="3" height="3" rx="0.5" fill="currentColor" stroke="none" />
+    <rect x="7" y="14" width="3" height="3" rx="0.5" fill="#ffffff" stroke="none" />
   </svg>
 );
 
 const LocationSvg = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+    stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ display: "block", margin: "auto" }}>
     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
     <circle cx="12" cy="10" r="3" />
   </svg>
 );
 
 const PenSvg = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+    stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ display: "block", margin: "auto" }}>
     <path d="M12 20h9" />
     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
   </svg>
@@ -100,7 +100,7 @@ export default function CertificatePreview() {
               <div className="certAg"><span className="agDot agDot--pink">♦</span> AG No: {d.agNo} <span className="agDot agDot--blue">♦</span></div>
 
               <p className="certDesc">
-                For participating in <strong>"{d.eventTitle}"</strong> organized by The Computing Society, University of Agriculture Faisalabad.
+                For participating in <strong>"{d.eventTitle}"</strong> organized by The Computing Society,<br />University of Agriculture Faisalabad.
               </p>
 
               {/* Centered Diamond and Lines Divider in natural flow */}

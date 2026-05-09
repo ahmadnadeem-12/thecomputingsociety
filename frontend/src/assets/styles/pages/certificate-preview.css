@@ -1,4 +1,4 @@
-/* =========================================================
+﻿/* =========================================================
    CERTIFICATE PREVIEW — PIXEL-PERFECT EXACT REPLICA OF THE IMAGE
    ========================================================= */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Dancing+Script:wght@700&family=Poppins:wght@400;500;600;700;800;900&display=swap');
@@ -608,8 +608,8 @@
 }
 
 /* Event Date and Signature Columns (Left and Right) */
-.certFooter > .fCol:first-of-type,
-.certFooter > .fCol:last-of-type {
+.certFooter>.fCol:first-of-type,
+.certFooter>.fCol:last-of-type {
   transform: translateY(-15px);
 }
 
@@ -617,7 +617,7 @@
 .badgeSeal {
   display: block !important;
   position: absolute;
-  top: 68%;
+  top: 60%;
   bottom: auto;
   left: 50%;
   transform: translateX(-50%);
