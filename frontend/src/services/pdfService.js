@@ -422,11 +422,11 @@ export async function downloadCertificatePDF(data) {
     return;
   }
 
-  // Capture the exact on-screen certificate at high resolution
+  const isMobile = window.innerWidth <= 768;
   const canvas = await html2canvas(certCard, {
-    scale: 3,               // 3x resolution for high-fidelity crisp printing
+    scale: isMobile ? 1.2 : 2,               // 2x on desktop, 1.2x on mobile for much smaller sizes
     useCORS: true,
-    allowTaint: false,      // Safer to be false when useCORS is true to prevent tainting the canvas
+    allowTaint: false,
     backgroundColor: '#ffffff',
     logging: false,
     scrollX: 0,
@@ -445,12 +445,15 @@ export async function downloadCertificatePDF(data) {
           opacity: 0 !important;
           box-shadow: none !important;
         }
+        .badgeSeal {
+          top: 53% !important;
+        }
       `;
       clonedDoc.head.appendChild(style);
 
       // ── ADVANCED GRAPHICS OVERRIDES FOR PERFECT FIDELITY ──
 
-      // A. "THE COMPUTING SOCIETY" Gradient Text (Exact font size, weight, letter-spacing, and no clipping)
+      // A. "THE COMPUTING SOCIETY" Gradient Text
       const societyEl = clonedDoc.querySelector('.certSociety');
       if (societyEl) {
         const socText = societyEl.textContent || 'THE COMPUTING SOCIETY';
@@ -473,7 +476,7 @@ export async function downloadCertificatePDF(data) {
         societyEl.style.display = 'block';
       }
 
-      // B. "OF PARTICIPATION" Subtitle (Exact font size, letter-spacing, and perfect diamond spacing)
+      // B. "OF PARTICIPATION" Subtitle
       const subTextEl = clonedDoc.querySelector('.certSubText');
       if (subTextEl) {
         const subText = subTextEl.textContent || 'OF PARTICIPATION';
@@ -497,7 +500,7 @@ export async function downloadCertificatePDF(data) {
         subTextEl.style.margin = '0 auto';
       }
 
-      // C. Participant Name (Exact Serif Typography and Scaling)
+      // C. Participant Name
       const nameEl = clonedDoc.querySelector('.certName');
       if (nameEl) {
         const nameText = nameEl.textContent || 'STUDENT NAME';
@@ -521,13 +524,10 @@ export async function downloadCertificatePDF(data) {
         nameEl.style.display = 'block';
       }
 
-      // D. AG No Hexagon Badge (Draw true SVG hexagon with solid navy fill and perfect gradient stroke)
+      // D. AG No Hexagon Badge
       const agEl = clonedDoc.querySelector('.certAg');
       if (agEl) {
-        // Extract the clean AG Number text (e.g. "2022-AG-0000")
         const agNoText = agEl.textContent.replace(/♦/g, '').replace(/AG No:/i, '').trim();
-
-        // Create a brand-new clean element to hold our perfect flat SVG (no classes, no pseudo-elements)
         const newAgEl = clonedDoc.createElement('div');
         newAgEl.innerHTML = `
           <svg width="390" height="32" viewBox="0 0 390 32" style="display:block; margin:0 auto; overflow:visible !important; width:390px !important; height:32px !important;">
@@ -538,14 +538,8 @@ export async function downloadCertificatePDF(data) {
                 <stop offset="100%" stop-color="#3C63D9" />
               </linearGradient>
             </defs>
-            
-            <!-- Left Extended Line (Pink) -->
             <line x1="0" y1="16" x2="70" y2="16" stroke="#D92C8A" stroke-width="1.2" />
-            
-            <!-- Right Extended Line (Blue) -->
             <line x1="320" y1="16" x2="390" y2="16" stroke="#3C63D9" stroke-width="1.2" />
-            
-            <!-- Centered Hexagon + Text Group -->
             <g transform="translate(70, 0)">
               <polygon points="11,1 239,1 249,16 239,31 11,31 1,16" fill="#070726" stroke="url(#hexGrad)" stroke-width="2"/>
               <text x="32" y="21" fill="#ff2f92" font-family="'Poppins', sans-serif" font-size="14px" text-anchor="middle">♦</text>
@@ -554,30 +548,22 @@ export async function downloadCertificatePDF(data) {
             </g>
           </svg>
         `;
-
         newAgEl.style.display = 'block';
         newAgEl.style.width = '100%';
         newAgEl.style.textAlign = 'center';
-        newAgEl.style.margin = '1% auto';
-        newAgEl.style.transform = 'translateY(-10px)';
-
-        // Insert our new perfect element right before the original one
+        newAgEl.style.margin = '0.1% auto';
+        newAgEl.style.transform = 'translateY(-15px)';
         agEl.parentNode.insertBefore(newAgEl, agEl);
-
-        // Safely hide the original element so its pseudo-elements are never captured
         agEl.style.setProperty('display', 'none', 'important');
       }
 
-      // E. Event Name Gradient and Exact Spacing Flow (No unnecessary spacing gaps!)
+      // E. Event Name Gradient
       const strongEl = clonedDoc.querySelector('.certDesc strong');
       if (strongEl) {
-        const eventText = strongEl.textContent || '';
-
-        // Measure the precise text width in pixels using a 2D canvas context
+        const eventText = (strongEl.textContent || '').trim();
         const canvasCtx = document.createElement('canvas').getContext('2d');
         canvasCtx.font = "bold 13px 'Poppins', sans-serif";
         const measuredWidth = canvasCtx.measureText(eventText).width;
-
         strongEl.innerHTML = `
           <svg width="${measuredWidth + 2}" height="18" viewBox="0 0 ${measuredWidth + 2} 18" style="overflow:visible !important; display:inline-block; vertical-align:middle; margin:0; padding:0; width:${measuredWidth + 2}px !important;">
             <defs>
@@ -597,10 +583,9 @@ export async function downloadCertificatePDF(data) {
         strongEl.style.padding = '0';
       }
 
-      // F. Self-Contained SVG Badges Injection (Completely replaces .fIcon contents to bypass html2canvas rendering bugs)
+      // F. Self-Contained SVG Badges Injection
       const fIcons = clonedDoc.querySelectorAll('.fIcon');
       if (fIcons.length >= 3) {
-        // 1. Calendar Svg (Pink Circle)
         if (fIcons[0]) {
           fIcons[0].innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 54 54" style="display:block; margin:auto; width:54px; height:54px; overflow:visible;">
@@ -621,8 +606,6 @@ export async function downloadCertificatePDF(data) {
           fIcons[0].style.setProperty('width', '54px', 'important');
           fIcons[0].style.setProperty('height', '54px', 'important');
         }
-
-        // 2. Location Svg (Blue Circle)
         if (fIcons[1]) {
           fIcons[1].innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 54 54" style="display:block; margin:auto; width:54px; height:54px; overflow:visible;">
@@ -640,8 +623,6 @@ export async function downloadCertificatePDF(data) {
           fIcons[1].style.setProperty('width', '54px', 'important');
           fIcons[1].style.setProperty('height', '54px', 'important');
         }
-
-        // 3. Signature Svg (Blue Circle)
         if (fIcons[2]) {
           fIcons[2].innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 54 54" style="display:block; margin:auto; width:54px; height:54px; overflow:visible;">
@@ -663,13 +644,14 @@ export async function downloadCertificatePDF(data) {
     }
   });
 
-  // Create a temporary canvas to apply perfectly rounded corners clipping (slices away any html2canvas spilling)
   const roundedCanvas = document.createElement('canvas');
   roundedCanvas.width = canvas.width;
   roundedCanvas.height = canvas.height;
   const ctx = roundedCanvas.getContext('2d');
+  
+  ctx.fillStyle = '#070726';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Mathematically precise 10mm rounded corner radius on the final A4 page
   const r = 10 * (canvas.width / 297);
   const w = canvas.width;
   const h = canvas.height;
@@ -687,40 +669,36 @@ export async function downloadCertificatePDF(data) {
   ctx.closePath();
   ctx.clip();
 
-  // Draw the original high-resolution render onto our rounded canvas
   ctx.drawImage(canvas, 0, 0);
 
-  const imgData = roundedCanvas.toDataURL('image/png');
+  // Use a highly compressed JPEG and scale down quality heavily
+  const imgData = roundedCanvas.toDataURL('image/jpeg', 0.65);
 
-  // Create landscape A4 PDF and fit the captured image perfectly
-  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-  const W = doc.internal.pageSize.getWidth();   // 297mm
-  const H = doc.internal.pageSize.getHeight();  // 210mm
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4', compress: true });
+  const W = doc.internal.pageSize.getWidth();
+  const H = doc.internal.pageSize.getHeight();
 
-  // Fill the outer PDF background page with a seamless, clean dark navy (#070726) matching the website
-  doc.setFillColor(7, 7, 38); // RGB for #070726
+  doc.setFillColor(7, 7, 38);
   doc.rect(0, 0, W, H, 'F');
 
-  // Calculate aspect-ratio-aware dimensions to fill the page
   const imgAspect = canvas.width / canvas.height;
   const pageAspect = W / H;
 
   let imgW, imgH, imgX, imgY;
   if (imgAspect > pageAspect) {
-    // Image is wider — fit to width
     imgW = W;
     imgH = W / imgAspect;
     imgX = 0;
     imgY = (H - imgH) / 2;
   } else {
-    // Image is taller — fit to height
     imgH = H;
     imgW = H * imgAspect;
     imgX = (W - imgW) / 2;
     imgY = 0;
   }
 
-  doc.addImage(imgData, 'PNG', imgX, imgY, imgW, imgH);
+  // Use FAST compression to aggressively minimize jsPDF blob size
+  doc.addImage(imgData, 'JPEG', imgX, imgY, imgW, imgH, undefined, 'FAST');
   doc.save(`TCS_Certificate_${data.name || 'Student'}.pdf`);
 }
 

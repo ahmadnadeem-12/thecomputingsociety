@@ -6,8 +6,19 @@ import axios from "axios";
  * - set VITE_API_URL in .env
  * - replace localStorage mocks in services with real API calls here
  */
+const getBaseURL = () => {
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  if (envUrl) {
+    if (envUrl.includes("localhost") && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+      return envUrl.replace("localhost", window.location.hostname);
+    }
+    return envUrl;
+  }
+  return `http://${window.location.hostname}:5000/api`;
+};
+
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api",
+  baseURL: getBaseURL(),
   timeout: 30000,
 });
 

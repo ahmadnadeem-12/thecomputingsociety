@@ -543,7 +543,8 @@ export default function Tickets() {
                                     name: t.name || user.name,
                                     agNo: t.agNo || user.agNo,
                                     eventTitle: ev?.title,
-                                    eventDate: ev?.date ? formatDate(ev.date) : (ev?.startDate || "TBA")
+                                    eventDate: ev?.date ? formatDate(ev.date) : (ev?.startDate || "TBA"),
+                                    eventVenue: ev?.venue || "MAIN AUDITORIUM"
                                   };
                                   nav("/certificate-preview", { state: certData });
                                 }}

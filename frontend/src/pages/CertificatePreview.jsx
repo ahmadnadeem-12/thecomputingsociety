@@ -50,16 +50,23 @@ export default function CertificatePreview() {
   return (
     <section className="section">
       <div className="certPreviewPage">
-        <div className="certFrame">
-          <div className="certCard">
-            {/* corners */}
-            <div className="cornerTL">
-              <div className="top-left-accent" />
-              <div className="top-left-dots" />
-            </div>
-            <div className="cornerBL" />
-            <div className="cornerBR" />
-            <div className="accentBar" />
+        {/* Mobile Notice: Shown only on small screens */}
+        <div className="certMobileNotice">
+          <h3>Certificate Ready! 🎉</h3>
+          <p>The high-resolution certificate is difficult to preview on small screens. Please click the download button below to save your certificate directly.</p>
+        </div>
+
+        <div className="certFrameContainer">
+          <div className="certFrame">
+            <div className="certCard">
+              {/* corners */}
+              <div className="cornerTL">
+                <div className="top-left-accent" />
+                <div className="top-left-dots" />
+              </div>
+              <div className="cornerBL" />
+              <div className="cornerBR" />
+              <div className="accentBar" />
 
             {/* dot grids */}
             <div className="dotGrid dotGrid--tl"><Dots /></div>
@@ -126,8 +133,7 @@ export default function CertificatePreview() {
                 <div className="fCol fCentre">
                   <div className="fIcon"><LocationSvg /></div>
                   <div className="fLabel fLabel--blue">VENUE</div>
-                  <div className="fValue">according to event</div>
-                  <div className="fValue">{d.eventDate}</div>
+                  <div className="fValue">{d.eventVenue || "Location"}</div>
                 </div>
 
                 <div className="fDiv" />
@@ -144,6 +150,7 @@ export default function CertificatePreview() {
                 <img src={awardSealImg} className="badgeSeal" alt="Award Seal Badge" />
               </div>
             </div>
+          </div>
           </div>
         </div>
 

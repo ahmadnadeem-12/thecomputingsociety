@@ -45,7 +45,10 @@ router.post("/register", async (req, res) => {
     });
 
     // Send Verification Email
-    const backendUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get("host")}`;
+    let backendUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get("host")}`;
+    if (backendUrl.includes("localhost") && !req.get("host").includes("localhost") && !req.get("host").includes("127.0.0.1")) {
+        backendUrl = `${req.protocol}://${req.get("host")}`;
+    }
     const verifyUrl = `${backendUrl}/api/auth/verify/${verificationToken}`;
     
     console.log("\n============================================");
@@ -220,7 +223,11 @@ router.post("/forgot-password", async (req, res) => {
     await user.save({ validateBeforeSave: false });
 
     // Build reset URL (frontend URL)
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    let frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    if (frontendUrl.includes("localhost") && !req.get("host").includes("localhost") && !req.get("host").includes("127.0.0.1")) {
+        const hostIp = req.get("host").split(":")[0];
+        frontendUrl = `http://${hostIp}:5173`;
+    }
     const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
 
     try {
@@ -379,18 +386,24 @@ router.put("/update-profile", protect, async (req, res) => {
             return res.status(404).json({ success: false, message: "User not found" });
         }
         
-        // Only delete tickets if the NAME is changing (as it's the primary identity)
-        const nameChanged = name && name !== user.name;
-
-        if (nameChanged && user.role === "student") {
-            await Ticket.deleteMany({ agNo: user.agNo });
-        }
-
         if (name) user.name = name;
         if (department) user.department = department;
         if (semester) user.semester = semester;
         
         await user.save();
+
+        // Dynamically update all existing tickets for this user with the new Name, Department, and Semester
+        const updateFields = {};
+        if (name) updateFields.name = name;
+        if (department) updateFields.department = department;
+        if (semester) updateFields.semester = semester;
+
+        if (Object.keys(updateFields).length > 0) {
+            await Ticket.updateMany(
+                { $or: [{ userId: user._id.toString() }, { agNo: user.agNo }] },
+                { $set: updateFields }
+            );
+        }
 
         res.json({ 
             success: true, 
@@ -507,7 +520,10 @@ router.post("/users/:id/resend-verify", protect, async (req, res) => {
     targetUser.verificationTokenExpire = Date.now() + 24 * 60 * 60 * 1000;
     await targetUser.save();
 
-    const backendUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get("host")}`;
+    let backendUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get("host")}`;
+    if (backendUrl.includes("localhost") && !req.get("host").includes("localhost") && !req.get("host").includes("127.0.0.1")) {
+        backendUrl = `${req.protocol}://${req.get("host")}`;
+    }
     const verifyUrl = `${backendUrl}/api/auth/verify/${verificationToken}`;
     
     console.log("\n============================================");

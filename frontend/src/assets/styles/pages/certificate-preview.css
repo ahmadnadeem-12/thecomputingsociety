@@ -269,7 +269,7 @@
   font-size: clamp(2.4rem, 4.4vw, 4.4rem);
   font-weight: normal;
   color: #070726;
-  margin: 0.2% 0 0.2%;
+  margin: -1.2% 0 0.2% !important;
   letter-spacing: 0.12em;
   text-shadow: 1px 1.5px 2px rgba(7, 7, 38, 0.12);
 }
@@ -279,7 +279,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 0.8%;
+  margin-bottom: 0.2% !important;
 }
 
 .certSubText {
@@ -321,7 +321,7 @@
   font-weight: 600;
   color: #555a7e;
   letter-spacing: 0.18em;
-  margin-top: 2%;
+  margin-top: 1.2% !important;
   text-transform: uppercase;
 }
 
@@ -350,7 +350,7 @@
   font-size: clamp(0.58rem, 0.78vw, 1rem);
   font-weight: 500;
   padding: 0.5rem 2em;
-  margin: 1% 0;
+  margin: 0.2% 0 !important;
   letter-spacing: 0.3em;
   display: inline-flex;
   align-items: center;
@@ -431,7 +431,7 @@
 
 /* ═══════════ FOOTER GRID SENSITIVE LAYOUT ═══════════ */
 .certFooter {
-  margin-top: 2%;
+  margin-top: 1.8% !important;
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -439,6 +439,7 @@
   padding: 0 4% 3rem;
   box-sizing: border-box;
   position: relative;
+  z-index: 15;
 }
 
 /* Centered Diamond and Lines Divider in natural flow */
@@ -448,7 +449,7 @@
   justify-content: center;
   width: calc(100% - 8%);
   max-width: 580px;
-  margin: 1.5% auto;
+  margin: 0.1% auto 1.5% auto !important;
   position: relative;
   gap: 0;
   transform: translateY(-12px);
@@ -585,7 +586,7 @@
   align-self: center;
   margin: 0 1.5%;
   position: relative;
-  transform: translateY(-20px);
+  transform: translateY(-35px);
 }
 
 .fDiv::before {
@@ -604,20 +605,24 @@
 /* Center Column (Symmetrically aligned in flow) */
 .fCentre {
   flex: 1;
-  transform: translateY(-25px);
+  transform: translateY(-30px);
 }
 
-/* Event Date and Signature Columns (Left and Right) */
-.certFooter>.fCol:first-of-type,
+/* Event Date Column (Left) */
+.certFooter>.fCol:first-of-type {
+  transform: translateY(-40px);
+}
+
+/* Signature Column (Right) */
 .certFooter>.fCol:last-of-type {
-  transform: translateY(-15px);
+  transform: translateY(-25px);
 }
 
 /* Embossed Scalloped Seal Badge (Custom transparent image overlapping the bottom border) */
 .badgeSeal {
   display: block !important;
   position: absolute;
-  top: 60%;
+  top: 53% !important;
   bottom: auto;
   left: 50%;
   transform: translateX(-50%);
@@ -630,11 +635,13 @@
 /* Elegant Handwriting Signature */
 .fSig {
   font-family: 'Dancing Script', cursive;
-  font-size: clamp(1rem, 1.5vw, 1.5vw);
+  font-size: clamp(0.85rem, 1.25vw, 1.25vw) !important;
   font-weight: 500;
   color: #070726;
   transform: rotate(-2deg);
   margin-top: -13px;
+  white-space: nowrap !important;
+  display: block !important;
 }
 
 .fSigLine {
@@ -671,6 +678,38 @@
   margin-top: 1.5rem;
 }
 
+/* ── MOBILE NOTICE ── */
+.certMobileNotice {
+  display: none;
+  text-align: center;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 2rem;
+  border-radius: 16px;
+  max-width: 400px;
+  margin: 0 auto 1.5rem;
+}
+
+.certMobileNotice h3 {
+  color: #D92C8A;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.certMobileNotice p {
+  color: #9a8fa6;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.certFrameContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 /* ═══════════ RESPONSIVE ═══════════ */
 @media (max-width: 991px) {
   .cornerTL {
@@ -690,6 +729,17 @@
 }
 
 @media (max-width: 768px) {
+  .certMobileNotice {
+    display: block;
+  }
+
+  .certFrameContainer {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+    visibility: visible;
+  }
+
   .certBody {
     padding: 4% 5% 3%;
   }
