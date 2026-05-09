@@ -458,6 +458,47 @@ export async function downloadCertificatePDF(data) {
       // ── 0. DISABLE PSEUDO-ELEMENT ROUND BACKGROUNDS & PREVENT CLIPPING ──
       const style = clonedDoc.createElement('style');
       style.innerHTML = `
+        /* Force desktop styles inside the cloned document on all devices to prevent 0 width/height elements */
+        .certMobileNotice {
+          display: none !important;
+        }
+        .certFrameContainer {
+          display: block !important;
+          position: static !important;
+          visibility: visible !important;
+          width: 1060px !important;
+          max-width: 1060px !important;
+          margin: 0 auto !important;
+          left: 0 !important;
+          top: 0 !important;
+          opacity: 1 !important;
+        }
+        .certFrame {
+          display: block !important;
+          width: 1060px !important;
+          min-height: 720px !important;
+          aspect-ratio: 1.414 !important;
+          border-radius: 12px !important;
+        }
+        .certCard {
+          aspect-ratio: 1.414 !important;
+          min-height: 720px !important;
+        }
+        .fDiv {
+          display: block !important;
+        }
+        .dotGrid {
+          display: block !important;
+        }
+        .badgeSeal {
+          width: 145px !important;
+          height: 145px !important;
+          top: 62% !important;
+        }
+        .badgeRing {
+          inset: 12px !important;
+        }
+
         /* Remove the unclipped rectangular gradient backgrounds rendered by html2canvas */
         .certAg::before, .certAg::after {
           display: none !important;
@@ -467,9 +508,6 @@ export async function downloadCertificatePDF(data) {
           border: none !important;
           opacity: 0 !important;
           box-shadow: none !important;
-        }
-        .badgeSeal {
-          top: 62% !important;
         }
       `;
       clonedDoc.head.appendChild(style);
