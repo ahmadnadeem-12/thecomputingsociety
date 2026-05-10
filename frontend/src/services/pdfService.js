@@ -2,9 +2,6 @@ import jsPDF from 'jspdf';
 import footerLogo from '../assets/images/footer-logo.png';
 import headerLogo from '../assets/images/header-logo.png';
 import pageBorder from '../assets/images/page-border.png';
-import cornerTlImg from '../assets/images/corner-tl.png';
-import bottomBarImg from '../assets/images/bottom-bar.png';
-import awardSealImg from '../assets/images/award-seal.png';
 
 // ════════════════════════════════════════════════════════════
 //  HELPERS
@@ -410,226 +407,378 @@ export function downloadAllTicketsPDF(tickets, qrs) {
 //  AWARD CERTIFICATE — 100% EXACT SCREEN CAPTURE → PDF
 // ════════════════════════════════════════════════════════════
 
-// ════════════════════════════════════════════════════════════
-//  AWARD CERTIFICATE — NATIVE jsPDF GENERATION (100% MOBILE STABLE)
-// ════════════════════════════════════════════════════════════
+export async function downloadCertificatePDF(data) {
+  const html2canvas = (await import('html2canvas')).default;
 
-// Premium Branding Constants
-const C_PINK = [217, 44, 138];
-const C_PRP = [106, 53, 184];
-const C_BLU = [60, 99, 217];
-const C_DRK = [7, 7, 38];
-const C_GRY = [85, 90, 126];
+  // 1. Ensure all custom fonts are fully loaded before rendering
+  if (document.fonts) {
+    await document.fonts.ready;
+  }
 
-export async function downloadCertificatePDF(d) {
+  // Find the actual rendered certificate frame on the page (includes gradient border)
+  const container = document.querySelector('.certFrameContainer');
+  const certCard = document.querySelector('.certFrame');
+  if (!certCard) {
+    alert('Certificate preview not found on page. Please try again.');
+    return;
+  }
+
+  const originalContainerStyle = container ? container.getAttribute('style') || '' : '';
+  const originalCardStyle = certCard ? certCard.getAttribute('style') || '' : '';
+
+  const isMobile = window.innerWidth <= 768;
+  const simulatedWidth = isMobile ? 1536 : window.innerWidth;
+  const simulatedHeight = isMobile ? 900 : window.innerHeight;
+
+  let canvas;
   try {
-  // 1. Create high-fidelity A4 Landscape Canvas
+    if (container) {
+      container.style.setProperty('display', 'block', 'important');
+      container.style.setProperty('position', 'absolute', 'important');
+      container.style.setProperty('left', '-9999px', 'important');
+      container.style.setProperty('top', '-9999px', 'important');
+      container.style.setProperty('width', '1060px', 'important');
+      container.style.setProperty('opacity', '0.001', 'important');
+    }
+    if (certCard) {
+      certCard.style.setProperty('width', '1060px', 'important');
+    }
+
+    canvas = await html2canvas(certCard, {
+      scale: 2,                 // Consistent 2x resolution on all devices for high-resolution crispness
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: '#ffffff',
+      logging: false,
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: simulatedWidth,        // Dynamically simulate standard laptop screen width (1536px) on mobile so clamp() and vw typography evaluate to their full large desktop proportions!
+      windowHeight: simulatedHeight,       // Dynamically simulate standard screen height
+      onclone: (clonedDoc) => {
+      // ── 0. DISABLE PSEUDO-ELEMENT ROUND BACKGROUNDS & PREVENT CLIPPING ──
+      const style = clonedDoc.createElement('style');
+      style.innerHTML = `
+        /* Force desktop styles inside the cloned document on all devices to prevent 0 width/height elements */
+        .certMobileNotice {
+          display: none !important;
+        }
+        .certFrameContainer {
+          display: block !important;
+          position: static !important;
+          visibility: visible !important;
+          width: 1060px !important;
+          max-width: 1060px !important;
+          margin: 0 auto !important;
+          left: 0 !important;
+          top: 0 !important;
+          opacity: 1 !important;
+        }
+        .certFrame {
+          display: block !important;
+          width: 1060px !important;
+          min-height: 720px !important;
+          aspect-ratio: 1.414 !important;
+          border-radius: 12px !important;
+        }
+        .certCard {
+          aspect-ratio: 1.414 !important;
+          min-height: 720px !important;
+        }
+        .fDiv {
+          display: block !important;
+        }
+        .dotGrid {
+          display: block !important;
+        }
+        .badgeSeal {
+          width: 145px !important;
+          height: 145px !important;
+          top: 62% !important;
+        }
+        .badgeRing {
+          inset: 12px !important;
+        }
+
+        /* Remove the unclipped rectangular gradient backgrounds rendered by html2canvas */
+        .certAg::before, .certAg::after {
+          display: none !important;
+          content: none !important;
+          background: transparent !important;
+          background-color: transparent !important;
+          border: none !important;
+          opacity: 0 !important;
+          box-shadow: none !important;
+        }
+      `;
+      clonedDoc.head.appendChild(style);
+
+      // ── ADVANCED GRAPHICS OVERRIDES FOR PERFECT FIDELITY ──
+
+      // A. "THE COMPUTING SOCIETY" Gradient Text
+      const societyEl = clonedDoc.querySelector('.certSociety');
+      if (societyEl) {
+        const socText = societyEl.textContent || 'THE COMPUTING SOCIETY';
+        societyEl.innerHTML = `
+          <svg width="100%" height="45" viewBox="0 0 600 45" style="overflow:visible !important; display:block; margin:0 auto; width:100% !important;">
+            <defs>
+              <linearGradient id="socGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#D92C8A" />
+                <stop offset="50%" stop-color="#6A35B8" />
+                <stop offset="100%" stop-color="#3C63D9" />
+              </linearGradient>
+            </defs>
+            <text x="300" y="32" text-anchor="middle" fill="url(#socGrad)" font-family="'Poppins', sans-serif" font-size="30px" font-weight="600" letter-spacing="0.16em">${socText}</text>
+          </svg>
+        `;
+        societyEl.style.background = 'none';
+        societyEl.style.webkitBackgroundClip = 'unset';
+        societyEl.style.webkitTextFillColor = 'unset';
+        societyEl.style.width = '100%';
+        societyEl.style.display = 'block';
+      }
+
+      // B. "OF PARTICIPATION" Subtitle
+      const subTextEl = clonedDoc.querySelector('.certSubText');
+      if (subTextEl) {
+        const subText = subTextEl.textContent || 'OF PARTICIPATION';
+        subTextEl.innerHTML = `
+          <svg width="200" height="20" viewBox="0 0 200 20" style="overflow:visible !important; display:inline-block; width:200px !important;">
+            <defs>
+              <linearGradient id="subGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#D92C8A" />
+                <stop offset="50%" stop-color="#6A35B8" />
+                <stop offset="100%" stop-color="#3C63D9" />
+              </linearGradient>
+            </defs>
+            <text x="100" y="18" text-anchor="middle" fill="url(#subGrad)" font-family="'Poppins', sans-serif" font-size="13px" font-weight="600" letter-spacing="0.38em">${subText}</text>
+          </svg>
+        `;
+        subTextEl.style.background = 'none';
+        subTextEl.style.webkitBackgroundClip = 'unset';
+        subTextEl.style.webkitTextFillColor = 'unset';
+        subTextEl.style.width = '200px';
+        subTextEl.style.display = 'inline-block';
+        subTextEl.style.margin = '0 auto';
+      }
+
+      // C. Participant Name
+      const nameEl = clonedDoc.querySelector('.certName');
+      if (nameEl) {
+        const nameText = nameEl.textContent || 'STUDENT NAME';
+        nameEl.innerHTML = `
+          <svg width="100%" height="75" viewBox="0 0 800 75" style="overflow:visible !important; display:block; margin:0 auto; width:100% !important;">
+            <defs>
+              <linearGradient id="nameGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#D92C8A" />
+                <stop offset="50%" stop-color="#6A35B8" />
+                <stop offset="100%" stop-color="#3C63D9" />
+              </linearGradient>
+            </defs>
+            <text x="400" y="55" text-anchor="middle" fill="url(#nameGrad)" font-family="'Playfair Display', 'Cinzel', serif" font-size="60px" font-weight="700" letter-spacing="0.12em">${nameText.toUpperCase()}</text>
+          </svg>
+        `;
+        nameEl.style.background = 'none';
+        nameEl.style.webkitBackgroundClip = 'unset';
+        nameEl.style.webkitTextFillColor = 'unset';
+        nameEl.style.filter = 'none';
+        nameEl.style.width = '100%';
+        nameEl.style.display = 'block';
+        nameEl.style.setProperty('margin', '0.7% 0 18px 0', 'important');
+      }
+
+      // D. AG No Hexagon Badge
+      const agEl = clonedDoc.querySelector('.certAg');
+      if (agEl) {
+        const agNoText = agEl.textContent.replace(/♦/g, '').replace(/AG No:/i, '').trim();
+        const newAgEl = clonedDoc.createElement('div');
+        newAgEl.innerHTML = `
+          <svg width="390" height="32" viewBox="0 0 390 32" style="display:block; margin:0 auto; overflow:visible !important; width:390px !important; height:32px !important;">
+            <defs>
+              <linearGradient id="hexGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#D92C8A" />
+                <stop offset="50%" stop-color="#6A35B8" />
+                <stop offset="100%" stop-color="#3C63D9" />
+              </linearGradient>
+            </defs>
+            <line x1="0" y1="16" x2="70" y2="16" stroke="#D92C8A" stroke-width="1.2" />
+            <line x1="320" y1="16" x2="390" y2="16" stroke="#3C63D9" stroke-width="1.2" />
+            <g transform="translate(70, 0)">
+              <polygon points="11,1 239,1 249,16 239,31 11,31 1,16" fill="#070726" stroke="url(#hexGrad)" stroke-width="2"/>
+              <text x="32" y="21" fill="#ff2f92" font-family="'Poppins', sans-serif" font-size="14px" text-anchor="middle">♦</text>
+              <text x="125" y="21" fill="#ffffff" font-family="'Poppins', sans-serif" font-size="12px" font-weight="600" letter-spacing="0.18em" text-anchor="middle">AG No: ${agNoText}</text>
+              <text x="218" y="21" fill="#3C63D9" font-family="'Poppins', sans-serif" font-size="14px" text-anchor="middle">♦</text>
+            </g>
+          </svg>
+        `;
+        newAgEl.style.display = 'block';
+        newAgEl.style.width = '100%';
+        newAgEl.style.textAlign = 'center';
+        newAgEl.style.margin = '0.2% auto 16px auto';
+        newAgEl.style.transform = 'translateY(-10px)';
+        agEl.parentNode.insertBefore(newAgEl, agEl);
+        agEl.style.setProperty('display', 'none', 'important');
+      }
+
+      // E. Event Name Gradient
+      const strongEl = clonedDoc.querySelector('.certDesc strong');
+      if (strongEl) {
+        const eventText = (strongEl.textContent || '').trim();
+        const canvasCtx = document.createElement('canvas').getContext('2d');
+        canvasCtx.font = "bold 13px 'Poppins', sans-serif";
+        const measuredWidth = canvasCtx.measureText(eventText).width;
+        strongEl.innerHTML = `
+          <svg width="${measuredWidth + 2}" height="18" viewBox="0 0 ${measuredWidth + 2} 18" style="overflow:visible !important; display:inline-block; vertical-align:middle; margin:0; padding:0; width:${measuredWidth + 2}px !important;">
+            <defs>
+              <linearGradient id="eventGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#D92C8A" />
+                <stop offset="50%" stop-color="#6A35B8" />
+                <stop offset="100%" stop-color="#3C63D9" />
+              </linearGradient>
+            </defs>
+            <text x="0" y="14" fill="url(#eventGrad)" font-family="'Poppins', sans-serif" font-weight="700" font-size="13px">${eventText}</text>
+          </svg>
+        `;
+        strongEl.style.background = 'none';
+        strongEl.style.webkitBackgroundClip = 'unset';
+        strongEl.style.webkitTextFillColor = 'unset';
+        strongEl.style.margin = '0';
+        strongEl.style.padding = '0';
+      }
+
+      // F. Self-Contained SVG Badges Injection
+      const fIcons = clonedDoc.querySelectorAll('.fIcon');
+      if (fIcons.length >= 3) {
+        if (fIcons[0]) {
+          fIcons[0].innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 54 54" style="display:block; margin:auto; width:54px; height:54px; overflow:visible;">
+              <circle cx="27" cy="27" r="25" fill="#070726" stroke="#D92C8A" stroke-width="2" />
+              <g transform="translate(15, 15)" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+                <rect x="7" y="14" width="3" height="3" rx="0.5" fill="#ffffff" stroke="none"></rect>
+              </g>
+            </svg>
+          `;
+          fIcons[0].style.setProperty('background', 'none', 'important');
+          fIcons[0].style.setProperty('border', 'none', 'important');
+          fIcons[0].style.setProperty('box-shadow', 'none', 'important');
+          fIcons[0].style.setProperty('display', 'block', 'important');
+          fIcons[0].style.setProperty('width', '54px', 'important');
+          fIcons[0].style.setProperty('height', '54px', 'important');
+        }
+        if (fIcons[1]) {
+          fIcons[1].innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 54 54" style="display:block; margin:auto; width:54px; height:54px; overflow:visible;">
+              <circle cx="27" cy="27" r="25" fill="#070726" stroke="#3C63D9" stroke-width="2" />
+              <g transform="translate(15, 15)" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </g>
+            </svg>
+          `;
+          fIcons[1].style.setProperty('background', 'none', 'important');
+          fIcons[1].style.setProperty('border', 'none', 'important');
+          fIcons[1].style.setProperty('box-shadow', 'none', 'important');
+          fIcons[1].style.setProperty('display', 'block', 'important');
+          fIcons[1].style.setProperty('width', '54px', 'important');
+          fIcons[1].style.setProperty('height', '54px', 'important');
+        }
+        if (fIcons[2]) {
+          fIcons[2].innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 54 54" style="display:block; margin:auto; width:54px; height:54px; overflow:visible;">
+              <circle cx="27" cy="27" r="25" fill="#070726" stroke="#3C63D9" stroke-width="2" />
+              <g transform="translate(15, 15)" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </g>
+            </svg>
+          `;
+          fIcons[2].style.setProperty('background', 'none', 'important');
+          fIcons[2].style.setProperty('border', 'none', 'important');
+          fIcons[2].style.setProperty('box-shadow', 'none', 'important');
+          fIcons[2].style.setProperty('display', 'block', 'important');
+          fIcons[2].style.setProperty('width', '54px', 'important');
+          fIcons[2].style.setProperty('height', '54px', 'important');
+        }
+      }
+    }
+  });
+
+  const roundedCanvas = document.createElement('canvas');
+  roundedCanvas.width = canvas.width;
+  roundedCanvas.height = canvas.height;
+  const ctx = roundedCanvas.getContext('2d');
+
+  ctx.fillStyle = '#070726';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const r = 10 * (canvas.width / 297);
+  const w = canvas.width;
+  const h = canvas.height;
+
+  ctx.beginPath();
+  ctx.moveTo(r, 0);
+  ctx.lineTo(w - r, 0);
+  ctx.quadraticCurveTo(w, 0, w, r);
+  ctx.lineTo(w, h - r);
+  ctx.quadraticCurveTo(w, h, w - r, h);
+  ctx.lineTo(r, h);
+  ctx.quadraticCurveTo(0, h, 0, h - r);
+  ctx.lineTo(0, r);
+  ctx.quadraticCurveTo(0, 0, r, 0);
+  ctx.closePath();
+  ctx.clip();
+
+  ctx.drawImage(canvas, 0, 0);
+
+  // Use a highly compressed JPEG and scale down quality heavily
+  const imgData = roundedCanvas.toDataURL('image/jpeg', 0.65);
+
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4', compress: true });
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
 
-  // 2. DRAW THE CYBERPUNK BACKGROUND FRAME
-  doc.setFillColor(7, 7, 38); // Solid Deep Navy Background
+  doc.setFillColor(7, 7, 38);
   doc.rect(0, 0, W, H, 'F');
 
-  // 3. NATIVE GRADIENT BORDER (Iterative Line Interpolation for Premium Sharpness)
-  const m = 6; // Main safe margin
-  const fw = W - 2 * m; // Frame width
-  const fh = H - 2 * m; // Frame height
-  const r = 6; // Radius match
+  const imgAspect = canvas.width / canvas.height;
+  const pageAspect = W / H;
 
-  // Helper to find the precise color step across horizontal span
-  function getGradStep(pos, total) {
-    const t = Math.max(0, Math.min(1, pos / total));
-    return t < 0.5 ? lerp(C_PINK, C_PRP, t * 2) : lerp(C_PRP, C_BLU, (t - 0.5) * 2);
+  let imgW, imgH, imgX, imgY;
+  if (imgAspect > pageAspect) {
+    imgW = W;
+    imgH = W / imgAspect;
+    imgX = 0;
+    imgY = (H - imgH) / 2;
+  } else {
+    imgH = H;
+    imgW = H * imgAspect;
+    imgX = (W - imgW) / 2;
+    imgY = 0;
   }
 
-  doc.setLineWidth(0.8);
-  // Top horizontal gradient line
-  for (let x = m + r; x < m + fw - r; x += 0.5) {
-    const rgb = getGradStep(x - m, fw);
-    doc.setDrawColor(rgb[0], rgb[1], rgb[2]);
-    doc.line(x, m, x + 0.6, m);
-  }
-  // Bottom horizontal gradient line
-  for (let x = m + r; x < m + fw - r; x += 0.5) {
-    const rgb = getGradStep(x - m, fw);
-    doc.setDrawColor(rgb[0], rgb[1], rgb[2]);
-    doc.line(x, m + fh, x + 0.6, m + fh);
-  }
-  // Solid side bars connecting the gradient ends
-  doc.setDrawColor(C_BLU[0], C_BLU[1], C_BLU[2]); // Cyan right edge
-  doc.line(m + fw, m + r, m + fw, m + fh - r);
-  doc.setDrawColor(C_PINK[0], C_PINK[1], C_PINK[2]); // Pink left edge
-  doc.line(m, m + r, m, m + fh - r);
-
-  // 4. WHITE INNER BODY CARD (Beautifully rounded & inset)
-  doc.setFillColor(255, 255, 255);
-  doc.roundedRect(m + 0.8, m + 0.8, fw - 1.6, fh - 1.6, 4.5, 4.5, 'F');
-
-  // 5. RENDER PREMIUM GRAPHIC ASSETS
-  // Top-Left Futuristic Logo Design
-  doc.addImage(cornerTlImg, 'PNG', m + 1, m + 1, 62, 62);
-  
-  // Bottom Geometric Border Bar
-  const bBarH = 28; // Height allocated for Bottom Bar
-  doc.addImage(bottomBarImg, 'PNG', m + 2, m + fh - bBarH, fw - 4, bBarH);
-
-  // 6. DYNAMIC HEADER RENDERING
-  // Main Title "THE COMPUTING SOCIETY"
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(21);
-  doc.setTextColor(C_DRK[0], C_DRK[1], C_DRK[2]); 
-  doc.text("THE COMPUTING SOCIETY", W / 2, 33, { align: 'center', charSpace: 1.2 });
-
-  // Elegant decorative divider line under the society name
-  const lineHalfW = 38;
-  doc.setLineWidth(0.4);
-  doc.setDrawColor(C_PINK[0], C_PINK[1], C_PINK[2]);
-  doc.line(W / 2 - lineHalfW, 37.5, W / 2, 37.5);
-  doc.setDrawColor(C_BLU[0], C_BLU[1], C_BLU[2]);
-  doc.line(W / 2, 37.5, W / 2 + lineHalfW, 37.5);
-
-  // Department Details
-  doc.setFontSize(8.5);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(C_GRY[0], C_GRY[1], C_GRY[2]);
-  doc.text("DEPT. OF COMPUTER SCIENCE,", W / 2, 43.5, { align: 'center' });
-  doc.text("UNIVERSITY OF AGRICULTURE FAISALABAD", W / 2, 47.5, { align: 'center' });
-
-  // 7. THE OFFICIAL TITLE DESIGN
-  // Absolute High-Fidelity "AWARD CERTIFICATE" rendering using Serif
-  doc.setFont("times", "bold");
-  doc.setFontSize(44);
-  doc.setTextColor(C_DRK[0], C_DRK[1], C_DRK[2]);
-  doc.text("AWARD CERTIFICATE", W / 2, 72, { align: 'center', charSpace: 1.8 });
-
-  // Subline "OF PARTICIPATION" flanked by accent diamonds
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(10.5);
-  doc.setTextColor(C_PRP[0], C_PRP[1], C_PRP[2]);
-  doc.text("♦   OF PARTICIPATION   ♦", W / 2, 81, { align: 'center', charSpace: 2.5 });
-
-  // 8. THE RECIPIENT CORE
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(9.5);
-  doc.setTextColor(C_GRY[0], C_GRY[1], C_GRY[2]);
-  doc.text("PROUDLY PRESENTED TO", W / 2, 96, { align: 'center', charSpace: 0.8 });
-
-  // The Recipient's Dynamic Name: Big, Elegant, Accented
-  doc.setFont("times", "bolditalic");
-  doc.setFontSize(38);
-  doc.setTextColor(C_PINK[0], C_PINK[1], C_PINK[2]); // Keep the core identity accent
-  const recipientName = (d.name || "PARTICIPANT NAME").toUpperCase();
-  doc.text(recipientName, W / 2, 111, { align: 'center' });
-
-  // 9. AG NUMBER ACCENT BADGE (Drawn via vector geometry polygons)
-  const agId = `AG No: ${d.agNo || "20XX-AG-XXXX"}`;
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(9.5);
-  
-  const badgeWidth = doc.getTextWidth(agId) + 18; // Automatic fit-to-width
-  const badgeHeight = 8.5;
-  const bx = W / 2 - badgeWidth / 2;
-  const by = 119;
-
-  // Create clean dark vector capsule badge using verified roundedRect method
-  doc.setFillColor(7, 7, 38);
-  doc.roundedRect(bx, by, badgeWidth, badgeHeight, 2, 2, 'F');
-
-  // Add subtle gradient frame to the badge
-  doc.setLineWidth(0.35);
-  doc.setDrawColor(C_PRP[0], C_PRP[1], C_PRP[2]);
-  doc.roundedRect(bx, by, badgeWidth, badgeHeight, 2, 2, 'D');
-
-  // Badge Text
-  doc.setTextColor(255, 255, 255);
-  doc.text(agId, W / 2, by + 5.8, { align: 'center' });
-
-  // 10. DESCRIPTION DYNAMICS
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10.5);
-  doc.setTextColor(65, 70, 95);
-  
-  const mainDesc = `For participating in "${d.eventTitle || "Event Title"}" organized by The Computing Society,`;
-  const subDesc = `University of Agriculture Faisalabad.`;
-  doc.text(mainDesc, W / 2, 138, { align: 'center' });
-  doc.text(subDesc, W / 2, 143.5, { align: 'center' });
-
-  // Vector accent divider
-  doc.setDrawColor(210, 210, 225);
-  doc.setLineWidth(0.2);
-  doc.line(W / 2 - 40, 152, W / 2 + 40, 152);
-
-  // 11. TRIPLE-COLUMN FOOTER ECOSYSTEM
-  const fLocY = 173; // Primary baseline for icons
-  const colX1 = W * 0.24;
-  const colX2 = W * 0.5;
-  const colX3 = W * 0.76;
-
-  // Helper to draw circular icon frames
-  function drawIconFr(cx, cy, clr) {
-    doc.setFillColor(7, 7, 38);
-    doc.circle(cx, cy, 5.5, 'F');
-    doc.setDrawColor(clr[0], clr[1], clr[2]);
-    doc.setLineWidth(0.45);
-    doc.circle(cx, cy, 5.5, 'D');
-  }
-
-  // Draw frames
-  drawIconFr(colX1, fLocY - 12, C_PINK);
-  drawIconFr(colX2, fLocY - 12, C_BLU);
-  drawIconFr(colX3, fLocY - 12, C_BLU);
-
-  // -- Column 1: Event Meta --
-  doc.setFontSize(9);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(C_PINK[0], C_PINK[1], C_PINK[2]);
-  doc.text("EVENT DATE", colX1, fLocY, { align: 'center' });
-  
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(8.5);
-  doc.setTextColor(60, 60, 60);
-  const evTitleShort = d.eventTitle && d.eventTitle.length > 25 ? d.eventTitle.substring(0,22) + ".." : (d.eventTitle || "");
-  doc.text(evTitleShort, colX1, fLocY + 5, { align: 'center' });
-  doc.text(d.eventDate || "2026", colX1, fLocY + 9, { align: 'center' });
-
-  // -- Column 2: Venue --
-  doc.setFontSize(9);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(C_BLU[0], C_BLU[1], C_BLU[2]);
-  doc.text("VENUE", colX2, fLocY, { align: 'center' });
-  
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(8.5);
-  doc.setTextColor(60, 60, 60);
-  doc.text(d.eventVenue || "University Auditorium", colX2, fLocY + 5, { align: 'center' });
-
-  // -- Column 3: Signature --
-  doc.setFontSize(9);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(C_BLU[0], C_BLU[1], C_BLU[2]);
-  doc.text("SIGNATURE", colX3, fLocY, { align: 'center' });
-  
-  doc.setFont("times", "italic");
-  doc.setTextColor(7, 7, 38);
-  doc.setFontSize(12.5);
-  doc.text("The Computing Society", colX3, fLocY + 6.5, { align: 'center' });
-  
-  // The elegant line under signature
-  doc.setDrawColor(C_PRP[0], C_PRP[1], C_PRP[2]);
-  doc.setLineWidth(0.35);
-  doc.line(colX3 - 22, fLocY + 8.5, colX3 + 22, fLocY + 8.5);
-
-  // 12. THE CENTER EMBOSSED AWARD SEAL (FINAL OVERLAY)
-  const sealSz = 33; // Optimal dimension for A4 scaling
-  doc.addImage(awardSealImg, 'PNG', W / 2 - sealSz / 2, H - 48, sealSz, sealSz);
-
-  // 13. FIREWORKS! EXPORT COMPLETED VECTOR FILE!
-  doc.save(`TCS_Certificate_${(d.name || 'Student').replace(/[^a-z0-9]/gi, '_')}.pdf`);
+  // Use FAST compression to aggressively minimize jsPDF blob size
+  doc.addImage(imgData, 'JPEG', imgX, imgY, imgW, imgH, undefined, 'FAST');
+  doc.save(`TCS_Certificate_${data.name || 'Student'}.pdf`);
   } catch (err) {
-    console.error("Certificate Vector Generator Failed:", err);
-    alert("Oops! We couldn't create the PDF: " + err.message);
+    console.error("Certificate PDF generation failed:", err);
+    alert("Error downloading PDF: " + err.message);
+  } finally {
+    if (container) {
+      if (originalContainerStyle) {
+        container.setAttribute('style', originalContainerStyle);
+      } else {
+        container.removeAttribute('style');
+      }
+    }
+    if (certCard) {
+      if (originalCardStyle) {
+        certCard.setAttribute('style', originalCardStyle);
+      } else {
+        certCard.removeAttribute('style');
+      }
+    }
   }
 }
-
