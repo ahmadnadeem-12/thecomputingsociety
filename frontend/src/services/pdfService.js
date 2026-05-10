@@ -422,6 +422,7 @@ const C_DRK = [7, 7, 38];
 const C_GRY = [85, 90, 126];
 
 export async function downloadCertificatePDF(d) {
+  try {
   // 1. Create high-fidelity A4 Landscape Canvas
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4', compress: true });
   const W = doc.internal.pageSize.getWidth();
@@ -640,5 +641,9 @@ export async function downloadCertificatePDF(d) {
 
   // 13. FIREWORKS! EXPORT COMPLETED VECTOR FILE!
   doc.save(`TCS_Certificate_${(d.name || 'Student').replace(/[^a-z0-9]/gi, '_')}.pdf`);
+  } catch (err) {
+    console.error("Certificate Vector Generator Failed:", err);
+    alert("Oops! We couldn't create the PDF: " + err.message);
+  }
 }
 
