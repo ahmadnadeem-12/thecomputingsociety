@@ -410,47 +410,82 @@ export function downloadAllTicketsPDF(tickets, qrs) {
 export async function downloadCertificatePDF(data) {
   const html2canvas = (await import('html2canvas')).default;
 
-  // 1. Ensure all custom fonts are fully loaded before rendering
+  // 1. PRE-FLIGHT: Ensure dynamic webfonts are active in browser memory
   if (document.fonts) {
     await document.fonts.ready;
   }
 
-  // Find the actual rendered certificate frame on the page (includes gradient border)
-  const container = document.querySelector('.certFrameContainer');
-  const certCard = document.querySelector('.certFrame');
-  if (!certCard) {
-    alert('Certificate preview not found on page. Please try again.');
+  // Find the LIVE element on the screen to use as the cloning source
+  const liveNode = document.querySelector('.certFrame');
+  if (!liveNode) {
+    alert('Certificate source not ready. Please refresh.');
     return;
   }
 
-  const originalContainerStyle = container ? container.getAttribute('style') || '' : '';
-  const originalCardStyle = certCard ? certCard.getAttribute('style') || '' : '';
+  // 2. CREATE ISOLATED OFF-SCREEN MOUNT POINT (The Heavy Zone)
+  // This creates a physically separate, fixed 1536px rendering universe on the body
+  const heavyRenderZone = document.createElement('div');
+  heavyRenderZone.id = 'tcs-pdf-heavy-renderer';
+  heavyRenderZone.style.cssText = `
+    position: fixed !important;
+    top: 0 !important;
+    left: -9999px !important;
+    width: 1536px !important;
+    height: 1200px !important;
+    overflow: visible !important;
+    z-index: -99999 !important;
+    background: transparent !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  `;
 
-  // ALWAYS simulate high-resolution fixed desktop dimensions to ensure identical rendering regardless of device viewport
-  const simulatedWidth = 1536;
-  const simulatedHeight = 900;
+  // 3. CREATE DEEP CLONE (Zero React Side-Effects)
+  // Deep cloning detaches it from the React render cycle entirely!
+  const printNode = liveNode.cloneNode(true);
+
+  // 4. FORCE IMMUTABLE DESKTOP STYLES ON THE CLONE IMMEDIATELY
+  // Overrides any cascading styles that might try to force it to shrink
+  printNode.style.cssText = `
+    display: block !important;
+    position: relative !important;
+    width: 1060px !important;
+    height: 750px !important;
+    min-height: 750px !important;
+    aspect-ratio: 1.414 !important;
+    border-radius: 28px !important;
+    padding: 3px !important;
+    margin: 100px auto !important;
+    transform: scale(1) !important;
+    box-sizing: border-box !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    background: linear-gradient(135deg, #D92C8A 0%, #6A35B8 50%, #3C63D9 100%) !important;
+  `;
+
+  // Bulletproof the internal inner-card as well!
+  const innerCard = printNode.querySelector('.certCard');
+  if (innerCard) {
+    innerCard.style.cssText = `
+      display: block !important;
+      aspect-ratio: 1.414 !important;
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 744px !important;
+      border-radius: 24px !important;
+      box-sizing: border-box !important;
+    `;
+  }
+
+  // Inject the clone into the off-screen world
+  heavyRenderZone.appendChild(printNode);
+  document.body.appendChild(heavyRenderZone);
 
   let canvas;
   try {
-    if (container) {
-      container.style.setProperty('display', 'block', 'important');
-      container.style.setProperty('position', 'absolute', 'important');
-      container.style.setProperty('left', '-9999px', 'important');
-      container.style.setProperty('top', '-9999px', 'important');
-      container.style.setProperty('width', '1060px', 'important');
-      container.style.setProperty('height', '750px', 'important'); // 🔥 HEAVY FIX: Never allow collapse
-      container.style.setProperty('min-height', '750px', 'important');
-      container.style.setProperty('opacity', '0.001', 'important');
-    }
-    if (certCard) {
-      certCard.style.setProperty('display', 'block', 'important');
-      certCard.style.setProperty('width', '1060px', 'important');
-      certCard.style.setProperty('height', '750px', 'important'); // 🔥 HEAVY FIX: Match desktop height inline
-      certCard.style.setProperty('min-height', '750px', 'important');
-    }
-
-    // Wait for all images inside the card to be fully loaded and measured by the browser now that they are block!
-    const imgElements = Array.from(certCard.querySelectorAll('img'));
+    // 5. WAIT FOR IMAGES INSIDE ISOLATED DOM TO HYDRATE
+    const imgElements = Array.from(printNode.querySelectorAll('img'));
     await Promise.all(
       imgElements.map(img => {
         if (img.complete && img.naturalWidth > 0) return Promise.resolve();
@@ -461,407 +496,256 @@ export async function downloadCertificatePDF(data) {
       })
     );
 
-    canvas = await html2canvas(certCard, {
-      scale: 2,                 // Consistent 2x resolution on all devices for high-resolution crispness
+    // 6. SNAPSHOT THE ISOLATED CLONE
+    canvas = await html2canvas(printNode, {
+      scale: 2,                 // Ultra HD resolution
       useCORS: true,
       allowTaint: false,
       backgroundColor: '#ffffff',
       logging: false,
       scrollX: 0,
       scrollY: 0,
-      width: 1060,              // 🔥 EXPLICIT CANVAS DIMENSIONS: Prevents 0-size calculation crash
-      height: 750,             // 🔥 EXPLICIT CANVAS DIMENSIONS: Force deterministic snapshot area
-      windowWidth: simulatedWidth,        // Dynamically simulate standard laptop screen width (1536px) on mobile so clamp() and vw typography evaluate to their full large desktop proportions!
-      windowHeight: simulatedHeight,       // Dynamically simulate standard screen height
+      width: 1060,              // 🔥 ABSOLUTE CANVAS WIDTH: Zero ambiguity
+      height: 750,             // 🔥 ABSOLUTE CANVAS HEIGHT: Never collapse
+      windowWidth: 1536,        // Simulate wide monitor
+      windowHeight: 900,
       onclone: (clonedDoc) => {
-      // ── 0. DISABLE PSEUDO-ELEMENT ROUND BACKGROUNDS & PREVENT CLIPPING ──
-      const style = clonedDoc.createElement('style');
-      style.innerHTML = `
-        /* 1. Force Desktop Sizing & Position (Nullifies responsive resets) */
-        .certMobileNotice {
-          display: none !important;
-        }
-        .certFrameContainer {
-          display: block !important;
-          position: static !important;
-          visibility: visible !important;
-          width: 1060px !important;
-          max-width: 1060px !important;
-          height: 750px !important;
-          margin: 0 auto !important;
-          left: 0 !important;
-          top: 0 !important;
-          opacity: 1 !important;
-          overflow: visible !important;
-        }
-        .certFrame {
-          display: block !important;
-          width: 1060px !important;
-          height: 750px !important;
-          aspect-ratio: 1.414 !important;
-          border-radius: 28px !important;
-          padding: 3px !important;
-        }
-        .certCard {
-          height: 750px !important;
-          min-height: 750px !important;
-          border-radius: 24px !important;
-        }
-        .certBody {
-          padding: 1.5% 10% 2.8% !important;
-        }
-        
-        /* 2. Corner Graphics (Restore desktop display/sizing) */
-        .cornerTL {
-          width: 250px !important;
-          height: 250px !important;
-        }
-        .cornerBL, .cornerBR {
-          display: none !important;
-        }
-        
-        /* 3. Fixed Desktop Typography (Calculated for 1536px simulated width to completely override mobile queries) */
-        .certTitle {
-          font-size: 67px !important;
-          margin: -1.2% 0 0.2% !important;
-        }
-        .certDept {
-          font-size: 13.5px !important;
-        }
-        .certPresented {
-          font-size: 12.5px !important;
-          margin-bottom: 8px !important;
-        }
-        .certDesc {
-          font-size: 12.5px !important;
-          max-width: 75% !important;
-          display: block !important;
-          transform: translateY(-10px) !important;
-        }
-        .fLabel {
-          font-size: 11px !important;
-        }
-        .fValue {
-          font-size: 11px !important;
-        }
-        .fSig {
-          font-size: 22px !important;
-        }
+        // ── 0. INJECT THE MASTER OVERRIDE STYLESHEET ──
+        const style = clonedDoc.createElement('style');
+        style.innerHTML = `
+          /* 1. Nuclear Layout Force (Overwrites all imported responsive rules) */
+          .certMobileNotice { display: none !important; }
+          .certFrameContainer {
+            display: block !important;
+            position: static !important;
+            width: 1060px !important;
+            height: 750px !important;
+            margin: 0 auto !important;
+            opacity: 1 !important;
+          }
+          .certFrame {
+            display: block !important;
+            width: 1060px !important;
+            height: 750px !important;
+            aspect-ratio: 1.414 !important;
+            border-radius: 28px !important;
+            padding: 3px !important;
+          }
+          .certCard {
+            height: 750px !important;
+            min-height: 750px !important;
+            border-radius: 24px !important;
+          }
+          .certBody { padding: 1.5% 10% 2.8% !important; }
+          
+          /* 2. Hard Restores */
+          .cornerTL { width: 250px !important; height: 250px !important; }
+          .cornerBL, .cornerBR { display: none !important; }
+          .fDiv { display: block !important; width: 2px !important; height: 100px !important; }
+          .dotGrid { display: block !important; }
+          .badgeSeal { width: 145px !important; height: 145px !important; top: 62% !important; }
+          .badgeRing { inset: 12px !important; }
 
-        /* 4. Element Resets and Restorations */
-        .fDiv {
-          display: block !important;
-          width: 2px !important;
-          height: 100px !important;
-        }
-        .dotGrid {
-          display: block !important;
-        }
-        .badgeSeal {
-          width: 145px !important;
-          height: 145px !important;
-          top: 62% !important;
-        }
-        .badgeRing {
-          inset: 12px !important;
-        }
+          /* 3. Absolute Font Lockdown */
+          .certTitle { font-size: 67px !important; margin: -1.2% 0 0.2% !important; }
+          .certDept { font-size: 13.5px !important; }
+          .certPresented { font-size: 12.5px !important; margin-bottom: 8px !important; }
+          .certDesc { font-size: 12.5px !important; max-width: 75% !important; display: block !important; transform: translateY(-10px) !important; }
+          .fLabel { font-size: 11px !important; }
+          .fValue { font-size: 11px !important; }
+          .fSig { font-size: 22px !important; }
 
-        /* Remove the unclipped rectangular gradient backgrounds rendered by html2canvas for clean look */
-        .certAg::before, .certAg::after {
-          display: none !important;
-          content: none !important;
-          background: transparent !important;
-          background-color: transparent !important;
-          border: none !important;
-          opacity: 0 !important;
-          box-shadow: none !important;
-        }
-      `;
-      clonedDoc.head.appendChild(style);
+          .certAg::before, .certAg::after {
+            display: none !important; content: none !important; background: transparent !important;
+          }
+        `;
+        clonedDoc.head.appendChild(style);
 
-      // ── WIPE ALL MEDIA QUERIES FROM CLONED DOC ──
-      // Prevents browser from accidentally evaluating real device width against stylesheets during snapshot
-      try {
-        Array.from(clonedDoc.styleSheets).forEach(sheet => {
-          try {
-            const rules = sheet.cssRules || sheet.rules;
-            if (!rules) return;
-            for (let i = rules.length - 1; i >= 0; i--) {
-              if (rules[i] instanceof CSSMediaRule) {
-                sheet.deleteRule(i);
+        // ── 1. MEDIA QUERY STRIPPER (Nukes host viewport reactivity) ──
+        try {
+          Array.from(clonedDoc.styleSheets).forEach(sheet => {
+            try {
+              const rules = sheet.cssRules || sheet.rules;
+              if (!rules) return;
+              for (let i = rules.length - 1; i >= 0; i--) {
+                if (rules[i] instanceof CSSMediaRule) {
+                  sheet.deleteRule(i);
+                }
               }
-            }
-          } catch (err) { /* Silent fail for cross-origin sheets that don't hold layout logic */ }
-        });
-      } catch (err) { }
+            } catch (e) { }
+          });
+        } catch (e) { }
 
-      // ── ADVANCED GRAPHICS OVERRIDES FOR PERFECT FIDELITY ──
+        // ── 2. HEAVY GRAPHICS: SVG Text Conversion ──
 
-      // A. "THE COMPUTING SOCIETY" Gradient Text
-      const societyEl = clonedDoc.querySelector('.certSociety');
-      if (societyEl) {
-        const socText = societyEl.textContent || 'THE COMPUTING SOCIETY';
-        societyEl.innerHTML = `
-          <svg width="100%" height="45" viewBox="0 0 600 45" style="overflow:visible !important; display:block; margin:0 auto; width:100% !important;">
-            <defs>
-              <linearGradient id="socGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#D92C8A" />
-                <stop offset="50%" stop-color="#6A35B8" />
-                <stop offset="100%" stop-color="#3C63D9" />
-              </linearGradient>
-            </defs>
-            <text x="300" y="32" text-anchor="middle" fill="url(#socGrad)" font-family="'Poppins', sans-serif" font-size="30px" font-weight="600" letter-spacing="0.16em">${socText}</text>
-          </svg>
-        `;
-        societyEl.style.background = 'none';
-        societyEl.style.webkitBackgroundClip = 'unset';
-        societyEl.style.webkitTextFillColor = 'unset';
-        societyEl.style.width = '100%';
-        societyEl.style.display = 'block';
-      }
+        // Society Heading
+        const societyEl = clonedDoc.querySelector('.certSociety');
+        if (societyEl) {
+          societyEl.innerHTML = `
+            <svg width="600" height="45" viewBox="0 0 600 45" style="overflow:visible !important; display:block; margin:0 auto; width:600px !important;">
+              <defs>
+                <linearGradient id="socGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#D92C8A" /><stop offset="50%" stop-color="#6A35B8" /><stop offset="100%" stop-color="#3C63D9" />
+                </linearGradient>
+              </defs>
+              <text x="300" y="32" text-anchor="middle" fill="url(#socGrad)" font-family="'Poppins', sans-serif" font-size="30px" font-weight="600" letter-spacing="0.16em">${societyEl.textContent || 'THE COMPUTING SOCIETY'}</text>
+            </svg>
+          `;
+          societyEl.style.cssText = "background:none !important; -webkit-text-fill-color:initial !important; width:100% !important; display:block !important;";
+        }
 
-      // B. "OF PARTICIPATION" Subtitle
-      const subTextEl = clonedDoc.querySelector('.certSubText');
-      if (subTextEl) {
-        const subText = subTextEl.textContent || 'OF PARTICIPATION';
-        subTextEl.innerHTML = `
-          <svg width="200" height="20" viewBox="0 0 200 20" style="overflow:visible !important; display:inline-block; width:200px !important;">
-            <defs>
-              <linearGradient id="subGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#D92C8A" />
-                <stop offset="50%" stop-color="#6A35B8" />
-                <stop offset="100%" stop-color="#3C63D9" />
-              </linearGradient>
-            </defs>
-            <text x="100" y="18" text-anchor="middle" fill="url(#subGrad)" font-family="'Poppins', sans-serif" font-size="13px" font-weight="600" letter-spacing="0.38em">${subText}</text>
-          </svg>
-        `;
-        subTextEl.style.background = 'none';
-        subTextEl.style.webkitBackgroundClip = 'unset';
-        subTextEl.style.webkitTextFillColor = 'unset';
-        subTextEl.style.width = '200px';
-        subTextEl.style.display = 'inline-block';
-        subTextEl.style.margin = '0 auto';
-      }
+        // Subtitle
+        const subEl = clonedDoc.querySelector('.certSubText');
+        if (subEl) {
+          subEl.innerHTML = `
+            <svg width="200" height="20" viewBox="0 0 200 20" style="overflow:visible !important; display:inline-block; width:200px !important;">
+              <defs>
+                <linearGradient id="subGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#D92C8A" /><stop offset="50%" stop-color="#6A35B8" /><stop offset="100%" stop-color="#3C63D9" />
+                </linearGradient>
+              </defs>
+              <text x="100" y="18" text-anchor="middle" fill="url(#subGrad)" font-family="'Poppins', sans-serif" font-size="13px" font-weight="600" letter-spacing="0.38em">${subEl.textContent || 'OF PARTICIPATION'}</text>
+            </svg>
+          `;
+          subEl.style.cssText = "background:none !important; -webkit-text-fill-color:initial !important; width:200px !important; display:inline-block !important;";
+        }
 
-      // C. Participant Name
-      const nameEl = clonedDoc.querySelector('.certName');
-      if (nameEl) {
-        const nameText = nameEl.textContent || 'STUDENT NAME';
-        nameEl.innerHTML = `
-          <svg width="100%" height="75" viewBox="0 0 800 75" style="overflow:visible !important; display:block; margin:0 auto; width:100% !important;">
-            <defs>
-              <linearGradient id="nameGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#D92C8A" />
-                <stop offset="50%" stop-color="#6A35B8" />
-                <stop offset="100%" stop-color="#3C63D9" />
-              </linearGradient>
-            </defs>
-            <text x="400" y="55" text-anchor="middle" fill="url(#nameGrad)" font-family="'Playfair Display', 'Cinzel', serif" font-size="60px" font-weight="700" letter-spacing="0.12em">${nameText.toUpperCase()}</text>
-          </svg>
-        `;
-        nameEl.style.background = 'none';
-        nameEl.style.webkitBackgroundClip = 'unset';
-        nameEl.style.webkitTextFillColor = 'unset';
-        nameEl.style.filter = 'none';
-        nameEl.style.width = '100%';
-        nameEl.style.display = 'block';
-        nameEl.style.setProperty('margin', '0.7% 0 18px 0', 'important');
-      }
+        // Name
+        const nameEl = clonedDoc.querySelector('.certName');
+        if (nameEl) {
+          nameEl.innerHTML = `
+            <svg width="800" height="75" viewBox="0 0 800 75" style="overflow:visible !important; display:block; margin:0 auto; width:800px !important;">
+              <defs>
+                <linearGradient id="nameGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#D92C8A" /><stop offset="50%" stop-color="#6A35B8" /><stop offset="100%" stop-color="#3C63D9" />
+                </linearGradient>
+              </defs>
+              <text x="400" y="55" text-anchor="middle" fill="url(#nameGrad)" font-family="'Playfair Display', 'Cinzel', serif" font-size="60px" font-weight="700" letter-spacing="0.12em">${nameEl.textContent.toUpperCase()}</text>
+            </svg>
+          `;
+          nameEl.style.cssText = "background:none !important; -webkit-text-fill-color:initial !important; width:100% !important; display:block !important; filter:none !important; margin:0.7% 0 18px 0 !important;";
+        }
 
-      // D. AG No Hexagon Badge
-      const agEl = clonedDoc.querySelector('.certAg');
-      if (agEl) {
-        const agNoText = agEl.textContent.replace(/♦/g, '').replace(/AG No:/i, '').trim();
-        const newAgEl = clonedDoc.createElement('div');
-        newAgEl.innerHTML = `
-          <svg width="390" height="32" viewBox="0 0 390 32" style="display:block; margin:0 auto; overflow:visible !important; width:390px !important; height:32px !important;">
-            <defs>
-              <linearGradient id="hexGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#D92C8A" />
-                <stop offset="50%" stop-color="#6A35B8" />
-                <stop offset="100%" stop-color="#3C63D9" />
-              </linearGradient>
-            </defs>
-            <line x1="0" y1="16" x2="70" y2="16" stroke="#D92C8A" stroke-width="1.2" />
-            <line x1="320" y1="16" x2="390" y2="16" stroke="#3C63D9" stroke-width="1.2" />
-            <g transform="translate(70, 0)">
-              <polygon points="11,1 239,1 249,16 239,31 11,31 1,16" fill="#070726" stroke="url(#hexGrad)" stroke-width="2"/>
-              <text x="32" y="21" fill="#ff2f92" font-family="'Poppins', sans-serif" font-size="14px" text-anchor="middle">♦</text>
-              <text x="125" y="21" fill="#ffffff" font-family="'Poppins', sans-serif" font-size="12px" font-weight="600" letter-spacing="0.18em" text-anchor="middle">AG No: ${agNoText}</text>
-              <text x="218" y="21" fill="#3C63D9" font-family="'Poppins', sans-serif" font-size="14px" text-anchor="middle">♦</text>
-            </g>
-          </svg>
-        `;
-        newAgEl.style.display = 'block';
-        newAgEl.style.width = '100%';
-        newAgEl.style.textAlign = 'center';
-        newAgEl.style.margin = '0.2% auto 16px auto';
-        newAgEl.style.transform = 'translateY(-10px)';
-        agEl.parentNode.insertBefore(newAgEl, agEl);
-        agEl.style.setProperty('display', 'none', 'important');
-      }
-
-      // E. Event Name Gradient
-      const strongEl = clonedDoc.querySelector('.certDesc strong');
-      if (strongEl) {
-        const eventText = (strongEl.textContent || '').trim();
-        const canvasCtx = document.createElement('canvas').getContext('2d');
-        canvasCtx.font = "bold 13px 'Poppins', sans-serif";
-        const measuredWidth = canvasCtx.measureText(eventText).width;
-        strongEl.innerHTML = `
-          <svg width="${measuredWidth + 2}" height="18" viewBox="0 0 ${measuredWidth + 2} 18" style="overflow:visible !important; display:inline-block; vertical-align:middle; margin:0; padding:0; width:${measuredWidth + 2}px !important;">
-            <defs>
-              <linearGradient id="eventGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#D92C8A" />
-                <stop offset="50%" stop-color="#6A35B8" />
-                <stop offset="100%" stop-color="#3C63D9" />
-              </linearGradient>
-            </defs>
-            <text x="0" y="14" fill="url(#eventGrad)" font-family="'Poppins', sans-serif" font-weight="700" font-size="13px">${eventText}</text>
-          </svg>
-        `;
-        strongEl.style.background = 'none';
-        strongEl.style.webkitBackgroundClip = 'unset';
-        strongEl.style.webkitTextFillColor = 'unset';
-        strongEl.style.margin = '0';
-        strongEl.style.padding = '0';
-      }
-
-      // F. Self-Contained SVG Badges Injection
-      const fIcons = clonedDoc.querySelectorAll('.fIcon');
-      if (fIcons.length >= 3) {
-        if (fIcons[0]) {
-          fIcons[0].innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 54 54" style="display:block; margin:auto; width:54px; height:54px; overflow:visible;">
-              <circle cx="27" cy="27" r="25" fill="#070726" stroke="#D92C8A" stroke-width="2" />
-              <g transform="translate(15, 15)" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-                <rect x="7" y="14" width="3" height="3" rx="0.5" fill="#ffffff" stroke="none"></rect>
+        // AG Badge
+        const agEl = clonedDoc.querySelector('.certAg');
+        if (agEl) {
+          const val = agEl.textContent.replace(/♦/g, '').replace(/AG No:/i, '').trim();
+          const wrap = clonedDoc.createElement('div');
+          wrap.innerHTML = `
+            <svg width="390" height="32" viewBox="0 0 390 32" style="display:block; margin:0 auto; overflow:visible !important; width:390px !important;">
+              <defs><linearGradient id="hxG" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#D92C8A"/><stop offset="100%" stop-color="#3C63D9"/></linearGradient></defs>
+              <line x1="0" y1="16" x2="70" y2="16" stroke="#D92C8A" stroke-width="1.2" />
+              <line x1="320" y1="16" x2="390" y2="16" stroke="#3C63D9" stroke-width="1.2" />
+              <g transform="translate(70, 0)">
+                <polygon points="11,1 239,1 249,16 239,31 11,31 1,16" fill="#070726" stroke="url(#hxG)" stroke-width="2"/>
+                <text x="32" y="21" fill="#ff2f92" font-family="Poppins" font-size="14" text-anchor="middle">♦</text>
+                <text x="125" y="21" fill="#ffffff" font-family="Poppins" font-size="12" font-weight="600" text-anchor="middle">AG No: ${val}</text>
+                <text x="218" y="21" fill="#3C63D9" font-family="Poppins" font-size="14" text-anchor="middle">♦</text>
               </g>
             </svg>
           `;
-          fIcons[0].style.setProperty('background', 'none', 'important');
-          fIcons[0].style.setProperty('border', 'none', 'important');
-          fIcons[0].style.setProperty('box-shadow', 'none', 'important');
-          fIcons[0].style.setProperty('display', 'block', 'important');
-          fIcons[0].style.setProperty('width', '54px', 'important');
-          fIcons[0].style.setProperty('height', '54px', 'important');
+          wrap.style.cssText = "display:block !important; width:100% !important; text-align:center !important; transform:translateY(-10px);";
+          agEl.parentNode.insertBefore(wrap, agEl);
+          agEl.style.display = 'none';
         }
-        if (fIcons[1]) {
-          fIcons[1].innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 54 54" style="display:block; margin:auto; width:54px; height:54px; overflow:visible;">
-              <circle cx="27" cy="27" r="25" fill="#070726" stroke="#3C63D9" stroke-width="2" />
-              <g transform="translate(15, 15)" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-              </g>
+
+        // Description Strong Tag
+        const strongEl = clonedDoc.querySelector('.certDesc strong');
+        if (strongEl) {
+          const txt = (strongEl.textContent || '').trim();
+          const c = document.createElement('canvas').getContext('2d');
+          c.font = "bold 13px 'Poppins', sans-serif";
+          const w = c.measureText(txt).width || 200;
+          strongEl.innerHTML = `
+            <svg width="${w + 4}" height="18" viewBox="0 0 ${w + 4} 18" style="overflow:visible; display:inline-block; width:${w + 4}px !important;">
+              <defs><linearGradient id="evG"><stop offset="0%" stop-color="#D92C8A"/><stop offset="100%" stop-color="#3C63D9"/></linearGradient></defs>
+              <text x="0" y="14" fill="url(#evG)" font-family="Poppins" font-weight="700" font-size="13px">${txt}</text>
             </svg>
           `;
-          fIcons[1].style.setProperty('background', 'none', 'important');
-          fIcons[1].style.setProperty('border', 'none', 'important');
-          fIcons[1].style.setProperty('box-shadow', 'none', 'important');
-          fIcons[1].style.setProperty('display', 'block', 'important');
-          fIcons[1].style.setProperty('width', '54px', 'important');
-          fIcons[1].style.setProperty('height', '54px', 'important');
+          strongEl.style.cssText = "background:none !important; -webkit-text-fill-color:initial !important; padding:0 !important; margin:0 !important;";
         }
-        if (fIcons[2]) {
-          fIcons[2].innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 54 54" style="display:block; margin:auto; width:54px; height:54px; overflow:visible;">
-              <circle cx="27" cy="27" r="25" fill="#070726" stroke="#3C63D9" stroke-width="2" />
-              <g transform="translate(15, 15)" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
-                <path d="M12 20h9"></path>
-                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-              </g>
-            </svg>
-          `;
-          fIcons[2].style.setProperty('background', 'none', 'important');
-          fIcons[2].style.setProperty('border', 'none', 'important');
-          fIcons[2].style.setProperty('box-shadow', 'none', 'important');
-          fIcons[2].style.setProperty('display', 'block', 'important');
-          fIcons[2].style.setProperty('width', '54px', 'important');
-          fIcons[2].style.setProperty('height', '54px', 'important');
+
+        // Self-Contained Footer Icons
+        const icons = clonedDoc.querySelectorAll('.fIcon');
+        if (icons.length >= 3) {
+           const svgs = [
+             `<svg width="54" height="54"><circle cx="27" cy="27" r="25" fill="#070726" stroke="#D92C8A" stroke-width="2"/><g transform="translate(15, 15)" stroke="#ffffff" stroke-width="1.8" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><rect x="7" y="14" width="3" height="3" rx="0.5" fill="#ffffff" stroke="none"/></g></svg>`,
+             `<svg width="54" height="54"><circle cx="27" cy="27" r="25" fill="#070726" stroke="#3C63D9" stroke-width="2"/><g transform="translate(15, 15)" stroke="#ffffff" stroke-width="1.8" fill="none"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></g></svg>`,
+             `<svg width="54" height="54"><circle cx="27" cy="27" r="25" fill="#070726" stroke="#3C63D9" stroke-width="2"/><g transform="translate(15, 15)" stroke="#ffffff" stroke-width="1.8" fill="none"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></g></svg>`
+           ];
+           icons.forEach((ico, i) => {
+             if (svgs[i]) {
+               ico.innerHTML = svgs[i];
+               ico.style.cssText = "background:none !important; border:none !important; box-shadow:none !important; display:block !important; width:54px !important; height:54px !important;";
+             }
+           });
         }
       }
+    });
+
+    // 7. DRAW ROUNDED CORNERS ON THE FINAL CANVAS
+    const roundedCanvas = document.createElement('canvas');
+    roundedCanvas.width = canvas.width;
+    roundedCanvas.height = canvas.height;
+    const ctx = roundedCanvas.getContext('2d');
+
+    ctx.fillStyle = '#070726'; // Background fill
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Exact Corner Radius logic from original
+    const r = 10 * (canvas.width / 297);
+    const w = canvas.width;
+    const h = canvas.height;
+
+    ctx.beginPath();
+    ctx.moveTo(r, 0);
+    ctx.lineTo(w - r, 0);
+    ctx.quadraticCurveTo(w, 0, w, r);
+    ctx.lineTo(w, h - r);
+    ctx.quadraticCurveTo(w, h, w - r, h);
+    ctx.lineTo(r, h);
+    ctx.quadraticCurveTo(0, h, 0, h - r);
+    ctx.lineTo(0, r);
+    ctx.quadraticCurveTo(0, 0, r, 0);
+    ctx.closePath();
+    ctx.clip();
+    ctx.drawImage(canvas, 0, 0);
+
+    // 8. PDF GENERATION (Landscape A4)
+    const imgData = roundedCanvas.toDataURL('image/jpeg', 0.75);
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4', compress: true });
+    const W = doc.internal.pageSize.getWidth();
+    const H = doc.internal.pageSize.getHeight();
+
+    doc.setFillColor(7, 7, 38);
+    doc.rect(0, 0, W, H, 'F');
+
+    const imgAspect = canvas.width / canvas.height;
+    const pageAspect = W / H;
+    let imgW, imgH, imgX, imgY;
+
+    if (imgAspect > pageAspect) {
+      imgW = W;
+      imgH = W / imgAspect;
+      imgX = 0;
+      imgY = (H - imgH) / 2;
+    } else {
+      imgH = H;
+      imgW = H * imgAspect;
+      imgX = (W - imgW) / 2;
+      imgY = 0;
     }
-  });
 
-  const roundedCanvas = document.createElement('canvas');
-  roundedCanvas.width = canvas.width;
-  roundedCanvas.height = canvas.height;
-  const ctx = roundedCanvas.getContext('2d');
+    doc.addImage(imgData, 'JPEG', imgX, imgY, imgW, imgH, undefined, 'FAST');
+    doc.save(`TCS_Certificate_${data.name || 'Student'}.pdf`);
 
-  ctx.fillStyle = '#070726';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  const r = 10 * (canvas.width / 297);
-  const w = canvas.width;
-  const h = canvas.height;
-
-  ctx.beginPath();
-  ctx.moveTo(r, 0);
-  ctx.lineTo(w - r, 0);
-  ctx.quadraticCurveTo(w, 0, w, r);
-  ctx.lineTo(w, h - r);
-  ctx.quadraticCurveTo(w, h, w - r, h);
-  ctx.lineTo(r, h);
-  ctx.quadraticCurveTo(0, h, 0, h - r);
-  ctx.lineTo(0, r);
-  ctx.quadraticCurveTo(0, 0, r, 0);
-  ctx.closePath();
-  ctx.clip();
-
-  ctx.drawImage(canvas, 0, 0);
-
-  // Use a highly compressed JPEG and scale down quality heavily
-  const imgData = roundedCanvas.toDataURL('image/jpeg', 0.65);
-
-  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4', compress: true });
-  const W = doc.internal.pageSize.getWidth();
-  const H = doc.internal.pageSize.getHeight();
-
-  doc.setFillColor(7, 7, 38);
-  doc.rect(0, 0, W, H, 'F');
-
-  const imgAspect = canvas.width / canvas.height;
-  const pageAspect = W / H;
-
-  let imgW, imgH, imgX, imgY;
-  if (imgAspect > pageAspect) {
-    imgW = W;
-    imgH = W / imgAspect;
-    imgX = 0;
-    imgY = (H - imgH) / 2;
-  } else {
-    imgH = H;
-    imgW = H * imgAspect;
-    imgX = (W - imgW) / 2;
-    imgY = 0;
-  }
-
-  // Use FAST compression to aggressively minimize jsPDF blob size
-  doc.addImage(imgData, 'JPEG', imgX, imgY, imgW, imgH, undefined, 'FAST');
-  doc.save(`TCS_Certificate_${data.name || 'Student'}.pdf`);
   } catch (err) {
-    console.error("Certificate PDF generation failed:", err);
-    alert("Error downloading PDF: " + err.message);
+    console.error("Heavy Renderer failed:", err);
+    alert("PDF Engine Error: " + err.message);
   } finally {
-    if (container) {
-      if (originalContainerStyle) {
-        container.setAttribute('style', originalContainerStyle);
-      } else {
-        container.removeAttribute('style');
-      }
-    }
-    if (certCard) {
-      if (originalCardStyle) {
-        certCard.setAttribute('style', originalCardStyle);
-      } else {
-        certCard.removeAttribute('style');
-      }
+    // 9. NUCLEAR CLEANUP: Destroy the isolated world from user RAM
+    if (heavyRenderZone && heavyRenderZone.parentNode) {
+      heavyRenderZone.parentNode.removeChild(heavyRenderZone);
     }
   }
 }
