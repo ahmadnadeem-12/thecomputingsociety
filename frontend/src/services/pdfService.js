@@ -426,9 +426,9 @@ export async function downloadCertificatePDF(data) {
   const originalContainerStyle = container ? container.getAttribute('style') || '' : '';
   const originalCardStyle = certCard ? certCard.getAttribute('style') || '' : '';
 
-  const isMobile = window.innerWidth <= 768;
-  const simulatedWidth = isMobile ? 1536 : window.innerWidth;
-  const simulatedHeight = isMobile ? 900 : window.innerHeight;
+  // ALWAYS simulate high-resolution fixed desktop dimensions to ensure identical rendering regardless of device viewport
+  const simulatedWidth = 1536;
+  const simulatedHeight = 900;
 
   let canvas;
   try {
@@ -470,7 +470,7 @@ export async function downloadCertificatePDF(data) {
       // ── 0. DISABLE PSEUDO-ELEMENT ROUND BACKGROUNDS & PREVENT CLIPPING ──
       const style = clonedDoc.createElement('style');
       style.innerHTML = `
-        /* Force desktop styles inside the cloned document on all devices to prevent 0 width/height elements */
+        /* 1. Force Desktop Sizing & Position (Nullifies responsive resets) */
         .certMobileNotice {
           display: none !important;
         }
@@ -480,24 +480,72 @@ export async function downloadCertificatePDF(data) {
           visibility: visible !important;
           width: 1060px !important;
           max-width: 1060px !important;
+          height: auto !important;
           margin: 0 auto !important;
           left: 0 !important;
           top: 0 !important;
           opacity: 1 !important;
+          overflow: visible !important;
         }
         .certFrame {
           display: block !important;
           width: 1060px !important;
           min-height: 720px !important;
           aspect-ratio: 1.414 !important;
-          border-radius: 12px !important;
+          border-radius: 28px !important;
+          padding: 3px !important;
         }
         .certCard {
           aspect-ratio: 1.414 !important;
           min-height: 720px !important;
+          border-radius: 24px !important;
         }
+        .certBody {
+          padding: 1.5% 10% 2.8% !important;
+        }
+        
+        /* 2. Corner Graphics (Restore desktop display/sizing) */
+        .cornerTL {
+          width: 250px !important;
+          height: 250px !important;
+        }
+        .cornerBL, .cornerBR {
+          display: none !important;
+        }
+        
+        /* 3. Fixed Desktop Typography (Calculated for 1536px simulated width to completely override mobile queries) */
+        .certTitle {
+          font-size: 67px !important;
+          margin: -1.2% 0 0.2% !important;
+        }
+        .certDept {
+          font-size: 13.5px !important;
+        }
+        .certPresented {
+          font-size: 12.5px !important;
+          margin-bottom: 8px !important;
+        }
+        .certDesc {
+          font-size: 12.5px !important;
+          max-width: 75% !important;
+          display: block !important;
+          transform: translateY(-10px) !important;
+        }
+        .fLabel {
+          font-size: 11px !important;
+        }
+        .fValue {
+          font-size: 11px !important;
+        }
+        .fSig {
+          font-size: 22px !important;
+        }
+
+        /* 4. Element Resets and Restorations */
         .fDiv {
           display: block !important;
+          width: 2px !important;
+          height: 100px !important;
         }
         .dotGrid {
           display: block !important;
@@ -511,7 +559,7 @@ export async function downloadCertificatePDF(data) {
           inset: 12px !important;
         }
 
-        /* Remove the unclipped rectangular gradient backgrounds rendered by html2canvas */
+        /* Remove the unclipped rectangular gradient backgrounds rendered by html2canvas for clean look */
         .certAg::before, .certAg::after {
           display: none !important;
           content: none !important;
@@ -523,6 +571,22 @@ export async function downloadCertificatePDF(data) {
         }
       `;
       clonedDoc.head.appendChild(style);
+
+      // ── WIPE ALL MEDIA QUERIES FROM CLONED DOC ──
+      // Prevents browser from accidentally evaluating real device width against stylesheets during snapshot
+      try {
+        Array.from(clonedDoc.styleSheets).forEach(sheet => {
+          try {
+            const rules = sheet.cssRules || sheet.rules;
+            if (!rules) return;
+            for (let i = rules.length - 1; i >= 0; i--) {
+              if (rules[i] instanceof CSSMediaRule) {
+                sheet.deleteRule(i);
+              }
+            }
+          } catch (err) { /* Silent fail for cross-origin sheets that don't hold layout logic */ }
+        });
+      } catch (err) { }
 
       // ── ADVANCED GRAPHICS OVERRIDES FOR PERFECT FIDELITY ──
 
