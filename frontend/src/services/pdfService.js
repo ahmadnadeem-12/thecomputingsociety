@@ -533,28 +533,14 @@ export async function downloadCertificatePDF(d) {
   const bx = W / 2 - badgeWidth / 2;
   const by = 119;
 
-  // Create clean dark vector hexagon
+  // Create clean dark vector capsule badge using verified roundedRect method
   doc.setFillColor(7, 7, 38);
-  doc.polygon([
-    [bx + 3, by],
-    [bx + badgeWidth - 3, by],
-    [bx + badgeWidth, by + badgeHeight / 2],
-    [bx + badgeWidth - 3, by + badgeHeight],
-    [bx + 3, by + badgeHeight],
-    [bx, by + badgeHeight / 2]
-  ], 'F');
+  doc.roundedRect(bx, by, badgeWidth, badgeHeight, 2, 2, 'F');
 
-  // Add subtle gradient frame to the hexagon
-  doc.setLineWidth(0.3);
+  // Add subtle gradient frame to the badge
+  doc.setLineWidth(0.35);
   doc.setDrawColor(C_PRP[0], C_PRP[1], C_PRP[2]);
-  doc.polygon([
-    [bx + 3, by],
-    [bx + badgeWidth - 3, by],
-    [bx + badgeWidth, by + badgeHeight / 2],
-    [bx + badgeWidth - 3, by + badgeHeight],
-    [bx + 3, by + badgeHeight],
-    [bx, by + badgeHeight / 2]
-  ], 'D');
+  doc.roundedRect(bx, by, badgeWidth, badgeHeight, 2, 2, 'D');
 
   // Badge Text
   doc.setTextColor(255, 255, 255);
