@@ -438,10 +438,15 @@ export async function downloadCertificatePDF(data) {
       container.style.setProperty('left', '-9999px', 'important');
       container.style.setProperty('top', '-9999px', 'important');
       container.style.setProperty('width', '1060px', 'important');
+      container.style.setProperty('height', '750px', 'important'); // 🔥 HEAVY FIX: Never allow collapse
+      container.style.setProperty('min-height', '750px', 'important');
       container.style.setProperty('opacity', '0.001', 'important');
     }
     if (certCard) {
+      certCard.style.setProperty('display', 'block', 'important');
       certCard.style.setProperty('width', '1060px', 'important');
+      certCard.style.setProperty('height', '750px', 'important'); // 🔥 HEAVY FIX: Match desktop height inline
+      certCard.style.setProperty('min-height', '750px', 'important');
     }
 
     // Wait for all images inside the card to be fully loaded and measured by the browser now that they are block!
@@ -464,6 +469,8 @@ export async function downloadCertificatePDF(data) {
       logging: false,
       scrollX: 0,
       scrollY: 0,
+      width: 1060,              // 🔥 EXPLICIT CANVAS DIMENSIONS: Prevents 0-size calculation crash
+      height: 750,             // 🔥 EXPLICIT CANVAS DIMENSIONS: Force deterministic snapshot area
       windowWidth: simulatedWidth,        // Dynamically simulate standard laptop screen width (1536px) on mobile so clamp() and vw typography evaluate to their full large desktop proportions!
       windowHeight: simulatedHeight,       // Dynamically simulate standard screen height
       onclone: (clonedDoc) => {
@@ -480,7 +487,7 @@ export async function downloadCertificatePDF(data) {
           visibility: visible !important;
           width: 1060px !important;
           max-width: 1060px !important;
-          height: auto !important;
+          height: 750px !important;
           margin: 0 auto !important;
           left: 0 !important;
           top: 0 !important;
@@ -490,14 +497,14 @@ export async function downloadCertificatePDF(data) {
         .certFrame {
           display: block !important;
           width: 1060px !important;
-          min-height: 720px !important;
+          height: 750px !important;
           aspect-ratio: 1.414 !important;
           border-radius: 28px !important;
           padding: 3px !important;
         }
         .certCard {
-          aspect-ratio: 1.414 !important;
-          min-height: 720px !important;
+          height: 750px !important;
+          min-height: 750px !important;
           border-radius: 24px !important;
         }
         .certBody {
