@@ -404,525 +404,376 @@ export function downloadAllTicketsPDF(tickets, qrs) {
 }
 
 // ════════════════════════════════════════════════════════════
-//  AWARD CERTIFICATE — 100% EXACT SCREEN CAPTURE → PDF
+//  AWARD CERTIFICATE — PURE jsPDF (reliable on ALL devices)
 // ════════════════════════════════════════════════════════════
 
-export async function downloadCertificatePDF(data) {
-  const html2canvas = (await import('html2canvas')).default;
+const CP = [217, 44, 138];   // Pink
+const CV = [106, 53, 184];   // Purple
+const CB = [60, 99, 217];    // Blue
+const CN = [7, 7, 38];       // Navy
+const CG = [85, 90, 126];    // Gray
+const CW = [255, 255, 255];  // White
+const CT = [79, 86, 107];    // Text gray
 
-  // 1. Ensure all custom fonts are fully loaded before rendering
-  if (document.fonts) {
-    await document.fonts.ready;
+function certGradColor(t) {
+  if (t < 0.5) return lerp(CP, CV, t * 2);
+  return lerp(CV, CB, (t - 0.5) * 2);
+}
+
+function drawCertGradientBorder(doc, bx, by, bw, bh, br) {
+  doc.setLineWidth(1.2);
+  const seg = 120;
+  // Top
+  for (let i = 0; i < seg; i++) {
+    const t1 = i / seg, t2 = (i + 1) / seg;
+    const rgb = certGradColor(t1);
+    doc.setDrawColor(rgb[0], rgb[1], rgb[2]);
+    doc.line(bx + br + (bw - 2 * br) * t1, by, bx + br + (bw - 2 * br) * t2, by);
   }
-
-  // Find the actual rendered certificate frame on the page (includes gradient border)
-  const container = document.querySelector('.certFrameContainer');
-  const certCard = document.querySelector('.certFrame');
-  if (!certCard) {
-    alert('Certificate preview not found on page. Please try again.');
-    return;
+  // Bottom
+  for (let i = 0; i < seg; i++) {
+    const t1 = i / seg, t2 = (i + 1) / seg;
+    const rgb = certGradColor(t1);
+    doc.setDrawColor(rgb[0], rgb[1], rgb[2]);
+    doc.line(bx + br + (bw - 2 * br) * t1, by + bh, bx + br + (bw - 2 * br) * t2, by + bh);
   }
-
-  const originalContainerStyle = container ? container.getAttribute('style') || '' : '';
-  const originalCardStyle = certCard ? certCard.getAttribute('style') || '' : '';
-
-  const isMobile = window.innerWidth <= 768;
-  const simulatedWidth = isMobile ? 1536 : window.innerWidth;
-  const simulatedHeight = isMobile ? 900 : window.innerHeight;
-
-  let canvas;
-  try {
-    if (container) {
-      container.style.setProperty('display', 'block', 'important');
-      container.style.setProperty('position', 'absolute', 'important');
-      container.style.setProperty('left', '-9999px', 'important');
-      container.style.setProperty('top', '-9999px', 'important');
-      container.style.setProperty('width', '1060px', 'important');
-      container.style.setProperty('opacity', '0.001', 'important');
-      container.style.setProperty('z-index', '-1', 'important');
-      container.style.setProperty('pointer-events', 'none', 'important');
-      container.style.setProperty('overflow', 'visible', 'important');
-    }
-    if (certCard) {
-      certCard.style.setProperty('width', '1060px', 'important');
-      certCard.style.setProperty('min-height', '720px', 'important');
-    }
-
-    // Let DOM settle after style changes before capturing (critical on mobile)
-    await new Promise(resolve => setTimeout(resolve, isMobile ? 300 : 50));
-
-    canvas = await html2canvas(certCard, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: false,
-      backgroundColor: '#ffffff',
-      logging: false,
-      scrollX: 0,
-      scrollY: -window.scrollY,
-      windowWidth: simulatedWidth,
-      windowHeight: simulatedHeight,
-      x: 0,
-      y: 0,
-      width: certCard.scrollWidth || 1060,
-      height: certCard.scrollHeight || 750,
-      onclone: (clonedDoc) => {
-      // ── 0. DISABLE PSEUDO-ELEMENT ROUND BACKGROUNDS & PREVENT CLIPPING ──
-      const style = clonedDoc.createElement('style');
-      style.innerHTML = `
-        /* Force desktop styles inside the cloned document on all devices to prevent 0 width/height elements */
-        .certMobileNotice {
-          display: none !important;
-        }
-        .certFrameContainer {
-          display: block !important;
-          position: static !important;
-          visibility: visible !important;
-          width: 1060px !important;
-          max-width: 1060px !important;
-          margin: 0 auto !important;
-          left: 0 !important;
-          top: 0 !important;
-          opacity: 1 !important;
-        }
-        .certFrame {
-          display: block !important;
-          width: 1060px !important;
-          min-height: 720px !important;
-          aspect-ratio: 1.414 !important;
-          border-radius: 12px !important;
-        }
-        .certCard {
-          aspect-ratio: 1.414 !important;
-          min-height: 720px !important;
-        }
-        .fDiv {
-          display: block !important;
-        }
-        .dotGrid {
-          display: block !important;
-        }
-        .badgeSeal {
-          width: 145px !important;
-          height: 145px !important;
-          top: 62% !important;
-        }
-        .badgeRing {
-          inset: 12px !important;
-        }
-
-        /* Remove the unclipped rectangular gradient backgrounds rendered by html2canvas */
-        .certAg::before, .certAg::after {
-          display: none !important;
-          content: none !important;
-          background: transparent !important;
-          background-color: transparent !important;
-          border: none !important;
-          opacity: 0 !important;
-          box-shadow: none !important;
-        }
-
-        /* ══════════════════════════════════════════════════════════════════
-           PERMANENT MOBILE PDF FIX — Force ALL desktop font sizes & layout
-           Counter every clamp()/vw value that resolves to tiny sizes on
-           mobile viewports. Values computed for ~1536px desktop viewport.
-           ══════════════════════════════════════════════════════════════════ */
-        .certSociety {
-          font-size: 30px !important;
-          letter-spacing: 0.16em !important;
-          display: block !important;
-          width: 100% !important;
-        }
-        .certDept {
-          font-size: 13px !important;
-          letter-spacing: 0.04em !important;
-          line-height: 1.5 !important;
-        }
-        .certTitle {
-          font-size: 58px !important;
-          letter-spacing: 0.12em !important;
-          margin: -1.2% 0 0.2% !important;
-          font-weight: normal !important;
-        }
-        .certSubText {
-          font-size: 14px !important;
-          letter-spacing: 0.38em !important;
-        }
-        .certSubRow {
-          margin-bottom: 6px !important;
-          display: flex !important;
-          gap: 1rem !important;
-        }
-        .certPresented {
-          font-size: 13px !important;
-          letter-spacing: 0.18em !important;
-          margin-top: 1.2% !important;
-          margin-bottom: 8px !important;
-        }
-        .certName {
-          font-size: 74px !important;
-          letter-spacing: 0.12em !important;
-          line-height: 1.1 !important;
-          margin: 0.7% 0 18px 0 !important;
-          transform: translateY(-10px) !important;
-        }
-        .certAg {
-          font-size: 12px !important;
-          letter-spacing: 0.3em !important;
-          transform: translateY(-10px) !important;
-          margin: 0.2% 0 16px 0 !important;
-          display: inline-flex !important;
-          padding: 0.5rem 2em !important;
-        }
-        .certDesc {
-          font-size: 12px !important;
-          max-width: 75% !important;
-          transform: translateY(-10px) !important;
-          margin-top: 8px !important;
-          margin-bottom: 16px !important;
-          line-height: 1.6 !important;
-          text-align: center !important;
-        }
-        .certDesc strong {
-          font-weight: 700 !important;
-        }
-        .fLabel {
-          font-size: 11px !important;
-          letter-spacing: 0.1em !important;
-          margin-bottom: 14px !important;
-        }
-        .fValue {
-          font-size: 11px !important;
-          max-width: 150px !important;
-          line-height: 1.4 !important;
-        }
-        .fSig {
-          font-size: 22px !important;
-          white-space: nowrap !important;
-          transform: rotate(-2deg) !important;
-          display: block !important;
-          margin-top: -13px !important;
-        }
-        .fSigLine {
-          width: 140px !important;
-          height: 1px !important;
-        }
-        .agDot {
-          font-size: 15px !important;
-        }
-
-        /* ── Force desktop layout (override mobile media query) ── */
-        .certBody {
-          padding: 1.5% 10% 2.8% !important;
-          height: 100% !important;
-          display: flex !important;
-          flex-direction: column !important;
-          align-items: center !important;
-        }
-        .certCard {
-          border: 1.5px solid rgba(10, 8, 37, 0.08) !important;
-          border-radius: 24px !important;
-          overflow: hidden !important;
-        }
-        .certFrame {
-          border-radius: 28px !important;
-          padding: 3px !important;
-          background: linear-gradient(135deg, #D92C8A 0%, #6A35B8 50%, #3C63D9 100%) !important;
-        }
-        .cornerTL {
-          width: 250px !important;
-          height: 250px !important;
-        }
-        .certFooter {
-          margin-top: 1.8% !important;
-          width: 100% !important;
-          display: flex !important;
-          justify-content: space-between !important;
-          padding: 0 4% 3rem !important;
-        }
-        .fDiv {
-          width: 2px !important;
-          height: 100px !important;
-          background: rgba(10, 8, 37, 0.12) !important;
-          transform: translateY(-35px) !important;
-        }
-        .fCentre {
-          transform: translateY(-15px) !important;
-        }
-        .certDescDivider {
-          transform: translateY(-12px) !important;
-          max-width: 580px !important;
-        }
-        .fIcon {
-          width: 54px !important;
-          height: 54px !important;
-          border-radius: 50% !important;
-        }
-        .certHeaderLines {
-          max-width: 520px !important;
-        }
-        .hLine--pink, .hLine--blue {
-          width: 250px !important;
-        }
-        .diamLine {
-          width: 70px !important;
-        }
-        .accentBar {
-          display: block !important;
-        }
-      `;
-      clonedDoc.head.appendChild(style);
-
-      // ── ADVANCED GRAPHICS OVERRIDES FOR PERFECT FIDELITY ──
-
-      // A. "THE COMPUTING SOCIETY" Gradient Text
-      const societyEl = clonedDoc.querySelector('.certSociety');
-      if (societyEl) {
-        const socText = societyEl.textContent || 'THE COMPUTING SOCIETY';
-        societyEl.innerHTML = `
-          <svg width="100%" height="45" viewBox="0 0 600 45" style="overflow:visible !important; display:block; margin:0 auto; width:100% !important;">
-            <defs>
-              <linearGradient id="socGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#D92C8A" />
-                <stop offset="50%" stop-color="#6A35B8" />
-                <stop offset="100%" stop-color="#3C63D9" />
-              </linearGradient>
-            </defs>
-            <text x="300" y="32" text-anchor="middle" fill="url(#socGrad)" font-family="'Poppins', sans-serif" font-size="30px" font-weight="600" letter-spacing="0.16em">${socText}</text>
-          </svg>
-        `;
-        societyEl.style.background = 'none';
-        societyEl.style.webkitBackgroundClip = 'unset';
-        societyEl.style.webkitTextFillColor = 'unset';
-        societyEl.style.width = '100%';
-        societyEl.style.display = 'block';
-      }
-
-      // B. "OF PARTICIPATION" Subtitle
-      const subTextEl = clonedDoc.querySelector('.certSubText');
-      if (subTextEl) {
-        const subText = subTextEl.textContent || 'OF PARTICIPATION';
-        subTextEl.innerHTML = `
-          <svg width="200" height="20" viewBox="0 0 200 20" style="overflow:visible !important; display:inline-block; width:200px !important;">
-            <defs>
-              <linearGradient id="subGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#D92C8A" />
-                <stop offset="50%" stop-color="#6A35B8" />
-                <stop offset="100%" stop-color="#3C63D9" />
-              </linearGradient>
-            </defs>
-            <text x="100" y="18" text-anchor="middle" fill="url(#subGrad)" font-family="'Poppins', sans-serif" font-size="13px" font-weight="600" letter-spacing="0.38em">${subText}</text>
-          </svg>
-        `;
-        subTextEl.style.background = 'none';
-        subTextEl.style.webkitBackgroundClip = 'unset';
-        subTextEl.style.webkitTextFillColor = 'unset';
-        subTextEl.style.width = '200px';
-        subTextEl.style.display = 'inline-block';
-        subTextEl.style.margin = '0 auto';
-      }
-
-      // C. Participant Name
-      const nameEl = clonedDoc.querySelector('.certName');
-      if (nameEl) {
-        const nameText = nameEl.textContent || 'STUDENT NAME';
-        nameEl.innerHTML = `
-          <svg width="100%" height="75" viewBox="0 0 800 75" style="overflow:visible !important; display:block; margin:0 auto; width:100% !important;">
-            <defs>
-              <linearGradient id="nameGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#D92C8A" />
-                <stop offset="50%" stop-color="#6A35B8" />
-                <stop offset="100%" stop-color="#3C63D9" />
-              </linearGradient>
-            </defs>
-            <text x="400" y="55" text-anchor="middle" fill="url(#nameGrad)" font-family="'Playfair Display', 'Cinzel', serif" font-size="60px" font-weight="700" letter-spacing="0.12em">${nameText.toUpperCase()}</text>
-          </svg>
-        `;
-        nameEl.style.background = 'none';
-        nameEl.style.webkitBackgroundClip = 'unset';
-        nameEl.style.webkitTextFillColor = 'unset';
-        nameEl.style.filter = 'none';
-        nameEl.style.width = '100%';
-        nameEl.style.display = 'block';
-        nameEl.style.setProperty('margin', '0.7% 0 18px 0', 'important');
-      }
-
-      // D. AG No Hexagon Badge
-      const agEl = clonedDoc.querySelector('.certAg');
-      if (agEl) {
-        const agNoText = agEl.textContent.replace(/♦/g, '').replace(/AG No:/i, '').trim();
-        const newAgEl = clonedDoc.createElement('div');
-        newAgEl.innerHTML = `
-          <svg width="390" height="32" viewBox="0 0 390 32" style="display:block; margin:0 auto; overflow:visible !important; width:390px !important; height:32px !important;">
-            <defs>
-              <linearGradient id="hexGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#D92C8A" />
-                <stop offset="50%" stop-color="#6A35B8" />
-                <stop offset="100%" stop-color="#3C63D9" />
-              </linearGradient>
-            </defs>
-            <line x1="0" y1="16" x2="70" y2="16" stroke="#D92C8A" stroke-width="1.2" />
-            <line x1="320" y1="16" x2="390" y2="16" stroke="#3C63D9" stroke-width="1.2" />
-            <g transform="translate(70, 0)">
-              <polygon points="11,1 239,1 249,16 239,31 11,31 1,16" fill="#070726" stroke="url(#hexGrad)" stroke-width="2"/>
-              <text x="32" y="21" fill="#ff2f92" font-family="'Poppins', sans-serif" font-size="14px" text-anchor="middle">♦</text>
-              <text x="125" y="21" fill="#ffffff" font-family="'Poppins', sans-serif" font-size="12px" font-weight="600" letter-spacing="0.18em" text-anchor="middle">AG No: ${agNoText}</text>
-              <text x="218" y="21" fill="#3C63D9" font-family="'Poppins', sans-serif" font-size="14px" text-anchor="middle">♦</text>
-            </g>
-          </svg>
-        `;
-        newAgEl.style.display = 'block';
-        newAgEl.style.width = '100%';
-        newAgEl.style.textAlign = 'center';
-        newAgEl.style.margin = '0.2% auto 16px auto';
-        newAgEl.style.transform = 'translateY(-10px)';
-        agEl.parentNode.insertBefore(newAgEl, agEl);
-        agEl.style.setProperty('display', 'none', 'important');
-      }
-
-      // E. Event Name Gradient
-      const strongEl = clonedDoc.querySelector('.certDesc strong');
-      if (strongEl) {
-        const eventText = (strongEl.textContent || '').trim();
-        const canvasCtx = document.createElement('canvas').getContext('2d');
-        canvasCtx.font = "bold 13px 'Poppins', sans-serif";
-        const measuredWidth = canvasCtx.measureText(eventText).width;
-        strongEl.innerHTML = `
-          <svg width="${measuredWidth + 2}" height="18" viewBox="0 0 ${measuredWidth + 2} 18" style="overflow:visible !important; display:inline-block; vertical-align:middle; margin:0; padding:0; width:${measuredWidth + 2}px !important;">
-            <defs>
-              <linearGradient id="eventGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#D92C8A" />
-                <stop offset="50%" stop-color="#6A35B8" />
-                <stop offset="100%" stop-color="#3C63D9" />
-              </linearGradient>
-            </defs>
-            <text x="0" y="14" fill="url(#eventGrad)" font-family="'Poppins', sans-serif" font-weight="700" font-size="13px">${eventText}</text>
-          </svg>
-        `;
-        strongEl.style.background = 'none';
-        strongEl.style.webkitBackgroundClip = 'unset';
-        strongEl.style.webkitTextFillColor = 'unset';
-        strongEl.style.margin = '0';
-        strongEl.style.padding = '0';
-      }
-
-      // F. Self-Contained SVG Badges Injection
-      const fIcons = clonedDoc.querySelectorAll('.fIcon');
-      if (fIcons.length >= 3) {
-        if (fIcons[0]) {
-          fIcons[0].innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 54 54" style="display:block; margin:auto; width:54px; height:54px; overflow:visible;">
-              <circle cx="27" cy="27" r="25" fill="#070726" stroke="#D92C8A" stroke-width="2" />
-              <g transform="translate(15, 15)" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-                <rect x="7" y="14" width="3" height="3" rx="0.5" fill="#ffffff" stroke="none"></rect>
-              </g>
-            </svg>
-          `;
-          fIcons[0].style.setProperty('background', 'none', 'important');
-          fIcons[0].style.setProperty('border', 'none', 'important');
-          fIcons[0].style.setProperty('box-shadow', 'none', 'important');
-          fIcons[0].style.setProperty('display', 'block', 'important');
-          fIcons[0].style.setProperty('width', '54px', 'important');
-          fIcons[0].style.setProperty('height', '54px', 'important');
-        }
-        if (fIcons[1]) {
-          fIcons[1].innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 54 54" style="display:block; margin:auto; width:54px; height:54px; overflow:visible;">
-              <circle cx="27" cy="27" r="25" fill="#070726" stroke="#3C63D9" stroke-width="2" />
-              <g transform="translate(15, 15)" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-              </g>
-            </svg>
-          `;
-          fIcons[1].style.setProperty('background', 'none', 'important');
-          fIcons[1].style.setProperty('border', 'none', 'important');
-          fIcons[1].style.setProperty('box-shadow', 'none', 'important');
-          fIcons[1].style.setProperty('display', 'block', 'important');
-          fIcons[1].style.setProperty('width', '54px', 'important');
-          fIcons[1].style.setProperty('height', '54px', 'important');
-        }
-        if (fIcons[2]) {
-          fIcons[2].innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 54 54" style="display:block; margin:auto; width:54px; height:54px; overflow:visible;">
-              <circle cx="27" cy="27" r="25" fill="#070726" stroke="#3C63D9" stroke-width="2" />
-              <g transform="translate(15, 15)" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
-                <path d="M12 20h9"></path>
-                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-              </g>
-            </svg>
-          `;
-          fIcons[2].style.setProperty('background', 'none', 'important');
-          fIcons[2].style.setProperty('border', 'none', 'important');
-          fIcons[2].style.setProperty('box-shadow', 'none', 'important');
-          fIcons[2].style.setProperty('display', 'block', 'important');
-          fIcons[2].style.setProperty('width', '54px', 'important');
-          fIcons[2].style.setProperty('height', '54px', 'important');
-        }
-      }
+  // Left
+  for (let j = 0; j < seg; j++) {
+    const t1 = j / seg, t2 = (j + 1) / seg;
+    const rgb = certGradColor(t1 * 0.3);
+    doc.setDrawColor(rgb[0], rgb[1], rgb[2]);
+    doc.line(bx, by + br + (bh - 2 * br) * t1, bx, by + br + (bh - 2 * br) * t2);
+  }
+  // Right
+  for (let j = 0; j < seg; j++) {
+    const t1 = j / seg, t2 = (j + 1) / seg;
+    const rgb = certGradColor(0.7 + t1 * 0.3);
+    doc.setDrawColor(rgb[0], rgb[1], rgb[2]);
+    doc.line(bx + bw, by + br + (bh - 2 * br) * t1, bx + bw, by + br + (bh - 2 * br) * t2);
+  }
+  // Corners
+  const cs = 16;
+  [[bx + br, by + br, Math.PI, 1.5 * Math.PI, 0],
+   [bx + bw - br, by + br, 1.5 * Math.PI, 2 * Math.PI, 1],
+   [bx + bw - br, by + bh - br, 0, 0.5 * Math.PI, 1],
+   [bx + br, by + bh - br, 0.5 * Math.PI, Math.PI, 0]
+  ].forEach(([cx, cy, a1, a2, tBase]) => {
+    for (let i = 0; i < cs; i++) {
+      const ang1 = a1 + (i / cs) * (a2 - a1);
+      const ang2 = a1 + ((i + 1) / cs) * (a2 - a1);
+      const rgb = certGradColor(tBase);
+      doc.setDrawColor(rgb[0], rgb[1], rgb[2]);
+      doc.line(cx + br * Math.cos(ang1), cy + br * Math.sin(ang1),
+               cx + br * Math.cos(ang2), cy + br * Math.sin(ang2));
     }
   });
+}
 
-  const roundedCanvas = document.createElement('canvas');
-  roundedCanvas.width = canvas.width;
-  roundedCanvas.height = canvas.height;
-  const ctx = roundedCanvas.getContext('2d');
+function drawGradText(doc, words, cx, y, size, font) {
+  doc.setFontSize(size);
+  doc.setFont(font || 'helvetica', 'bold');
+  const full = words.join(' ');
+  const tw = doc.getTextWidth(full);
+  let x = cx - tw / 2;
+  const colors = [CP, CV, CB];
+  words.forEach((w, i) => {
+    const c = colors[i % 3];
+    doc.setTextColor(c[0], c[1], c[2]);
+    const sp = (i < words.length - 1) ? ' ' : '';
+    doc.text(w + sp, x, y);
+    x += doc.getTextWidth(w + sp);
+  });
+}
 
-  ctx.fillStyle = '#070726';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+function drawHexBadge(doc, text, cx, y, pw, ph) {
+  const hx = cx - pw / 2;
+  doc.setFillColor(CN[0], CN[1], CN[2]);
+  doc.setLineWidth(0.8);
+  // Hexagon path
+  const pts = [
+    [hx + 8, y], [hx + pw - 8, y], [hx + pw, y + ph / 2],
+    [hx + pw - 8, y + ph], [hx + 8, y + ph], [hx, y + ph / 2]
+  ];
+  // Fill
+  doc.setFillColor(CN[0], CN[1], CN[2]);
+  doc.triangle(pts[0][0], pts[0][1], pts[1][0], pts[1][1], pts[5][0], pts[5][1], 'F');
+  doc.triangle(pts[1][0], pts[1][1], pts[2][0], pts[2][1], pts[5][0], pts[5][1], 'F');
+  doc.triangle(pts[2][0], pts[2][1], pts[4][0], pts[4][1], pts[5][0], pts[5][1], 'F');
+  doc.triangle(pts[2][0], pts[2][1], pts[3][0], pts[3][1], pts[4][0], pts[4][1], 'F');
+  // Border
+  for (let i = 0; i < pts.length; i++) {
+    const t = i / pts.length;
+    const rgb = certGradColor(t);
+    doc.setDrawColor(rgb[0], rgb[1], rgb[2]);
+    const ni = (i + 1) % pts.length;
+    doc.line(pts[i][0], pts[i][1], pts[ni][0], pts[ni][1]);
+  }
+  // Left line
+  doc.setDrawColor(CP[0], CP[1], CP[2]);
+  doc.setLineWidth(0.5);
+  doc.line(hx - 30, y + ph / 2, hx, y + ph / 2);
+  // Right line
+  doc.setDrawColor(CB[0], CB[1], CB[2]);
+  doc.line(hx + pw, y + ph / 2, hx + pw + 30, y + ph / 2);
+  // Diamonds
+  doc.setTextColor(CP[0], CP[1], CP[2]);
+  doc.setFontSize(8);
+  doc.text('♦', hx + 8, y + ph / 2 + 2.5, { align: 'center' });
+  doc.setTextColor(CB[0], CB[1], CB[2]);
+  doc.text('♦', hx + pw - 8, y + ph / 2 + 2.5, { align: 'center' });
+  // Text
+  doc.setTextColor(CW[0], CW[1], CW[2]);
+  doc.setFontSize(8.5);
+  doc.setFont('helvetica', 'bold');
+  doc.text(text, cx, y + ph / 2 + 2.8, { align: 'center' });
+}
 
-  const r = 10 * (canvas.width / 297);
-  const w = canvas.width;
-  const h = canvas.height;
+function drawCertFooterIcon(doc, cx, y, borderColor) {
+  // Circle icon badge
+  doc.setFillColor(CN[0], CN[1], CN[2]);
+  doc.setDrawColor(borderColor[0], borderColor[1], borderColor[2]);
+  doc.setLineWidth(0.8);
+  doc.circle(cx, y, 8, 'FD');
+  // Inner white ring
+  doc.setDrawColor(255, 255, 255);
+  doc.setLineWidth(0.5);
+  doc.circle(cx, y, 6.5, 'S');
+}
 
-  ctx.beginPath();
-  ctx.moveTo(r, 0);
-  ctx.lineTo(w - r, 0);
-  ctx.quadraticCurveTo(w, 0, w, r);
-  ctx.lineTo(w, h - r);
-  ctx.quadraticCurveTo(w, h, w - r, h);
-  ctx.lineTo(r, h);
-  ctx.quadraticCurveTo(0, h, 0, h - r);
-  ctx.lineTo(0, r);
-  ctx.quadraticCurveTo(0, 0, r, 0);
-  ctx.closePath();
-  ctx.clip();
-
-  ctx.drawImage(canvas, 0, 0);
-
-  // Use a highly compressed JPEG and scale down quality heavily
-  const imgData = roundedCanvas.toDataURL('image/jpeg', 0.65);
-
+export function downloadCertificatePDF(data) {
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4', compress: true });
-  const W = doc.internal.pageSize.getWidth();
-  const H = doc.internal.pageSize.getHeight();
+  const W = doc.internal.pageSize.getWidth();   // 297
+  const H = doc.internal.pageSize.getHeight();  // 210
+  const cx = W / 2; // center x = 148.5
 
-  doc.setFillColor(7, 7, 38);
+  // ── 1. White page background ──
+  doc.setFillColor(255, 255, 255);
   doc.rect(0, 0, W, H, 'F');
 
-  const imgAspect = canvas.width / canvas.height;
-  const pageAspect = W / H;
+  // ── 2. Gradient border frame ──
+  drawCertGradientBorder(doc, 5, 5, W - 10, H - 10, 6);
 
-  let imgW, imgH, imgX, imgY;
-  if (imgAspect > pageAspect) {
-    imgW = W;
-    imgH = W / imgAspect;
-    imgX = 0;
-    imgY = (H - imgH) / 2;
-  } else {
-    imgH = H;
-    imgW = H * imgAspect;
-    imgX = (W - imgW) / 2;
-    imgY = 0;
+  // ── 3. Inner thin black corner accent (top-right) ──
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(0.6);
+  const acX = W - 20, acY = 12;
+  doc.line(acX - 40, acY, acX, acY);               // horizontal
+  doc.line(acX, acY, acX, acY + 40);               // vertical
+  doc.line(acX - 40, acY, acX - 40, acY + 3);      // small vertical tick
+
+  // ── 4. Diagonal fine lines (top-right area) ──
+  doc.setDrawColor(200, 200, 210);
+  doc.setLineWidth(0.15);
+  for (let i = 0; i < 8; i++) {
+    const off = i * 8;
+    doc.line(W - 80 + off, 10, W - 10, 10 + 70 - off);
   }
 
-  // Use FAST compression to aggressively minimize jsPDF blob size
-  doc.addImage(imgData, 'JPEG', imgX, imgY, imgW, imgH, undefined, 'FAST');
+  // ── 5. THE COMPUTING SOCIETY ──
+  drawGradText(doc, ['THE', 'COMPUTING', 'SOCIETY'], cx, 30, 18, 'helvetica');
 
-  // Mobile-compatible download: blob URL method works on all browsers including iOS Safari
+  // ── 6. Decorative header line with dots ──
+  const lineY = 34;
+  // Pink dot
+  doc.setFillColor(CP[0], CP[1], CP[2]);
+  doc.circle(cx - 60, lineY, 1.2, 'F');
+  // Pink → Purple line
+  doc.setLineWidth(0.6);
+  for (let i = 0; i < 30; i++) {
+    const t = i / 30;
+    const rgb = lerp(CP, CV, t);
+    doc.setDrawColor(rgb[0], rgb[1], rgb[2]);
+    doc.line(cx - 58 + i * 2, lineY, cx - 56 + i * 2, lineY);
+  }
+  // Purple → Blue line
+  for (let i = 0; i < 30; i++) {
+    const t = i / 30;
+    const rgb = lerp(CV, CB, t);
+    doc.setDrawColor(rgb[0], rgb[1], rgb[2]);
+    doc.line(cx + 2 + i * 2, lineY, cx + 4 + i * 2, lineY);
+  }
+  // Blue dot
+  doc.setFillColor(CB[0], CB[1], CB[2]);
+  doc.circle(cx + 62, lineY, 1.2, 'F');
+
+  // ── 7. Department ──
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8);
+  doc.setTextColor(CG[0], CG[1], CG[2]);
+  doc.text('DEPT. OF COMPUTER SCIENCE,', cx, 40, { align: 'center' });
+  doc.text('UNIVERSITY OF AGRICULTURE FAISALABAD', cx, 45, { align: 'center' });
+
+  // ── 8. AWARD CERTIFICATE ──
+  doc.setFont('times', 'bold');
+  doc.setFontSize(36);
+  doc.setTextColor(CN[0], CN[1], CN[2]);
+  doc.text('AWARD CERTIFICATE', cx, 63, { align: 'center' });
+
+  // ── 9. OF PARTICIPATION subtitle ──
+  const subY = 71;
+  // Left diamond line
+  doc.setDrawColor(CP[0], CP[1], CP[2]);
+  doc.setLineWidth(0.4);
+  doc.line(cx - 62, subY - 2, cx - 28, subY - 2);
+  // Left diamond
+  doc.setFillColor(CV[0], CV[1], CV[2]);
+  const ds = 1.8;
+  // Diamond 1
+  doc.triangle(cx - 24, subY - 2 - ds, cx - 24 + ds, subY - 2, cx - 24, subY - 2 + ds, 'F');
+  doc.triangle(cx - 24, subY - 2 - ds, cx - 24 - ds, subY - 2, cx - 24, subY - 2 + ds, 'F');
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8.5);
+  // Gradient "OF PARTICIPATION"
+  const subWords = ['OF', 'PARTICIPATION'];
+  let subX = cx - doc.getTextWidth(subWords.join(' ')) / 2;
+  doc.setTextColor(CP[0], CP[1], CP[2]);
+  doc.text('OF ', subX, subY);
+  subX += doc.getTextWidth('OF ');
+  doc.setTextColor(CB[0], CB[1], CB[2]);
+  doc.text('PARTICIPATION', subX, subY);
+
+  // Diamond 2
+  doc.setFillColor(CV[0], CV[1], CV[2]);
+  doc.triangle(cx + 24, subY - 2 - ds, cx + 24 + ds, subY - 2, cx + 24, subY - 2 + ds, 'F');
+  doc.triangle(cx + 24, subY - 2 - ds, cx + 24 - ds, subY - 2, cx + 24, subY - 2 + ds, 'F');
+  // Right diamond line
+  doc.setDrawColor(CB[0], CB[1], CB[2]);
+  doc.line(cx + 28, subY - 2, cx + 62, subY - 2);
+
+  // ── 10. PROUDLY PRESENTED TO ──
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.5);
+  doc.setTextColor(CG[0], CG[1], CG[2]);
+  doc.text('PROUDLY PRESENTED TO', cx, 81, { align: 'center' });
+
+  // ── 11. Recipient Name (gradient) ──
+  const nameStr = (data.name || 'STUDENT NAME').toUpperCase();
+  const nameWords = nameStr.split(' ');
+  drawGradText(doc, nameWords, cx, 97, 30, 'times');
+
+  // ── 12. AG No Hexagonal Badge ──
+  drawHexBadge(doc, 'AG No: ' + (data.agNo || 'N/A'), cx, 105, 80, 10);
+
+  // ── 13. Description Text ──
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.5);
+  doc.setTextColor(CT[0], CT[1], CT[2]);
+  const eventTitle = data.eventTitle || 'Event';
+  const descLine1 = `For participating in "${eventTitle}" organized by The Computing Society,`;
+  const descLine2 = 'University of Agriculture Faisalabad.';
+  doc.text(descLine1, cx, 125, { align: 'center' });
+  doc.text(descLine2, cx, 131, { align: 'center' });
+
+  // ── 14. Description Divider ──
+  const divY = 137;
+  doc.setDrawColor(CG[0], CG[1], CG[2]);
+  doc.setLineWidth(0.3);
+  doc.line(cx - 70, divY, cx - 5, divY);
+  doc.line(cx + 5, divY, cx + 70, divY);
+  // Center diamond
+  doc.setDrawColor(CG[0], CG[1], CG[2]);
+  doc.setLineWidth(0.5);
+  doc.line(cx - 2.5, divY, cx, divY - 2.5);
+  doc.line(cx, divY - 2.5, cx + 2.5, divY);
+  doc.line(cx + 2.5, divY, cx, divY + 2.5);
+  doc.line(cx, divY + 2.5, cx - 2.5, divY);
+
+  // ── 15. Footer Columns ──
+  const fY = 152;
+  const col1X = 60, col2X = cx, col3X = W - 60;
+
+  // Column 1: Event Date (pink accent)
+  drawCertFooterIcon(doc, col1X, fY, CP);
+  // Calendar icon inside circle
+  doc.setDrawColor(255, 255, 255);
+  doc.setLineWidth(0.4);
+  doc.rect(col1X - 3, fY - 3, 6, 6);
+  doc.line(col1X - 1.5, fY - 3, col1X - 1.5, fY - 1.5);
+  doc.line(col1X + 1.5, fY - 3, col1X + 1.5, fY - 1.5);
+  doc.line(col1X - 3, fY - 0.5, col1X + 3, fY - 0.5);
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7);
+  doc.setTextColor(CP[0], CP[1], CP[2]);
+  doc.text('EVENT DATE', col1X, fY + 14, { align: 'center' });
+  doc.setFontSize(6.5);
+  doc.setTextColor(CT[0], CT[1], CT[2]);
+  doc.setFont('helvetica', 'normal');
+  doc.text(eventTitle, col1X, fY + 20, { align: 'center', maxWidth: 55 });
+  doc.text(data.eventDate || 'N/A', col1X, fY + 26, { align: 'center' });
+
+  // Divider line 1
+  doc.setDrawColor(200, 200, 210);
+  doc.setLineWidth(0.3);
+  doc.line(col1X + 40, fY - 8, col1X + 40, fY + 30);
+  // Divider diamond
+  doc.setFillColor(CP[0], CP[1], CP[2]);
+  doc.circle(col1X + 40, fY + 11, 1, 'F');
+
+  // Column 2: Venue (blue accent)
+  drawCertFooterIcon(doc, col2X, fY - 5, CB);
+  // Location pin inside circle
+  doc.setDrawColor(255, 255, 255);
+  doc.setLineWidth(0.4);
+  doc.circle(col2X, fY - 5, 2, 'S');
+  doc.circle(col2X, fY - 6, 0.8, 'F');
+  doc.setFillColor(255, 255, 255);
+  doc.triangle(col2X - 1.5, fY - 4, col2X + 1.5, fY - 4, col2X, fY - 1.5, 'F');
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7);
+  doc.setTextColor(CB[0], CB[1], CB[2]);
+  doc.text('VENUE', col2X, fY + 9, { align: 'center' });
+  doc.setFontSize(6.5);
+  doc.setTextColor(CT[0], CT[1], CT[2]);
+  doc.setFont('helvetica', 'normal');
+  doc.text(data.eventVenue || 'Location', col2X, fY + 15, { align: 'center', maxWidth: 55 });
+
+  // Divider line 2
+  doc.setDrawColor(200, 200, 210);
+  doc.setLineWidth(0.3);
+  doc.line(col3X - 40, fY - 8, col3X - 40, fY + 30);
+  doc.setFillColor(CB[0], CB[1], CB[2]);
+  doc.circle(col3X - 40, fY + 11, 1, 'F');
+
+  // Column 3: Signature (blue accent)
+  drawCertFooterIcon(doc, col3X, fY, CB);
+  // Pen icon inside circle
+  doc.setDrawColor(255, 255, 255);
+  doc.setLineWidth(0.4);
+  doc.line(col3X - 2, fY + 3, col3X + 3, fY - 2);
+  doc.line(col3X - 3, fY + 2, col3X + 2, fY + 2);
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7);
+  doc.setTextColor(CB[0], CB[1], CB[2]);
+  doc.text('SIGNATURE', col3X, fY + 14, { align: 'center' });
+  doc.setFont('times', 'bolditalic');
+  doc.setFontSize(13);
+  doc.setTextColor(CN[0], CN[1], CN[2]);
+  doc.text('The Computing Society', col3X, fY + 22, { align: 'center' });
+  // Signature gradient line
+  doc.setLineWidth(0.5);
+  for (let i = 0; i < 30; i++) {
+    const t = i / 30;
+    const rgb = certGradColor(t);
+    doc.setDrawColor(rgb[0], rgb[1], rgb[2]);
+    doc.line(col3X - 25 + i * 1.67, fY + 24, col3X - 23.33 + i * 1.67, fY + 24);
+  }
+
+  // ── 16. Bottom accent bar (gradient line at bottom) ──
+  doc.setLineWidth(2);
+  for (let i = 0; i < 100; i++) {
+    const t = i / 100;
+    const rgb = certGradColor(t);
+    doc.setDrawColor(rgb[0], rgb[1], rgb[2]);
+    const lx = 8 + (W - 16) * t;
+    doc.line(lx, H - 8, lx + (W - 16) / 100 + 0.5, H - 8);
+  }
+
+  // ── 17. Download ──
+  const isMobile = window.innerWidth <= 768;
   const fileName = `TCS_Certificate_${data.name || 'Student'}.pdf`;
   if (isMobile) {
     const pdfBlob = doc.output('blob');
@@ -933,31 +784,11 @@ export async function downloadCertificatePDF(data) {
     link.style.display = 'none';
     document.body.appendChild(link);
     link.click();
-    // Cleanup after a short delay to ensure download starts
     setTimeout(() => {
       document.body.removeChild(link);
       URL.revokeObjectURL(blobUrl);
     }, 1000);
   } else {
     doc.save(fileName);
-  }
-  } catch (err) {
-    console.error("Certificate PDF generation failed:", err);
-    alert("Error downloading PDF: " + err.message);
-  } finally {
-    if (container) {
-      if (originalContainerStyle) {
-        container.setAttribute('style', originalContainerStyle);
-      } else {
-        container.removeAttribute('style');
-      }
-    }
-    if (certCard) {
-      if (originalCardStyle) {
-        certCard.setAttribute('style', originalCardStyle);
-      } else {
-        certCard.removeAttribute('style');
-      }
-    }
   }
 }
