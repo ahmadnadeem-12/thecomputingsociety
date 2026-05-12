@@ -439,21 +439,32 @@ export async function downloadCertificatePDF(data) {
       container.style.setProperty('top', '-9999px', 'important');
       container.style.setProperty('width', '1060px', 'important');
       container.style.setProperty('opacity', '0.001', 'important');
+      container.style.setProperty('z-index', '-1', 'important');
+      container.style.setProperty('pointer-events', 'none', 'important');
+      container.style.setProperty('overflow', 'visible', 'important');
     }
     if (certCard) {
       certCard.style.setProperty('width', '1060px', 'important');
+      certCard.style.setProperty('min-height', '720px', 'important');
     }
 
+    // Let DOM settle after style changes before capturing (critical on mobile)
+    await new Promise(resolve => setTimeout(resolve, isMobile ? 300 : 50));
+
     canvas = await html2canvas(certCard, {
-      scale: 2,                 // Consistent 2x resolution on all devices for high-resolution crispness
+      scale: 2,
       useCORS: true,
       allowTaint: false,
       backgroundColor: '#ffffff',
       logging: false,
       scrollX: 0,
-      scrollY: 0,
-      windowWidth: simulatedWidth,        // Dynamically simulate standard laptop screen width (1536px) on mobile so clamp() and vw typography evaluate to their full large desktop proportions!
-      windowHeight: simulatedHeight,       // Dynamically simulate standard screen height
+      scrollY: -window.scrollY,
+      windowWidth: simulatedWidth,
+      windowHeight: simulatedHeight,
+      x: 0,
+      y: 0,
+      width: certCard.scrollWidth || 1060,
+      height: certCard.scrollHeight || 750,
       onclone: (clonedDoc) => {
       // ── 0. DISABLE PSEUDO-ELEMENT ROUND BACKGROUNDS & PREVENT CLIPPING ──
       const style = clonedDoc.createElement('style');
@@ -910,7 +921,26 @@ export async function downloadCertificatePDF(data) {
 
   // Use FAST compression to aggressively minimize jsPDF blob size
   doc.addImage(imgData, 'JPEG', imgX, imgY, imgW, imgH, undefined, 'FAST');
-  doc.save(`TCS_Certificate_${data.name || 'Student'}.pdf`);
+
+  // Mobile-compatible download: blob URL method works on all browsers including iOS Safari
+  const fileName = `TCS_Certificate_${data.name || 'Student'}.pdf`;
+  if (isMobile) {
+    const pdfBlob = doc.output('blob');
+    const blobUrl = URL.createObjectURL(pdfBlob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = fileName;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    // Cleanup after a short delay to ensure download starts
+    setTimeout(() => {
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+    }, 1000);
+  } else {
+    doc.save(fileName);
+  }
   } catch (err) {
     console.error("Certificate PDF generation failed:", err);
     alert("Error downloading PDF: " + err.message);
