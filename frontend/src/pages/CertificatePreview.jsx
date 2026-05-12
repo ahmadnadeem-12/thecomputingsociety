@@ -51,7 +51,9 @@ export default function CertificatePreview() {
     <section className="section">
       <div className="certPreviewPage">
         {/* Mobile Notice: Shown only on small screens */}
-
+        <div className="certMobileNotice">
+          <h3>Certificate Ready! 🎉</h3>
+        </div>
 
         <div className="certFrameContainer">
           <div className="certFrame">
