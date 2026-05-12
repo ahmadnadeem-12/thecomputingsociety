@@ -509,6 +509,155 @@ export async function downloadCertificatePDF(data) {
           opacity: 0 !important;
           box-shadow: none !important;
         }
+
+        /* ══════════════════════════════════════════════════════════════════
+           PERMANENT MOBILE PDF FIX — Force ALL desktop font sizes & layout
+           Counter every clamp()/vw value that resolves to tiny sizes on
+           mobile viewports. Values computed for ~1536px desktop viewport.
+           ══════════════════════════════════════════════════════════════════ */
+        .certSociety {
+          font-size: 30px !important;
+          letter-spacing: 0.16em !important;
+          display: block !important;
+          width: 100% !important;
+        }
+        .certDept {
+          font-size: 13px !important;
+          letter-spacing: 0.04em !important;
+          line-height: 1.5 !important;
+        }
+        .certTitle {
+          font-size: 58px !important;
+          letter-spacing: 0.12em !important;
+          margin: -1.2% 0 0.2% !important;
+          font-weight: normal !important;
+        }
+        .certSubText {
+          font-size: 14px !important;
+          letter-spacing: 0.38em !important;
+        }
+        .certSubRow {
+          margin-bottom: 6px !important;
+          display: flex !important;
+          gap: 1rem !important;
+        }
+        .certPresented {
+          font-size: 13px !important;
+          letter-spacing: 0.18em !important;
+          margin-top: 1.2% !important;
+          margin-bottom: 8px !important;
+        }
+        .certName {
+          font-size: 74px !important;
+          letter-spacing: 0.12em !important;
+          line-height: 1.1 !important;
+          margin: 0.7% 0 18px 0 !important;
+          transform: translateY(-10px) !important;
+        }
+        .certAg {
+          font-size: 12px !important;
+          letter-spacing: 0.3em !important;
+          transform: translateY(-10px) !important;
+          margin: 0.2% 0 16px 0 !important;
+          display: inline-flex !important;
+          padding: 0.5rem 2em !important;
+        }
+        .certDesc {
+          font-size: 12px !important;
+          max-width: 75% !important;
+          transform: translateY(-10px) !important;
+          margin-top: 8px !important;
+          margin-bottom: 16px !important;
+          line-height: 1.6 !important;
+          text-align: center !important;
+        }
+        .certDesc strong {
+          font-weight: 700 !important;
+        }
+        .fLabel {
+          font-size: 11px !important;
+          letter-spacing: 0.1em !important;
+          margin-bottom: 14px !important;
+        }
+        .fValue {
+          font-size: 11px !important;
+          max-width: 150px !important;
+          line-height: 1.4 !important;
+        }
+        .fSig {
+          font-size: 22px !important;
+          white-space: nowrap !important;
+          transform: rotate(-2deg) !important;
+          display: block !important;
+          margin-top: -13px !important;
+        }
+        .fSigLine {
+          width: 140px !important;
+          height: 1px !important;
+        }
+        .agDot {
+          font-size: 15px !important;
+        }
+
+        /* ── Force desktop layout (override mobile media query) ── */
+        .certBody {
+          padding: 1.5% 10% 2.8% !important;
+          height: 100% !important;
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+        }
+        .certCard {
+          border: 1.5px solid rgba(10, 8, 37, 0.08) !important;
+          border-radius: 24px !important;
+          overflow: hidden !important;
+        }
+        .certFrame {
+          border-radius: 28px !important;
+          padding: 3px !important;
+          background: linear-gradient(135deg, #D92C8A 0%, #6A35B8 50%, #3C63D9 100%) !important;
+        }
+        .cornerTL {
+          width: 250px !important;
+          height: 250px !important;
+        }
+        .certFooter {
+          margin-top: 1.8% !important;
+          width: 100% !important;
+          display: flex !important;
+          justify-content: space-between !important;
+          padding: 0 4% 3rem !important;
+        }
+        .fDiv {
+          width: 2px !important;
+          height: 100px !important;
+          background: rgba(10, 8, 37, 0.12) !important;
+          transform: translateY(-35px) !important;
+        }
+        .fCentre {
+          transform: translateY(-15px) !important;
+        }
+        .certDescDivider {
+          transform: translateY(-12px) !important;
+          max-width: 580px !important;
+        }
+        .fIcon {
+          width: 54px !important;
+          height: 54px !important;
+          border-radius: 50% !important;
+        }
+        .certHeaderLines {
+          max-width: 520px !important;
+        }
+        .hLine--pink, .hLine--blue {
+          width: 250px !important;
+        }
+        .diamLine {
+          width: 70px !important;
+        }
+        .accentBar {
+          display: block !important;
+        }
       `;
       clonedDoc.head.appendChild(style);
 

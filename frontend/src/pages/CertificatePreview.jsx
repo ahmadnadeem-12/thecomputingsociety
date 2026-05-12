@@ -51,10 +51,7 @@ export default function CertificatePreview() {
     <section className="section">
       <div className="certPreviewPage">
         {/* Mobile Notice: Shown only on small screens */}
-        <div className="certMobileNotice">
-          <h3>Certificate Ready! 🎉</h3>
-          <p>The high-resolution certificate is difficult to preview on small screens. Please click the download button below to save your certificate directly.</p>
-        </div>
+
 
         <div className="certFrameContainer">
           <div className="certFrame">
