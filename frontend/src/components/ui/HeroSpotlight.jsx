@@ -11,8 +11,12 @@ export default function HeroSpotlight() {
         const fetchHeroEvent = async () => {
             try {
                 const res = await api.get("/events");
-                // Get events marked as isHero and status not 'past'
-                const heroEvents = res.data.data.filter(e => e.isHero && e.status !== "past");
+                const now = new Date().getTime();
+                // Filter out events that are past or whose target time has already elapsed
+                const heroEvents = res.data.data.filter(e => {
+                    const target = new Date(`${e.date}T${e.time || "00:00"}`).getTime();
+                    return e.isHero && e.status !== "past" && target > now;
+                });
 
                 if (heroEvents.length > 0) {
                     // Sort by nearest date
@@ -37,6 +41,7 @@ export default function HeroSpotlight() {
             if (diff <= 0) {
                 setTimeLeft({ days: 0, hours: 0, mins: 0, secs: 0 });
                 clearInterval(timer);
+                setEvent(null); // Auto-hide component when timer ends
             } else {
                 setTimeLeft({
                     days: Math.floor(diff / (1000 * 60 * 60 * 24)),
