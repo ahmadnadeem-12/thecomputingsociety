@@ -4,33 +4,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="canonical" href="https://thecomputingsociety.vercel.app/" />
+  <meta name="google-site-verification" content="HgLHi9t8fmkEbAP3bNFpM3JCCLU05kqq2V0NQs5oR1w" />
 
-  <!-- Primary Meta Tags -->
+  <!-- 1. Primary SEO Meta Tags -->
   <title>THE COMPUTING SOCIETY | TCS - UAF</title>
   <meta name="title" content="THE COMPUTING SOCIETY | TCS - UAF" />
-  <meta name="description"
-    content="THE COMPUTING SOCIETY (TCS) - Department of Computer Science, University of Agriculture Faisalabad. Join us for events, workshops, seminars, and tech excellence." />
-  <meta name="keywords"
-    content="TCS, Computing Society, UAF, University of Agriculture Faisalabad, Computer Science, Tech Events, Programming, Workshops, Seminars, Student Society" />
+  <meta name="description" content="Official student portal of The Computing Society (TCS), Department of Computer Science, University of Agriculture, Faisalabad (UAF). Register for events, check-in tickets, download certificates, and explore our cabinet." />
+  <meta name="keywords" content="TCS, The Computing Society, Computing Society UAF, UAF Computer Science, CS Department UAF, University of Agriculture Faisalabad, Student Cabinet UAF, UAF CS Events, CS Tickets" />
   <meta name="author" content="THE COMPUTING SOCIETY" />
-  <meta name="robots" content="index, follow" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
 
-  <!-- Open Graph / Facebook -->
+  <!-- 2. GEO (Geographic & Local SEO) Meta Tags -->
+  <meta name="geo.region" content="PK-PB" />
+  <meta name="geo.placename" content="Faisalabad" />
+  <meta name="geo.position" content="31.4278;73.0760" />
+  <meta name="ICBM" content="31.4278, 73.0760" />
+
+  <!-- 3. AEO (Answer Engine / AI Search Bot Optimization) Meta Tags -->
+  <meta name="ai-optimized" content="true" />
+  <meta name="chatgpt-optimized" content="true" />
+  <meta name="perplexity-optimized" content="true" />
+  <meta name="gemini-optimized" content="true" />
+
+  <!-- 4. Open Graph / Facebook / WhatsApp Meta Tags -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://tcs-uaf.com/" />
+  <meta property="og:url" content="https://thecomputingsociety.vercel.app/" />
   <meta property="og:title" content="THE COMPUTING SOCIETY | TCS - UAF" />
-  <meta property="og:description"
-    content="THE COMPUTING SOCIETY (TCS) - Department of Computer Science, UAF. Join us for events, workshops, and tech excellence." />
-  <meta property="og:image" content="/og-image.png" />
+  <meta property="og:description" content="Official student portal of the Department of Computer Science, UAF. Track events, download certificates, and stay updated with announcements." />
+  <meta property="og:image" content="https://thecomputingsociety.vercel.app/favicon.png" />
+  <meta property="og:locale" content="en_US" />
   <meta property="og:site_name" content="THE COMPUTING SOCIETY" />
 
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://tcs-uaf.com/" />
-  <meta name="twitter:title" content="THE COMPUTING SOCIETY | TCS - UAF" />
-  <meta name="twitter:description"
-    content="THE COMPUTING SOCIETY (TCS) - Department of Computer Science, UAF. Join us for events, workshops, and tech excellence." />
-  <meta name="twitter:image" content="/og-image.png" />
+  <!-- 5. Twitter / X Meta Tags -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://thecomputingsociety.vercel.app/" />
+  <meta property="twitter:title" content="THE COMPUTING SOCIETY | TCS - UAF" />
+  <meta property="twitter:description" content="Official student portal of the Department of Computer Science, UAF. Track events, download certificates, and stay updated." />
+  <meta property="twitter:image" content="https://thecomputingsociety.vercel.app/favicon.png" />
 
   <!-- Theme & Icons -->
   <meta name="theme-color" content="#0a0a0f" />
@@ -38,33 +49,53 @@
   <link rel="icon" type="image/png" href="/favicon.png" />
   <link rel="apple-touch-icon" href="/favicon.png" />
 
-  <!-- Preconnect to external resources -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-  <!-- Structured Data -->
+  <!-- 6. JSON-LD Structured Schema Markup (SEO, GEO & AEO Combined) -->
   <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "THE COMPUTING SOCIETY",
-      "alternateName": "TCS UAF",
-      "url": "https://tcs-uaf.com",
-      "description": "THE COMPUTING SOCIETY - Department of Computer Science, University of Agriculture Faisalabad",
-      "foundingDate": "2020",
-      "areaServed": "Pakistan",
+  {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": "The Computing Society (TCS)",
+    "alternateName": "TCS UAF",
+    "description": "The official student cabinet and computing society of the Department of Computer Science, University of Agriculture, Faisalabad (UAF).",
+    "url": "https://thecomputingsociety.vercel.app/",
+    "logo": "https://thecomputingsociety.vercel.app/favicon.png",
+    "image": "https://thecomputingsociety.vercel.app/favicon.png",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Department of Computer Science, University of Agriculture Faisalabad",
+      "addressLocality": "Faisalabad",
+      "addressRegion": "Punjab",
+      "addressCountry": "PK"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 31.4278,
+      "longitude": 73.0760
+    },
+    "department": {
+      "@type": "EducationalOrganization",
+      "name": "Department of Computer Science, UAF"
+    },
+    "parentOrganization": {
+      "@type": "University",
+      "name": "University of Agriculture, Faisalabad",
+      "alternateName": "UAF",
+      "url": "http://uaf.edu.pk/",
       "sameAs": [
-        "https://www.facebook.com/tcsuaf",
-        "https://www.instagram.com/tcsuaf",
-        "https://www.linkedin.com/company/tcsuaf"
-      ],
-      "parentOrganization": {
-        "@type": "EducationalOrganization",
-        "name": "University of Agriculture Faisalabad",
-        "alternateName": "UAF"
-      }
-    }
-    </script>
+        "https://en.wikipedia.org/wiki/University_of_Agriculture,_Faisalabad",
+        "https://www.facebook.com/UAF.Official/"
+      ]
+    },
+    "founder": {
+      "@type": "Organization",
+      "name": "TCS Student Cabinet"
+    },
+    "foundingDate": "2025",
+    "sameAs": [
+      "https://github.com/ahmadnadeem-12/thecomputingsociety"
+    ]
+  }
+  </script>
 </head>
 
 <body>
