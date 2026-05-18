@@ -277,7 +277,7 @@ export default function Home() {
         </div>
 
         {/* Mobile Stats Grid - Matching Desktop Aesthetic */}
-        <div className="mobileOnly" style={{ padding: "0 1rem" }}>
+        <div className="mobileOnly" style={{ padding: 0 }}>
           <div className="statsGrid" style={{ width: "100%", maxWidth: "100%" }}>
             {(stats || []).map((s, i) => {
               const getIcon = (label) => {
