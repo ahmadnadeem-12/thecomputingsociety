@@ -36,7 +36,7 @@ const DEFAULT_ANNOUNCEMENTS = [
 
 // @route   GET /api/announcements
 router.get("/", async (req, res) => {
-    const items = await Announcement.find().sort({ createdAt: -1 });
+    const items = await Announcement.find().sort({ date: -1, createdAt: -1 });
     res.json({ success: true, count: items.length, data: items });
 });
 

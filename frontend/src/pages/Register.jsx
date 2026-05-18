@@ -95,12 +95,12 @@ export default function Register() {
             <div className="label">Department</div>
             <select className="input" value={department} onChange={e => setDepartment(e.target.value)} required>
               <option value="">Select Dept</option>
-              <option value="Computer Science">Computer Science</option>
-              <option value="Information Technology">Information Technology</option>
-              <option value="Software Engineering">Software Engineering</option>
               <option value="Artificial Intelligence">Artificial Intelligence</option>
               <option value="Bioinformatics">Bioinformatics</option>
+              <option value="Computer Science">Computer Science</option>
               <option value="Data Science">Data Science</option>
+              <option value="Information Technology">Information Technology</option>
+              <option value="Software Engineering">Software Engineering</option>
             </select>
           </div>
           <div>

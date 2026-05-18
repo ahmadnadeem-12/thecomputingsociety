@@ -24,6 +24,11 @@ export default function App() {
     return () => clearTimeout(t);
   }, []);
 
+  // Scroll to top on every page transition
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   if (booting) return <Loader />;
 
   return (

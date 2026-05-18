@@ -1,8 +1,8 @@
 
 import { api } from "./api";
 
-export async function listGalleryAlbums() {
-    const { data } = await api.get("/gallery");
+export async function listGalleryAlbums(full = false) {
+    const { data } = await api.get(`/gallery${full ? "?full=true" : ""}`);
     return data.data || [];
 }
 

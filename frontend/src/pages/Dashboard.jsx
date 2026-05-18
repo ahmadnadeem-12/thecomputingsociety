@@ -62,6 +62,11 @@ export default function Dashboard() {
   const [draftTheme, setDraftTheme] = useState(themeCtx?.defaultTheme || themeCtx?.theme || {});
   const [hasUnsaved, setHasUnsaved] = useState(false);
 
+  // Scroll to top on admin tab switch
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [tab]);
+
   // Modal states
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState(null);
@@ -108,7 +113,7 @@ export default function Dashboard() {
     getHomeContent().then(d => setHomeContent(d || {})).catch(() => { });
     listAnnouncements().then(d => setAnnouncements(d || [])).catch(() => { });
     listPrograms().then(d => setPrograms(d || [])).catch(() => { });
-    listGalleryAlbums().then(d => setGallery(d || [])).catch(() => { });
+    listGalleryAlbums(true).then(d => setGallery(d || [])).catch(() => { });
   }, [refreshKey]);
 
   // Auth check - redirect if not logged in
@@ -628,7 +633,7 @@ export default function Dashboard() {
                     onChange={(url) => setEditing({ ...editing, adPoster: url })} 
                     placeholder="Drop Ad Poster Here" 
                     aspectRatio="3/4" 
-                    maxSize={2048} 
+                    maxSize={600} 
                   />
                 </div>
                 <div style={{ fontSize: ".7rem", color: "var(--text-muted)", textAlign: "center", marginTop: "0.8rem", lineHeight: 1.4 }}>
@@ -720,7 +725,7 @@ export default function Dashboard() {
                 <div className="formRow">
                   <div><div className="label">Role</div>
                     <select className="input" value={editing.departmentRole} onChange={e => setEditing({ ...editing, departmentRole: e.target.value })} aria-label="Department role">
-                      <option>Chairman</option><option>Professor</option><option>Supervisor</option><option>Lecturer</option>
+                      <option>Chairman</option><option>Lecturer</option><option>Professor</option><option>Supervisor</option>
                     </select>
                   </div>
                   <div><div className="label">Experience Years</div><input type="number" className="input" value={editing.experienceYears} onChange={e => setEditing({ ...editing, experienceYears: +e.target.value })} aria-label="Experience years" /></div>
@@ -884,7 +889,7 @@ export default function Dashboard() {
       {/* Gallery Image Upload Modal */}
       <Modal open={imageModalOpen} title="Add Image to Album" onClose={() => setImageModalOpen(false)} maxWidth="400px">
         <div style={{ display: "grid", gap: "1rem" }}>
-          <ImageUploader value={pendingImage} onChange={setPendingImage} placeholder="Drop image here or click to browse" aspectRatio="16/9" maxSize={1024} />
+          <ImageUploader value={pendingImage} onChange={setPendingImage} placeholder="Drop image here or click to browse" aspectRatio="16/9" maxSize={800} />
           <div style={{ display: "flex", gap: ".5rem", justifyContent: "flex-end" }}>
             <button className="btn btnGhost" onClick={() => setImageModalOpen(false)}>Cancel</button>
             <button className="btn btnPrimary" disabled={!pendingImage} onClick={confirmAddImage}>Add Image</button>

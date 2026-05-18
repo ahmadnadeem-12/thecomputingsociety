@@ -115,7 +115,7 @@ export function DashboardModals({
                       onChange={(url) => setEditing({ ...editing, adPoster: url })}
                       placeholder="Drop Ad Poster Here"
                       aspectRatio="3/4"
-                      maxSize={2048}
+                      maxSize={600}
                     />
                   </div>
                   <div style={{ fontSize: ".7rem", color: "var(--text-muted)", textAlign: "center", marginTop: "0.8rem", lineHeight: 1.4 }}>
@@ -162,7 +162,7 @@ export function DashboardModals({
                 <div className="formRow">
                   <div><div className="label">Role</div>
                     <select className="input" value={editing.departmentRole} onChange={e => setEditing({ ...editing, departmentRole: e.target.value })} aria-label="Department role">
-                      <option>Chairman</option><option>Professor</option><option>Supervisor</option><option>Lecturer</option>
+                      <option>Chairman</option><option>Lecturer</option><option>Professor</option><option>Supervisor</option>
                     </select>
                   </div>
                   <div><div className="label">Experience Years</div><input type="number" className="input" value={editing.experienceYears} onChange={e => setEditing({ ...editing, experienceYears: +e.target.value })} aria-label="Experience years" /></div>

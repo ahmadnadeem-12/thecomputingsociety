@@ -151,7 +151,7 @@ export default function Events() {
               </div>
 
               <div className="eventInner">
-                <div style={{ fontWeight: 900, fontSize: "1.1rem", marginBottom: "0.5rem" }}>
+                <div className="eventTitle" style={{ paddingRight: "5.2rem" }}>
                   {e.title}
                 </div>
 

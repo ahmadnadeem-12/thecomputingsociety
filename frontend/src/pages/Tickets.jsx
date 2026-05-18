@@ -74,6 +74,39 @@ export default function Tickets() {
     }
   }, [isAuthed, targetEventId]); // Re-fetch or re-selection if target changes
 
+  // Calculate derived lists of events/programs that the user has not registered for yet, sorted alphabetically A-Z
+  const userEventIds = myTickets.map(t => (t.eventId && typeof t.eventId === 'object' ? t.eventId._id : t.eventId)).filter(Boolean);
+  const userProgramIds = myTickets.map(t => (t.programId && typeof t.programId === 'object' ? t.programId._id : t.programId)).filter(Boolean);
+
+  const availableEvents = events
+    .filter(e => {
+      const isDeadlinePassed = e.registrationDeadline && new Date(e.registrationDeadline).setHours(23, 59, 59, 999) < new Date();
+      return !isDeadlinePassed && !userEventIds.includes(e._id);
+    })
+    .sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+
+  const availablePrograms = programs
+    .filter(p => !userProgramIds.includes(p._id))
+    .sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+
+  // Dynamic selection setter to auto-select the first available option that hasn't been registered yet
+  useEffect(() => {
+    const isCurrentAvailable = form.selectionType === "event"
+      ? availableEvents.some(e => e._id === form.selectionId)
+      : availablePrograms.some(p => p._id === form.selectionId);
+
+    if (!isCurrentAvailable || !form.selectionId) {
+      if (targetEventId && availableEvents.some(e => e._id === targetEventId)) {
+        setForm({ selectionType: "event", selectionId: targetEventId });
+      } else if (availableEvents.length > 0) {
+        setForm({ selectionType: "event", selectionId: availableEvents[0]._id });
+      } else if (availablePrograms.length > 0) {
+        setForm({ selectionType: "program", selectionId: availablePrograms[0]._id });
+      } else {
+        setForm({ selectionType: "event", selectionId: "" });
+      }
+    }
+  }, [events, programs, myTickets, targetEventId]);
   // Auto-dismiss success message
   useEffect(() => {
     if (showSuccess) {
@@ -83,7 +116,6 @@ export default function Tickets() {
       return () => clearTimeout(timer);
     }
   }, [showSuccess]);
-
   const fetchData = async () => {
     try {
       const [evRes, prRes] = await Promise.all([
@@ -143,17 +175,19 @@ export default function Tickets() {
   const capitalizeTitle = (s) => s ? s.split(" ").map(w => w[0].toUpperCase() + w.substring(1)).join(" ") : "";
 
   const handleDownloadAll = () => {
-    const qrs = Array.from(document.querySelectorAll(".expandableTicket canvas")).map(c => c.toDataURL());
-    const ticketsForPDF = myTickets.map(t => {
-      const ev = t.eventId || t.programId;
-      return {
-        ...t,
-        eventTitle: ev?.title || "OFFICIAL PASS",
-        eventDate: ev?.date ? formatDate(ev.date) : (ev?.startDate || "TBA"),
-        eventTime: ev?.time || ev?.duration || "TBA",
-        id: t.publicTicketId || t._id
-      };
-    });
+    const qrs = Array.from(document.querySelectorAll(".expandableTicket[data-checked-in='false'] canvas")).map(c => c.toDataURL());
+    const ticketsForPDF = myTickets
+      .filter(t => !t.checkedIn)
+      .map(t => {
+        const ev = t.eventId || t.programId;
+        return {
+          ...t,
+          eventTitle: ev?.title || "OFFICIAL PASS",
+          eventDate: ev?.date ? formatDate(ev.date) : (ev?.startDate || "TBA"),
+          eventTime: ev?.time || ev?.duration || "TBA",
+          id: t.publicTicketId || t._id
+        };
+      });
     downloadAllTicketsPDF(ticketsForPDF, qrs);
   };
 
@@ -297,17 +331,15 @@ export default function Tickets() {
                       setForm({ ...form, selectionType: t, selectionId: id });
                     }}
                   >
-                    {!events.length && !programs.length && <option value="">NO ACTIVE EVENTS AT THE MOMENT</option>}
+                    {!availableEvents.length && !availablePrograms.length && <option value="">NO ACTIVE EVENTS AT THE MOMENT</option>}
                     <optgroup label="✨ MAJOR EVENTS" style={{ background: "#0a0f23", color: "var(--accent-cyan)", padding: "10px" }}>
-                      {events.filter(e => !e.registrationDeadline || new Date(e.registrationDeadline).setHours(23, 59, 59, 999) >= new Date()).length > 0 ? (
-                        events
-                          .filter(e => !e.registrationDeadline || new Date(e.registrationDeadline).setHours(23, 59, 59, 999) >= new Date())
-                          .map(e => <option key={e._id} value={`event:${e._id}`} style={{ background: "#0a0f23", color: "#fff" }}>{e.title}</option>)
+                      {availableEvents.length > 0 ? (
+                        availableEvents.map(e => <option key={e._id} value={`event:${e._id}`} style={{ background: "#0a0f23", color: "#fff" }}>{e.title}</option>)
                       ) : <option disabled>No active events</option>}
                     </optgroup>
                     <optgroup label="📚 TRAINING PROGRAMS" style={{ background: "#0a0f23", color: "var(--accent-cyan)", padding: "10px" }}>
-                      {programs.length > 0 ? (
-                        programs.map(p => <option key={p._id} value={`program:${p._id}`} style={{ background: "#0a0f23", color: "#fff" }}>{p.title}</option>)
+                      {availablePrograms.length > 0 ? (
+                        availablePrograms.map(p => <option key={p._id} value={`program:${p._id}`} style={{ background: "#0a0f23", color: "#fff" }}>{p.title}</option>)
                       ) : <option disabled>No active programs</option>}
                     </optgroup>
                   </select>
@@ -345,7 +377,7 @@ export default function Tickets() {
                 return (
                   <button
                     className="btn btnGhost"
-                    style={{ width: "100%", marginTop: "2.5rem", padding: "1.2rem", borderRadius: "20px", fontSize: "1rem", fontWeight: 900, color: "var(--accent-red)", border: "2px dashed var(--accent-red)", cursor: "not-allowed" }}
+                    style={{ width: "100%", marginTop: "2.5rem", padding: "1.2rem 1.8rem", borderRadius: "20px", fontSize: "0.85rem", fontWeight: 900, color: "var(--accent-red)", border: "2px dashed var(--accent-red)", cursor: "not-allowed", lineHeight: "1.4", whiteSpace: "normal" }}
                     disabled
                   >
                     🚫 REGISTRATION CLOSED (DEADLINE EXPIRED)
@@ -371,9 +403,9 @@ export default function Tickets() {
             <div className="sectionHeader" style={{ border: "none", padding: 0, marginBottom: "3rem", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
               <h2 className="sectionTitle" style={{ fontSize: "2.5rem" }}>YOUR VERIFIED PASSES</h2>
               <div style={{ width: "60px", height: "4px", background: "var(--accent-cyan)", marginTop: "1rem" }} />
-              {Array.isArray(myTickets) && myTickets.length > 0 && (
+              {Array.isArray(myTickets) && myTickets.filter(t => !t.checkedIn).length >= 2 && (
                 <button className="btn btnPrimary" onClick={handleDownloadAll} style={{ marginTop: "2rem", fontSize: "0.85rem", padding: "0.7rem 2.2rem", borderRadius: "15px" }}>
-                  📥 BATCH DOWNLOAD ALL
+                  📥 DOWNLOAD ALL
                 </button>
               )}
             </div>
@@ -383,7 +415,7 @@ export default function Tickets() {
                 const ev = t.eventId || t.programId;
                 const publicId = t.publicTicketId || t._id;
                 return (
-                  <div key={t._id} className="expandableTicket expanded group" style={{
+                  <div key={t._id} data-checked-in={t.checkedIn} className="expandableTicket expanded group" style={{
                     border: "1.5px solid rgba(255, 45, 149, 0.5)",
                     borderRadius: "24px",
                     overflow: "hidden",
@@ -479,47 +511,49 @@ export default function Tickets() {
 
                           {/* Action Buttons */}
                           <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
-                            <button
-                              style={{
-                                borderRadius: "12px",
-                                padding: "10px 20px",
-                                fontSize: "0.85rem",
-                                fontWeight: 700,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                gap: "8px",
-                                background: "rgba(255,255,255,0.05)",
-                                border: "1px solid rgba(255,255,255,0.15)",
-                                color: "#fff",
-                                cursor: "pointer",
-                                transition: "all 0.3s ease",
-                                backdropFilter: "blur(10px)"
-                              }}
-                              onClick={(e) => {
-                                const canvas = e.currentTarget.closest(".expandableTicket").querySelector("canvas");
-                                const data = {
-                                  ...t,
-                                  eventTitle: ev?.title,
-                                  eventDate: ev?.date ? formatDate(ev.date) : (ev?.startDate || "TBA"),
-                                  eventTime: ev?.time || ev?.duration || "TBA",
-                                  id: t.publicTicketId || t._id
-                                };
-                                downloadTicketPDF(data, canvas?.toDataURL());
-                              }}
-                              onMouseOver={(e) => {
-                                e.currentTarget.style.background = "rgba(255,255,255,0.1)";
-                                e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)";
-                                e.currentTarget.style.transform = "translateY(-2px)";
-                              }}
-                              onMouseOut={(e) => {
-                                e.currentTarget.style.background = "rgba(255,255,255,0.05)";
-                                e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
-                                e.currentTarget.style.transform = "translateY(0)";
-                              }}
-                            >
-                              <span style={{ fontSize: "1.1rem" }}>📥</span> DOWNLOAD PDF
-                            </button>
+                            {!t.checkedIn && (
+                              <button
+                                style={{
+                                  borderRadius: "12px",
+                                  padding: "10px 20px",
+                                  fontSize: "0.85rem",
+                                  fontWeight: 700,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  gap: "8px",
+                                  background: "rgba(255,255,255,0.05)",
+                                  border: "1px solid rgba(255,255,255,0.15)",
+                                  color: "#fff",
+                                  cursor: "pointer",
+                                  transition: "all 0.3s ease",
+                                  backdropFilter: "blur(10px)"
+                                }}
+                                onClick={(e) => {
+                                  const canvas = e.currentTarget.closest(".expandableTicket").querySelector("canvas");
+                                  const data = {
+                                    ...t,
+                                    eventTitle: ev?.title,
+                                    eventDate: ev?.date ? formatDate(ev.date) : (ev?.startDate || "TBA"),
+                                    eventTime: ev?.time || ev?.duration || "TBA",
+                                    id: t.publicTicketId || t._id
+                                  };
+                                  downloadTicketPDF(data, canvas?.toDataURL());
+                                }}
+                                onMouseOver={(e) => {
+                                  e.currentTarget.style.background = "rgba(255,255,255,0.1)";
+                                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)";
+                                  e.currentTarget.style.transform = "translateY(-2px)";
+                                }}
+                                onMouseOut={(e) => {
+                                  e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+                                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+                                  e.currentTarget.style.transform = "translateY(0)";
+                                }}
+                              >
+                                <span style={{ fontSize: "1.1rem" }}>📥</span> DOWNLOAD PDF
+                              </button>
+                            )}
 
                             {t.checkedIn && (
                               <button

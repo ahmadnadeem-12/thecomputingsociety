@@ -7,7 +7,7 @@ const { protect, adminOnly } = require("../middleware/auth");
 // @desc    Get all events
 // @access  Public
 router.get("/", async (req, res) => {
-    const events = await Event.find().sort({ createdAt: -1 });
+    const events = await Event.find().select("-adPoster").sort({ createdAt: -1 });
     res.json({ success: true, count: events.length, data: events });
 });
 

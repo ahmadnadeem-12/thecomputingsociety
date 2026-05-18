@@ -1,7 +1,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { listGalleryAlbums } from "../services/galleryService";
+import { listGalleryAlbums, getAlbum } from "../services/galleryService";
 import "../assets/styles/pages/gallery.css";
 
 /* ---- Collage Layout for Album Card ---- */
@@ -153,6 +153,18 @@ export default function Gallery() {
     listGalleryAlbums().then(data => setCatalogues(data || [])).catch(() => setCatalogues([]));
   }, []);
 
+  const handleAlbumClick = async (album) => {
+    setSelectedAlbum(album);
+    try {
+      const fullAlbum = await getAlbum(album._id || album.id);
+      if (fullAlbum) {
+        setSelectedAlbum(fullAlbum);
+      }
+    } catch (err) {
+      console.error("Error loading full album images:", err);
+    }
+  };
+
   const filtered = useMemo(() => {
     if (filter === "all") return catalogues;
     return catalogues.filter(c => (c._id || c.id) === filter);
@@ -234,7 +246,7 @@ export default function Gallery() {
             }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => setSelectedAlbum(album)}
+            onClick={() => handleAlbumClick(album)}
           >
             {/* Collage Thumbnail */}
             {album.images.length > 0 ? (

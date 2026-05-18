@@ -283,10 +283,10 @@ export default function AdminTickets() {
             <select className="input" value={checkEvent} onChange={(e) => setCheckEvent(e.target.value)}>
               <option value="">Select Event/Program</option>
               <optgroup label="Events">
-                {events.map(e => <option key={e.id} value={e.id || e._id}>{e.title}</option>)}
+                {[...events].sort((a, b) => (a.title || "").localeCompare(b.title || "")).map(e => <option key={e.id} value={e.id || e._id}>{e.title}</option>)}
               </optgroup>
               <optgroup label="Programs">
-                {programs.map(p => <option key={p.id} value={p.id || p._id}>{p.title}</option>)}
+                {[...programs].sort((a, b) => (a.title || "").localeCompare(b.title || "")).map(p => <option key={p.id} value={p.id || p._id}>{p.title}</option>)}
               </optgroup>
             </select>
             <button className="btn btnPrimary" onClick={quickCheckIn}>Check-in</button>

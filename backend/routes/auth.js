@@ -18,13 +18,22 @@ router.post("/register", async (req, res) => {
         return res.status(400).json({ success: false, message: "All fields are required" });
     }
 
-    // Check if user exists by email
+    // Delete any existing unverified accounts with same email or AG Number so they can register again
+    await User.deleteMany({
+        $or: [
+            { email: email.toLowerCase() },
+            { agNo: agNo.toUpperCase() }
+        ],
+        isVerified: false
+    });
+
+    // Check if user exists by email (verified accounts only now)
     const existingEmail = await User.findOne({ email: email.toLowerCase() });
     if (existingEmail) {
         return res.status(400).json({ success: false, message: "Email already registered" });
     }
 
-    // Check if user exists by agNo
+    // Check if user exists by agNo (verified accounts only now)
     const existingAgNo = await User.findOne({ agNo: agNo.toUpperCase() });
     if (existingAgNo) {
         return res.status(400).json({ success: false, message: "AG Number already registered" });

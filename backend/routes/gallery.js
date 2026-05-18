@@ -5,7 +5,9 @@ const { protect, adminOnly } = require("../middleware/auth");
 
 // @route   GET /api/gallery
 router.get("/", async (req, res) => {
-    const items = await Gallery.find().sort({ createdAt: -1 });
+    const isFull = req.query.full === "true";
+    const projection = isFull ? {} : { title: 1, images: { $slice: 5 }, createdAt: 1 };
+    const items = await Gallery.find({}, projection).sort({ createdAt: -1 });
     res.json({ success: true, count: items.length, data: items });
 });
 
