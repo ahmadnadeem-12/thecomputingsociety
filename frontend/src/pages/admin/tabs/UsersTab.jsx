@@ -206,9 +206,9 @@ export default function UsersTab() {
                     />
                   </div>
                   
-                  <div style={{ flex: 1 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: "wrap", marginBottom: '0.5rem' }}>
-                      <span style={{ fontWeight: 800, fontSize: '1.25rem', color: '#fff', letterSpacing: '-0.3px' }}>{u.name}</span>
+                      <span style={{ fontWeight: 800, fontSize: '1.25rem', color: '#fff', letterSpacing: '-0.3px', wordBreak: 'break-word' }}>{u.name}</span>
                       {!isAdmin && (
                         <span style={{ 
                           fontSize: '0.65rem', 
@@ -228,7 +228,7 @@ export default function UsersTab() {
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                      <div style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>{u.email}</div>
+                      <div style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.6)', fontWeight: 500, wordBreak: 'break-all' }}>{u.email}</div>
                       <div style={{ fontSize: '1rem', color: 'var(--accent-cyan)', fontWeight: 800 }}>{u.agNo || 'N/A'}</div>
                     </div>
                   </div>
@@ -238,7 +238,7 @@ export default function UsersTab() {
                       className="btn actionBtnDelete" 
                       onClick={(e) => handleDelete(u._id, u.name, e)}
                       disabled={deletingId === u._id}
-                      style={{ alignSelf: 'center' }}
+                      style={{ alignSelf: 'center', flexShrink: 0 }}
                       aria-label="Delete User"
                     >
                       {deletingId === u._id ? (
@@ -253,7 +253,7 @@ export default function UsersTab() {
                     </button>
                   )}
 
-                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.2rem', cursor: 'pointer', alignSelf: 'center' }}>⋮</div>
+                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.2rem', cursor: 'pointer', alignSelf: 'center', marginLeft: 'auto' }}>⋮</div>
                 </div>
 
                 {!isAdmin && (
@@ -376,6 +376,23 @@ export default function UsersTab() {
         @keyframes rotation {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
+        }
+        @media (max-width: 480px) {
+          .userCard {
+            padding: 1rem !important;
+          }
+          .userCard > div {
+            gap: 0.75rem !important;
+          }
+          .actionBtnDelete {
+            width: 38px !important;
+            height: 38px !important;
+            border-radius: 8px !important;
+          }
+          .actionBtnDelete svg {
+            width: 16px;
+            height: 16px;
+          }
         }
       `}</style>
     </div>

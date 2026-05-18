@@ -119,3 +119,51 @@
         margin-top: 0.5rem;
     }
 }
+
+/* =========================================================
+   RESPONSIVE LAYOUT FIXES FOR MODALS & TABS
+   ========================================================= */
+.socialsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.albumHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.albumButtons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .socialsGrid {
+        grid-template-columns: 1fr;
+    }
+    
+    .albumHeader {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .albumButtons {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    .albumButtons .btn {
+        flex: 1 1 auto;
+        justify-content: center;
+        padding: 0.45rem 0.75rem !important;
+        font-size: 0.75rem !important;
+    }
+}
+

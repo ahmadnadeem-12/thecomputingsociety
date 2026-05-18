@@ -34,9 +34,9 @@ export default function GalleryTab({
             <div style={{ display: "grid", gap: "1.5rem" }}>
                 {gallery.map(album => (
                     <div key={album.id} className="card">
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: ".75rem" }}>
-                            <div style={{ fontWeight: 900, fontSize: "1.1rem" }}>{album.title}</div>
-                            <div style={{ display: "flex", gap: ".5rem" }}>
+                        <div className="albumHeader">
+                            <div style={{ fontWeight: 900, fontSize: "1.1rem", color: "#fff" }}>{album.title}</div>
+                            <div className="albumButtons">
                                 <button
                                     className="btn btnGhost"
                                     style={{ padding: ".35rem .7rem", fontSize: ".75rem" }}

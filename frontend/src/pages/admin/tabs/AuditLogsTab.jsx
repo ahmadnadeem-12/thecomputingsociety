@@ -52,9 +52,9 @@ export default function AuditLogsTab() {
           ))
         ) : logs.length > 0 ? (
           logs.map(log => (
-            <div key={log._id} className="card" style={{ padding: '1rem 1.25rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <div key={log._id} className="card" style={{ padding: '1.25rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
                   <div style={{ 
                     padding: '0.3rem 0.6rem', 
                     borderRadius: '6px', 
@@ -62,20 +62,50 @@ export default function AuditLogsTab() {
                     fontWeight: 800, 
                     background: getActionColor(log.action) + '22',
                     color: getActionColor(log.action),
-                    border: `1px solid ${getActionColor(log.action)}33`
+                    border: `1px solid ${getActionColor(log.action)}33`,
+                    whiteSpace: 'nowrap'
                   }}>
                     {log.action}
                   </div>
-                  <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{log.details}</div>
+                  <div style={{ fontWeight: 700, fontSize: '0.95rem', wordBreak: 'break-word', color: '#fff' }}>{log.details}</div>
                 </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                   {new Date(log.createdAt).toLocaleString()}
                 </div>
               </div>
-              <div style={{ marginTop: '0.6rem', display: 'flex', gap: '1.5rem', fontSize: '0.8rem' }}>
-                <div style={{ color: 'var(--text-muted)' }}>👤 Admin: <span style={{ color: 'var(--text-dim)' }}>{log.adminName}</span></div>
-                <div style={{ color: 'var(--text-muted)' }}>🎯 Target: <span style={{ color: 'var(--accent-cyan)' }}>{log.targetType}</span></div>
-                {log.ipAddress && <div style={{ color: 'var(--text-muted)' }}>🌐 IP: <span style={{ color: 'var(--text-dim)' }}>{log.ipAddress}</span></div>}
+              
+              <div style={{ 
+                marginTop: '0.75rem', 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', 
+                gap: '0.75rem', 
+                fontSize: '0.8rem',
+                borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+                paddingTop: '0.75rem'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '1rem' }}>👤</span>
+                  <div>
+                    <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--text-muted)', fontWeight: 700 }}>Admin</div>
+                    <div style={{ color: 'var(--text-dim)', fontWeight: 600 }}>{log.adminName}</div>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '1rem' }}>🎯</span>
+                  <div>
+                    <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--text-muted)', fontWeight: 700 }}>Target</div>
+                    <div style={{ color: 'var(--accent-cyan)', fontWeight: 600 }}>{log.targetType}</div>
+                  </div>
+                </div>
+                {log.ipAddress && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '1rem' }}>🌐</span>
+                    <div>
+                      <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--text-muted)', fontWeight: 700 }}>IP Address</div>
+                      <div style={{ color: 'var(--text-dim)', fontWeight: 600 }}>{log.ipAddress}</div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           ))

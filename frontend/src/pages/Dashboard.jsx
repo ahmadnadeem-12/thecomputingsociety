@@ -677,7 +677,7 @@ export default function Dashboard() {
                 </div>
                 <div><div className="label">Email <span style={{ color: "var(--accent-red)" }}>*</span></div><input type="email" className="input" value={editing.email} onChange={e => setEditing({ ...editing, email: e.target.value })} aria-label="Email" /></div>
                 
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.5rem" }}>
+                <div className="socialsGrid">
                   <div>
                     <div className="label">LinkedIn URL</div>
                     <input 
