@@ -210,6 +210,9 @@ export default function Profile() {
           margin-bottom: 2.5rem;
           box-shadow: 0 15px 40px rgba(0,0,0,0.4);
         }
+        .profileFormContainer {
+          padding: 2.5rem 3rem;
+        }
         .infoGrid {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -397,24 +400,48 @@ export default function Profile() {
         }
 
         @media (max-width: 768px) {
-          .glassCard { padding: 1.5rem; border-radius: 20px; }
+          .glassCard { padding: 1.2rem; border-radius: 20px; }
           .cardHeader h2 { font-size: 1.5rem !important; }
           .infoGrid { gap: 1rem; }
-          .fieldCell { padding: 1.2rem; flex-direction: column; align-items: flex-start; gap: 1rem; }
-          .verifiedBadge { position: static; margin-top: 0.5rem; display: inline-block; }
+          .fieldCell {
+            padding: 1rem !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 1rem !important;
+          }
+          .verifiedBadge {
+            position: absolute !important;
+            right: 1rem !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            margin-top: 0 !important;
+            padding: 4px 10px !important;
+            font-size: 0.7rem !important;
+            display: inline-block !important;
+          }
           .sexyInput { padding: 0.8rem 1rem !important; font-size: 1rem !important; }
-          .btnMajestic, .btnSecurity { height: 50px; font-size: 0.9rem; }
+          .btnMajestic, .btnSecurity {
+            height: 50px !important;
+            font-size: 0.85rem !important;
+            white-space: nowrap !important;
+            letter-spacing: 0.5px !important;
+            padding: 0 1rem !important;
+          }
           .infoGrid div div div { font-size: 1.2rem !important; }
           .formRowMobileStack { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
           .profileTitle { font-size: 2rem; }
           .profileSection { padding: 1rem 0.5rem; }
+          .profileFormContainer { padding: 1.2rem 0.8rem !important; }
         }
 
         @media (max-width: 480px) {
-          .cardHeader { margin-bottom: 2rem; }
+          .cardHeader { margin-bottom: 1.5rem !important; }
           .cardHeader h2 { font-size: 1.2rem !important; }
-          .iconCircle { width: 45px; height: 45px; font-size: 1.2rem; }
+          .iconCircle { width: 40px !important; height: 40px !important; font-size: 1rem !important; }
           .profileTitle { font-size: 1.6rem; }
+          .profileFormContainer { padding: 1rem 0.5rem !important; }
+          .glassCard { padding: 0.8rem !important; }
+          .fieldCell { padding: 0.8rem !important; gap: 0.75rem !important; }
         }
       `}</style>
 
@@ -500,7 +527,7 @@ export default function Profile() {
              </div>
           </div>
 
-          <div style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "25px", padding: "2.5rem 3rem" }}>
+          <div className="profileFormContainer" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "25px" }}>
              <form onSubmit={handleUpdateProfile} style={{ display: "grid", gap: "2rem" }}>
                 <div className="formRowMobileStack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
                    <div>
