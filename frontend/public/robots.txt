@@ -1,0 +1,14 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+
+# Allow all search engines to crawl public pages
+Allow: /
+
+# Disallow crawling of sensitive admin and profile portals (Security Best Practice)
+Disallow: /admin/
+Disallow: /admin/*
+Disallow: /profile/
+Disallow: /profile/*
+
+# Link to the website sitemap
+Sitemap: https://thecomputingsociety.vercel.app/sitemap.xml
