@@ -408,16 +408,16 @@ export default function Profile() {
             flex-direction: row !important;
             align-items: center !important;
             gap: 1rem !important;
+            flex-wrap: wrap !important;
           }
           .verifiedBadge {
-            position: absolute !important;
-            right: 1rem !important;
-            top: 50% !important;
-            transform: translateY(-50%) !important;
-            margin-top: 0 !important;
+            position: static !important;
+            transform: none !important;
+            margin-top: 0.5rem !important;
             padding: 4px 10px !important;
             font-size: 0.7rem !important;
             display: inline-block !important;
+            width: fit-content !important;
           }
           .sexyInput { padding: 0.8rem 1rem !important; font-size: 1rem !important; }
           .btnMajestic, .btnSecurity {

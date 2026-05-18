@@ -278,7 +278,6 @@ export default function Tickets() {
       ) : (
         <>
           <div className="card shadow-glass regCard" style={{
-            padding: "3.5rem",
             borderRadius: "45px",
             position: "relative",
             overflow: "hidden",
@@ -468,7 +467,7 @@ export default function Tickets() {
                           </div>
                           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
                             <span style={{ color: "rgba(255,255,255,0.3)", fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", marginBottom: "6px" }}>TICKET ID</span>
-                            <div style={{ fontFamily: "monospace", fontSize: "1.05rem", color: "#fff", fontWeight: 800, letterSpacing: "1.5px", background: "linear-gradient(90deg, #ff2d95, #a855f7)", padding: "6px 16px", borderRadius: "8px", border: "1px solid rgba(255, 255, 255, 0.2)", boxShadow: "0 0 15px rgba(255, 45, 149, 0.3)", textShadow: "0 2px 4px rgba(0,0,0,0.4)" }}>
+                            <div className="ticketIdBox">
                               {publicId}
                             </div>
                           </div>
@@ -513,22 +512,7 @@ export default function Tickets() {
                           <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
                             {!t.checkedIn && (
                               <button
-                                style={{
-                                  borderRadius: "12px",
-                                  padding: "10px 20px",
-                                  fontSize: "0.85rem",
-                                  fontWeight: 700,
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  gap: "8px",
-                                  background: "rgba(255,255,255,0.05)",
-                                  border: "1px solid rgba(255,255,255,0.15)",
-                                  color: "#fff",
-                                  cursor: "pointer",
-                                  transition: "all 0.3s ease",
-                                  backdropFilter: "blur(10px)"
-                                }}
+                                className="ticketActionBtn"
                                 onClick={(e) => {
                                   const canvas = e.currentTarget.closest(".expandableTicket").querySelector("canvas");
                                   const data = {
@@ -540,16 +524,6 @@ export default function Tickets() {
                                   };
                                   downloadTicketPDF(data, canvas?.toDataURL());
                                 }}
-                                onMouseOver={(e) => {
-                                  e.currentTarget.style.background = "rgba(255,255,255,0.1)";
-                                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)";
-                                  e.currentTarget.style.transform = "translateY(-2px)";
-                                }}
-                                onMouseOut={(e) => {
-                                  e.currentTarget.style.background = "rgba(255,255,255,0.05)";
-                                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
-                                  e.currentTarget.style.transform = "translateY(0)";
-                                }}
                               >
                                 <span style={{ fontSize: "1.1rem" }}>📥</span> DOWNLOAD PDF
                               </button>
@@ -557,21 +531,7 @@ export default function Tickets() {
 
                             {t.checkedIn && (
                               <button
-                                style={{
-                                  borderRadius: "12px",
-                                  padding: "10px 20px",
-                                  fontSize: "0.85rem",
-                                  fontWeight: 700,
-                                  color: "#10b981",
-                                  background: "rgba(16, 185, 129, 0.08)",
-                                  border: "1px solid rgba(16, 185, 129, 0.2)",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  cursor: "pointer",
-                                  gap: "8px",
-                                  transition: "all 0.3s ease",
-                                  boxShadow: "0 0 20px rgba(16, 185, 129, 0.1)"
-                                }}
+                                className="ticketCertBtn"
                                 onClick={() => {
                                   const certData = {
                                     name: t.name || user.name,
@@ -581,16 +541,6 @@ export default function Tickets() {
                                     eventVenue: ev?.venue || "MAIN AUDITORIUM"
                                   };
                                   nav("/certificate-preview", { state: certData });
-                                }}
-                                onMouseOver={(e) => {
-                                  e.currentTarget.style.background = "rgba(16, 185, 129, 0.15)";
-                                  e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.3)";
-                                  e.currentTarget.style.transform = "translateY(-2px)";
-                                }}
-                                onMouseOut={(e) => {
-                                  e.currentTarget.style.background = "rgba(16, 185, 129, 0.08)";
-                                  e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.2)";
-                                  e.currentTarget.style.transform = "translateY(0)";
                                 }}
                               >
                                 <span style={{ fontSize: "1.1rem" }}>📜</span> CERTIFICATE
@@ -609,6 +559,67 @@ export default function Tickets() {
         </>
       )}
       <style>{`
+        .regCard {
+          padding: 3.5rem;
+        }
+        .ticketIdBox {
+          font-family: monospace;
+          font-size: 1.05rem;
+          color: #fff;
+          font-weight: 800;
+          letter-spacing: 1.5px;
+          background: linear-gradient(90deg, #ff2d95, #a855f7);
+          padding: 6px 16px;
+          border-radius: 8px;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          box-shadow: 0 0 15px rgba(255, 45, 149, 0.3);
+          text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+          white-space: nowrap;
+          word-break: keep-all;
+        }
+        .ticketActionBtn {
+          border-radius: 12px;
+          padding: 10px 20px;
+          font-size: 0.85rem;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.15);
+          color: #fff;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          backdrop-filter: blur(10px);
+          white-space: nowrap;
+        }
+        .ticketActionBtn:hover {
+          background: rgba(255,255,255,0.1);
+          border-color: rgba(255,255,255,0.3);
+          transform: translateY(-2px);
+        }
+        .ticketCertBtn {
+          border-radius: 12px;
+          padding: 10px 20px;
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: #10b981;
+          background: rgba(16, 185, 129, 0.08);
+          border: 1px solid rgba(16, 185, 129, 0.2);
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+          gap: 8px;
+          transition: all 0.3s ease;
+          box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+          white-space: nowrap;
+        }
+        .ticketCertBtn:hover {
+          background: rgba(16, 185, 129, 0.15);
+          border-color: rgba(16, 185, 129, 0.3);
+          transform: translateY(-2px);
+        }
         .sexyInput {
           width: 100%;
           background: rgba(0, 0, 0, 0.3) !important;
@@ -656,13 +667,18 @@ export default function Tickets() {
         }
 
         @media (max-width: 768px) {
-          .regCard { padding: 1.5rem !important; border-radius: 25px !important; }
+          .regCard { padding: 1.2rem 1rem !important; border-radius: 25px !important; }
           .regTitle { font-size: 1.4rem !important; }
           .regSubtitle { font-size: 0.75rem !important; }
           .ticketTitle { font-size: 1.4rem !important; }
           .ticketContentGrid { grid-template-columns: 1fr 1fr !important; gap: 1rem !important; }
           .successModalContent { padding: 2rem 1.5rem; border-radius: 25px; }
           .successIcon { font-size: 3.5rem; }
+          .ticketIdBox {
+            font-size: clamp(0.7rem, 2.5vw, 0.85rem) !important;
+            padding: 4px 10px !important;
+            letter-spacing: 0.5px !important;
+          }
           
           /* Realme 5i / Small Mobile Buttons */
           .regCard .btnPrimary { 
@@ -679,6 +695,7 @@ export default function Tickets() {
 
         @media (max-width: 480px) {
           .ticketContentGrid { grid-template-columns: 1fr !important; }
+          .regCard { padding: 1rem 0.8rem !important; border-radius: 20px !important; }
         }
       `}</style>
     </section>

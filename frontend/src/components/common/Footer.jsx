@@ -31,7 +31,7 @@ export default function Footer() {
           THE COMPUTING SOCIETY
         </div>
         <div style={{ fontSize: "0.75rem", opacity: 0.6 }}>
-          Built with ❤️ for UAF • Final Year Project
+          Built with ❤️ for UAF
         </div>
         <div style={{
           display: "flex",

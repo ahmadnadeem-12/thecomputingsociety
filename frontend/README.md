@@ -2,7 +2,6 @@
 
 Welcome to the official frontend repository of **The Computing Society (TCS)**. This is a premium, high-performance web application designed for student management, event registration, and society administration.
 
-> **Project Identity:** 🎓 Final Year Project (FYP)  
 > **Status:** 🚧 Frontend Completed | Backend Integration In-Progress  
 > **Author:** [Ahmad Nadeem](https://github.com/ahmadnadeem-12)
 
