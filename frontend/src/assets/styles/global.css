@@ -92,27 +92,25 @@
 }
 
 html {
-  /* Allow mobile viewport to scale correctly on auth pages */
   min-width: 0;
-  /* Professional UI Base Scaling (naturally compacts oversized elements) */
-  font-size: 75%;
+  font-size: 75%; /* Compacts layout on desktop to match 75% zoom look perfectly */
 }
 
 @media (max-width: 1024px) {
   html {
-    font-size: 90%;
+    font-size: 88%;
   }
 }
 
 @media (max-width: 768px) {
   html {
-    font-size: 95%;
+    font-size: 92%;
   }
 }
 
 @media (max-width: 480px) {
   html {
-    font-size: 100%;
+    font-size: 95%;
   }
 }
 
@@ -557,7 +555,7 @@ textarea {
   }
 
   .main {
-    padding: 0.25rem 0.15rem 1.2rem;
+    padding: 0.25rem 1rem 1.2rem; /* Increase side padding for mobile safety */
     /* Clean edge-to-edge layout */
   }
 
@@ -1380,7 +1378,7 @@ select optgroup {
       rgba(194, 52, 165, 0.3),
       rgba(155, 89, 182, 0.3),
       transparent);
-  margin: 1.25rem 0;
+  margin: 0.5rem 0;
   border: none;
 }
 

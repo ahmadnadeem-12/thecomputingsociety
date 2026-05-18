@@ -331,7 +331,7 @@ export default function Tickets() {
                 animation: "pulse 2s infinite"
               }}>
                 <span style={{ fontSize: "1.2rem" }}>⌛</span>
-                <span style={{ fontSize: "0.85rem", fontWeight: 800, color: "var(--accent-red)", letterSpacing: "1px" }}>
+                <span style={{ fontSize: "1.05rem", fontWeight: 900, color: "var(--accent-red)", letterSpacing: "1px" }}>
                   REGISTRATION DEADLINE: {formatDate(events.find(e => e._id === form.selectionId).registrationDeadline)}
                 </span>
               </div>
@@ -383,14 +383,14 @@ export default function Tickets() {
                 const ev = t.eventId || t.programId;
                 const publicId = t.publicTicketId || t._id;
                 return (
-                  <div key={t._id} className="expandableTicket expanded group" style={{ 
-                    border: "1.5px solid rgba(255, 45, 149, 0.5)", 
-                    borderRadius: "24px", 
-                    overflow: "hidden", 
-                    background: "linear-gradient(145deg, rgba(20, 22, 35, 0.8) 0%, rgba(10, 12, 20, 0.95) 100%)", 
+                  <div key={t._id} className="expandableTicket expanded group" style={{
+                    border: "1.5px solid rgba(255, 45, 149, 0.5)",
+                    borderRadius: "24px",
+                    overflow: "hidden",
+                    background: "linear-gradient(145deg, rgba(20, 22, 35, 0.8) 0%, rgba(10, 12, 20, 0.95) 100%)",
                     backdropFilter: "blur(20px)",
-                    marginBottom: "2rem", 
-                    position: "relative", 
+                    marginBottom: "2rem",
+                    position: "relative",
                     boxShadow: "0 0 15px rgba(255, 45, 149, 0.15), 0 25px 50px rgba(0,0,0,0.5), inset 0 2px 0 rgba(255,255,255,0.08)",
                     transition: "all 0.3s ease"
                   }}>
@@ -401,14 +401,14 @@ export default function Tickets() {
                     <div className="horizontalTicket expandedHorizontal horizontalTicketMobile" style={{ background: "transparent", margin: 0, width: "100%", padding: 0, display: "flex", alignItems: "stretch" }}>
 
                       {/* QR SECTION (Tear-away stub) */}
-                      <div className="ticketQrSection" style={{ 
-                        width: "220px", 
-                        padding: "1.5rem", 
-                        display: "flex", 
-                        flexDirection: "column", 
-                        alignItems: "center", 
-                        justifyContent: "center", 
-                        borderRight: "2px dashed rgba(255,255,255,0.25)", 
+                      <div className="ticketQrSection" style={{
+                        width: "220px",
+                        padding: "1.5rem",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRight: "2px dashed rgba(255,255,255,0.25)",
                         background: "rgba(0,0,0,0.2)",
                         position: "relative"
                       }}>
@@ -425,7 +425,7 @@ export default function Tickets() {
 
                       {/* INFO SECTION */}
                       <div className="ticketInfoCol" style={{ flex: 1, padding: "1.5rem", display: "flex", flexDirection: "column", justifyContent: "space-between", zIndex: 1 }}>
-                        
+
                         {/* Top Area: Title & ID */}
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem", paddingBottom: "1.2rem", borderBottom: "1px solid rgba(255, 255, 255, 0.1)", gap: "1rem", flexWrap: "wrap" }}>
                           <div>
@@ -445,26 +445,26 @@ export default function Tickets() {
                         {/* Middle Area: Grid Data */}
                         <div className="ticketContentGrid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "1.5rem", marginBottom: "1rem", padding: "1.2rem", background: "rgba(255,255,255,0.03)", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "inset 0 0 20px rgba(0,0,0,0.2)" }}>
                           <div style={{ display: "flex", flexDirection: "column" }}>
-                            <span style={{ fontSize: "0.7rem", fontWeight: 600, color: "rgba(255,255,255,0.4)", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "1px" }}>DATE</span>
-                            <span style={{ color: "#fff", fontSize: "1rem", fontWeight: 700 }}>{ev?.date ? formatDate(ev.date) : (ev?.startDate || "TBA")}</span>
+                            <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "rgba(255,255,255,0.4)", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "1px" }}>DATE</span>
+                            <span style={{ color: "#fff", fontSize: "1.15rem", fontWeight: 700 }}>{ev?.date ? formatDate(ev.date) : (ev?.startDate || "TBA")}</span>
                           </div>
                           <div style={{ display: "flex", flexDirection: "column" }}>
-                            <span style={{ fontSize: "0.7rem", fontWeight: 600, color: "rgba(255,255,255,0.4)", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "1px" }}>TIME / DURATION</span>
-                            <span style={{ color: "#fff", fontSize: "1rem", fontWeight: 700 }}>{ev?.time || ev?.duration || "TBA"}</span>
+                            <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "rgba(255,255,255,0.4)", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "1px" }}>TIME / DURATION</span>
+                            <span style={{ color: "#fff", fontSize: "1.15rem", fontWeight: 700 }}>{ev?.time || ev?.duration || "TBA"}</span>
                           </div>
                           <div style={{ display: "flex", flexDirection: "column" }}>
-                            <span style={{ fontSize: "0.7rem", fontWeight: 600, color: "rgba(255,255,255,0.4)", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "1px" }}>DEPARTMENT</span>
-                            <span style={{ color: "var(--accent-cyan)", fontSize: "1rem", fontWeight: 700 }}>{t.department}</span>
+                            <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "rgba(255,255,255,0.4)", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "1px" }}>DEPARTMENT</span>
+                            <span style={{ color: "var(--accent-cyan)", fontSize: "1.15rem", fontWeight: 700 }}>{t.department}</span>
                           </div>
                           <div style={{ display: "flex", flexDirection: "column" }}>
-                            <span style={{ fontSize: "0.7rem", fontWeight: 600, color: "rgba(255,255,255,0.4)", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "1px" }}>SEMESTER</span>
-                            <span style={{ color: "#fff", fontSize: "1rem", fontWeight: 700 }}>{t.semester}</span>
+                            <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "rgba(255,255,255,0.4)", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "1px" }}>SEMESTER</span>
+                            <span style={{ color: "#fff", fontSize: "1.15rem", fontWeight: 700 }}>{t.semester}</span>
                           </div>
                         </div>
 
                         {/* Bottom Area: User Info & Actions */}
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1.5rem", flexWrap: "wrap", borderTop: "1px solid rgba(255, 255, 255, 0.1)", paddingTop: "1.2rem" }}>
-                          
+
                           {/* User Details */}
                           <div style={{ display: "flex", alignItems: "center", gap: "1.2rem" }}>
                             <div style={{ width: "42px", height: "42px", borderRadius: "12px", background: "linear-gradient(135deg, var(--accent-pink), var(--accent-cyan))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", fontWeight: 800, color: "#fff", boxShadow: "0 8px 16px rgba(0,0,0,0.3)" }}>

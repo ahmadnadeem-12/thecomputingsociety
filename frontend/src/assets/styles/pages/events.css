@@ -82,7 +82,8 @@
   gap: 0.5rem;
   align-items: center;
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
+  font-weight: 600;
 }
 
 .eventMeta span {

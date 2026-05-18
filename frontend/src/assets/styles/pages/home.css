@@ -294,9 +294,9 @@
   position: absolute;
   top: 0;
   right: 0;
-  font-size: 0.65rem;
+  font-size: 0.85rem;
   font-weight: 800;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.65);
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -506,7 +506,7 @@
   backdrop-filter: blur(25px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   overflow: hidden;
-  margin-bottom: 2rem;
+  margin-bottom: 0.75rem;
   box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
   display: grid;
   grid-template-columns: 1.4fr 1fr;
@@ -560,7 +560,7 @@
       rgba(255, 255, 255, 0.05) 20%,
       rgba(255, 255, 255, 0.05) 80%,
       transparent 100%);
-  margin: 1.25rem 0;
+  margin: 0.5rem 0;
   position: relative;
 }
 
@@ -755,6 +755,10 @@
     text-align: left !important;
     margin-bottom: 2rem !important;
     font-weight: 500;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .statsGrid {
@@ -1087,8 +1091,8 @@
     align-items: center;
     gap: 0.5rem;
     color: #9a8fa6;
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.95rem;
+    font-weight: 800;
   }
 
   .timeDot {
@@ -1388,7 +1392,7 @@
 
   .btnExplore {
     font-size: 0.85rem !important;
-    padding: 0 1rem !important;
+    padding: 0 2rem !important;
     height: 42px !important;
     border-radius: 40px !important;
   }
@@ -1416,6 +1420,7 @@
    Fixes for Home/Hero Section specifically
    ========================================================= */
 @media (max-width: 480px) {
+
   /* 1. HORIZONTAL PADDING & 10. OVERFLOW */
   .welcomeBanner {
     padding: 1rem 10px !important;
@@ -1429,28 +1434,38 @@
   .theText {
     font-size: clamp(1.2rem, 7vw, 1.4rem) !important;
   }
+
   .mainText {
     font-size: clamp(1.6rem, 9vw, 1.8rem) !important;
   }
+
   .majesticDescMobile {
     font-size: 0.75rem !important;
-    margin-bottom: 1rem !important; /* 9. EXCESSIVE VERTICAL SPACING */
+    margin-bottom: 1rem !important;
+    /* 9. EXCESSIVE VERTICAL SPACING */
   }
 
   /* 3 & 4. PRIMARY & SECONDARY BUTTONS */
   .heroButtons.mobileOnly {
-    margin-top: 0.5rem !important; /* Tighter layout */
+    margin-top: 0.5rem !important;
+    /* Tighter layout */
     gap: 0.5rem !important;
   }
-  .btnExplore, .btnSecondary {
+
+  .btnExplore {
+    height: 44px !important;
+    padding: 0 2rem !important;
+    font-size: 0.7rem !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .btnSecondary {
     height: 44px !important;
     padding: 0 0.4rem !important;
     font-size: 0.65rem !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
-  }
-  .btnExplore {
-    font-size: 0.7rem !important;
   }
 
   /* 5. ICON SIZES in buttons */
@@ -1465,22 +1480,27 @@
     margin-top: 0.5rem !important;
     gap: 0 !important;
   }
+
   .statItem {
     padding: 0.2rem !important;
   }
+
   .statIcon {
     width: 20px !important;
     height: 20px !important;
     margin-bottom: 0.4rem !important;
   }
+
   .statIcon svg {
     width: 20px !important;
     height: 20px !important;
   }
+
   .statNumber {
     font-size: 1.1rem !important;
     margin-bottom: 0.2rem !important;
   }
+
   .statLabel {
     font-size: 0.5rem !important;
   }
@@ -1491,6 +1511,7 @@
     gap: 0.8rem !important;
     margin-top: 1.5rem !important;
   }
+
   .heroSpotlightTitle {
     font-size: 1.4rem !important;
     margin-bottom: 0.8rem !important;
@@ -1501,22 +1522,33 @@
     gap: 0.4rem !important;
     margin-bottom: 1rem !important;
   }
+
   .countdownBox {
     padding: 0.6rem 0.2rem !important;
     border-radius: 12px !important;
   }
+
   .countdownNum {
     font-size: 1.1rem !important;
   }
+
   .countdownLabel {
     font-size: 0.45rem !important;
   }
+
   .spotlightMeta {
     font-size: 0.75rem !important;
     margin-bottom: 1.2rem !important;
   }
+
   .spotlightBtn {
     padding: 0.8rem !important;
     font-size: 0.8rem !important;
   }
+}
+
+
+.spotlightBtn {
+  padding: 0.8rem !important;
+  font-size: 0.8rem !important;
 }

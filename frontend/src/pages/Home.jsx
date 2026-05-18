@@ -162,8 +162,7 @@ export default function Home() {
               <span className="mainText">Computing Society</span>
             </div>
             <div className="heroDescription mobileOnly majesticDescMobile">
-              A community of innovators, problem solvers,<br />
-              and future tech leaders.
+              A community of innovators, problem solvers, and future tech leaders committed to driving technological advancement and academic excellence.
             </div>
 
             <div className="heroButtons desktopOnly" style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "1.25rem", width: "100%", alignItems: "center" }}>
