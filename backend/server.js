@@ -125,6 +125,41 @@ const PORT = process.env.PORT || 5000;
 
 const Ticket = require("./models/Ticket");
 
+/**
+ * Self-ping mechanism to prevent Render free tier from sleeping/spinning down.
+ * It pings the public health endpoint of the application periodically.
+ */
+const startSelfPing = () => {
+    const url = process.env.BACKEND_URL;
+    if (!url) {
+        console.log("  ℹ️ Self-ping disabled: BACKEND_URL is not configured in environment.");
+        return;
+    }
+
+    const intervalMinutes = parseInt(process.env.PING_INTERVAL_MINUTES) || 5;
+    const intervalMs = intervalMinutes * 60 * 1000;
+    
+    console.log(`  ⚙️ Self-ping initialized. Target: ${url} (Interval: ${intervalMinutes} mins)`);
+
+    const https = require("https");
+    const http = require("http");
+
+    const triggerPing = () => {
+        const client = url.startsWith("https") ? https : http;
+        client.get(`${url}/api/health`, (res) => {
+            console.log(`  🎯 [Self-Ping] Ping successful! Status: ${res.statusCode}`);
+        }).on("error", (err) => {
+            console.error("  ❌ [Self-Ping] Failed to ping server:", err.message);
+        });
+    };
+
+    // Initial ping after 5 seconds to verify configuration on startup
+    setTimeout(triggerPing, 5000);
+
+    // Periodic ping
+    setInterval(triggerPing, intervalMs);
+};
+
 const startServer = async () => {
     try {
         await connectDB();
@@ -147,6 +182,9 @@ const startServer = async () => {
             console.log(`  📡 Health:  /api/health`);
             console.log("============================================");
             console.log("");
+
+            // Start self-ping mechanism
+            startSelfPing();
         });
     } catch (error) {
         console.error("❌ Failed to start server:", error.message);
