@@ -289,11 +289,11 @@
   border-radius: 50%;
   padding: 3px;
   background: var(--gradient-main);
-  animation: none !important;
+  animation: none;
 }
 
 .modalCenter .dpWrap::before {
-  display: none !important;
+  display: none;
 }
 
 .modalCenter .dpInner {

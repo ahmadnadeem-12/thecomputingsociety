@@ -48,7 +48,7 @@
 
 /* Modal Content adjustments for forms */
 .modalContent .input, 
-.modalContent .sexyInput {
+.modalContent .glassInput {
     font-size: 0.95rem;
 }
 
@@ -99,8 +99,8 @@
 
     /* User Card Alignment Fixes */
     .userCard.flex-stack {
-        align-items: stretch !important;
-        text-align: left !important;
+        align-items: stretch;
+        text-align: left;
     }
 
     .userCard.flex-stack .btn {
@@ -111,7 +111,7 @@
 
 @media (max-width: 480px) {
     .sectionTitle {
-        font-size: 1.4rem !important;
+        font-size: 1.4rem;
     }
     
     .sectionHeader .btn {
@@ -162,8 +162,8 @@
     .albumButtons .btn {
         flex: 1 1 auto;
         justify-content: center;
-        padding: 0.45rem 0.75rem !important;
-        font-size: 0.75rem !important;
+        padding: 0.45rem 0.75rem;
+        font-size: 0.75rem;
     }
 }
 

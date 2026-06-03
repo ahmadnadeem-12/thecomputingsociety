@@ -328,8 +328,8 @@ export default function UsersTab() {
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .selectableCard:hover {
-          border-color: var(--accent-pink) !important;
-          background: rgba(255,45,149,0.03) !important;
+          border-color: var(--accent-pink);
+          background: rgba(255,45,149,0.03);
           transform: translateX(5px);
         }
         .selectedCard {
@@ -338,30 +338,30 @@ export default function UsersTab() {
         }
         .adminCard {
           opacity: 0.85;
-          border-color: rgba(255,255,255,0.05) !important;
+          border-color: rgba(255,255,255,0.05);
         }
-        .actionBtnDelete {
+        .btn.actionBtnDelete {
           width: 44px;
           height: 44px;
-          padding: 0 !important;
+          padding: 0;
           display: flex;
           align-items: center;
           justify-content: center;
-          background: rgba(255, 77, 77, 0.08) !important;
-          border: 1.5px solid rgba(255, 77, 77, 0.2) !important;
-          color: #ff4d4d !important;
-          border-radius: 12px !important;
-          transition: all 0.2s ease !important;
+          background: rgba(255, 77, 77, 0.08);
+          border: 1.5px solid rgba(255, 77, 77, 0.2);
+          color: #ff4d4d;
+          border-radius: 12px;
+          transition: all 0.2s ease;
           box-shadow: 0 4px 12px rgba(255, 77, 77, 0.1);
         }
-        .actionBtnDelete:hover:not(:disabled) {
-          background: #ff4d4d !important;
-          color: #fff !important;
-          border-color: #ff4d4d !important;
+        .btn.actionBtnDelete:hover:not(:disabled) {
+          background: #ff4d4d;
+          color: #fff;
+          border-color: #ff4d4d;
           box-shadow: 0 0 20px rgba(255, 77, 77, 0.4);
           transform: translateY(-2px);
         }
-        .actionBtnDelete:active {
+        .btn.actionBtnDelete:active {
           transform: scale(0.95);
         }
         .loader-small {
@@ -379,17 +379,17 @@ export default function UsersTab() {
         }
         @media (max-width: 480px) {
           .userCard {
-            padding: 1rem !important;
+            padding: 1rem;
           }
           .userCard > div {
-            gap: 0.75rem !important;
+            gap: 0.75rem;
           }
-          .actionBtnDelete {
-            width: 38px !important;
-            height: 38px !important;
-            border-radius: 8px !important;
+          .btn.actionBtnDelete {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
           }
-          .actionBtnDelete svg {
+          .btn.actionBtnDelete svg {
             width: 16px;
             height: 16px;
           }

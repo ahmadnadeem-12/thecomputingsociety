@@ -166,15 +166,21 @@ export default function Faculty() {
                 {/* Stats */}
                 <div className="facultyStats">
                   <div className="facultyStat">
-                    <div className="facultyStatNumber">{f.experienceYears || 0}+</div>
+                    <div className="facultyStatNumber" style={{ minHeight: "2.4rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      {f.experienceYears || 0}+
+                    </div>
                     <div className="facultyStatLabel">Years Exp.</div>
                   </div>
                   <div className="facultyStat">
-                    <div className="facultyStatNumber">{(f.courses || []).length}</div>
+                    <div className="facultyStatNumber" style={{ minHeight: "2.4rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      {(f.courses || []).length}
+                    </div>
                     <div className="facultyStatLabel">Courses</div>
                   </div>
-                  <div className="facultyStat">
-                    <div className="facultyStatNumber">{(f.expertise || []).length}</div>
+                  <div className="facultyStat" style={{ flex: 1.8 }}>
+                    <div className="facultyStatNumber" style={{ fontSize: "0.9rem", textAlign: "center", lineHeight: "1.25", minHeight: "2.4rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      {(f.expertise || []).slice(0, 2).join(", ") || "—"}
+                    </div>
                     <div className="facultyStatLabel">Specializations</div>
                   </div>
                 </div>
@@ -196,7 +202,7 @@ export default function Faculty() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              style={{ textAlign: "center" }}
+              className="modalCenter"
             >
               {/* Centered Profile Image */}
               <motion.div
@@ -251,15 +257,19 @@ export default function Faculty() {
               <div className="hr" />
 
               {selected.summary && (
-                <motion.div
-                  className="sectionSubtitle"
-                  style={{ lineHeight: 1.8, textAlign: "left", marginTop: "1rem" }}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
+                <div
+                  style={{ 
+                    lineHeight: 1.8, 
+                    textAlign: "left", 
+                    marginTop: "1.25rem", 
+                    marginBottom: "1.25rem",
+                    whiteSpace: "pre-wrap", 
+                    color: "rgba(255, 255, 255, 0.85)",
+                    fontSize: "0.92rem"
+                  }}
                 >
                   {selected.summary}
-                </motion.div>
+                </div>
               )}
 
               <motion.div

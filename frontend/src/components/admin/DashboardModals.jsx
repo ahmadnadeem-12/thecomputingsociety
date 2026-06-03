@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Modal } from "../ui/Modal";
 import { ImageUploader } from "../ui/ImageUploader";
@@ -25,6 +25,32 @@ export function DashboardModals({
   setPendingImage,
   confirmAddImage
 }) {
+  const standardTypes = ["workshop", "bootcamp", "competition", "talk", "course", "seminar"];
+  const [selectValue, setSelectValue] = useState("");
+
+  useEffect(() => {
+    if (editing && modalType === "program") {
+      const typeLower = (editing.type || "").toLowerCase();
+      if (typeLower === "") {
+        setSelectValue("workshop");
+      } else if (standardTypes.includes(typeLower)) {
+        setSelectValue(typeLower);
+      } else {
+        setSelectValue("custom");
+      }
+    }
+  }, [editing, modalType]);
+
+  const handleSelectChange = (e) => {
+    const val = e.target.value;
+    setSelectValue(val);
+    if (val !== "custom") {
+      setEditing({ ...editing, type: val });
+    } else {
+      setEditing({ ...editing, type: "" });
+    }
+  };
+
   return (
     <>
       <Modal open={modalOpen} title={getModalTitle()} onClose={() => setModalOpen(false)} maxWidth="720px">
@@ -238,22 +264,21 @@ export function DashboardModals({
             <div><div className="label">Description</div><textarea className="input" style={{ minHeight: 80, borderRadius: 12 }} value={editing.description} onChange={e => setEditing({ ...editing, description: e.target.value })} aria-label="Description" /></div>
             <div className="formRow">
               <div>
-                <div className="label">Type</div>
-                <input
-                  list="program-types"
+                <div className="label" style={{ color: "var(--accent-cyan)", fontWeight: 900 }}>Category</div>
+                <select
                   className="input"
-                  value={editing.type}
-                  onChange={e => setEditing({ ...editing, type: e.target.value })}
-                  placeholder="Select or type custom..."
-                />
-                <datalist id="program-types">
+                  value={selectValue}
+                  onChange={handleSelectChange}
+                  aria-label="Category select"
+                >
                   <option value="workshop">Workshop</option>
                   <option value="bootcamp">Bootcamp</option>
                   <option value="competition">Competition</option>
                   <option value="talk">Talk</option>
                   <option value="course">Course</option>
                   <option value="seminar">Seminar</option>
-                </datalist>
+                  <option value="custom">✍️ Custom Category...</option>
+                </select>
               </div>
               <div><div className="label">Status</div>
                 <select className="input" value={editing.status} onChange={e => setEditing({ ...editing, status: e.target.value })} aria-label="Status">
@@ -261,6 +286,30 @@ export function DashboardModals({
                 </select>
               </div>
             </div>
+
+            {selectValue === "custom" && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                style={{
+                  padding: "1rem",
+                  background: "rgba(255, 45, 149, 0.05)",
+                  border: "1px solid rgba(255, 45, 149, 0.2)",
+                  borderRadius: "12px",
+                  marginTop: "0.2rem"
+                }}
+              >
+                <div className="label" style={{ color: "var(--accent-pink)", fontWeight: 900 }}>✍️ Enter Custom Category</div>
+                <input
+                  type="text"
+                  className="input"
+                  placeholder="e.g. Hackathon, Webinar, etc."
+                  value={editing.type}
+                  onChange={e => setEditing({ ...editing, type: e.target.value })}
+                  aria-label="Custom Category"
+                />
+              </motion.div>
+            )}
             <div className="formRow">
               <div><div className="label">Duration</div><input className="input" value={editing.duration} onChange={e => setEditing({ ...editing, duration: e.target.value })} aria-label="Duration" /></div>
               <div><div className="label">Participants (Current)</div><input type="number" className="input" value={editing.participants} onChange={e => setEditing({ ...editing, participants: +e.target.value })} aria-label="Participants" /></div>

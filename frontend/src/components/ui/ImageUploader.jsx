@@ -153,20 +153,7 @@ export function ImageUploader({
                         }}
                     />
                     {/* Overlay for actions */}
-                    <div
-                        style={{
-                            position: "absolute",
-                            inset: 0,
-                            background: "rgba(0,0,0,0.5)",
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            opacity: 0,
-                            transition: "opacity 0.2s",
-                        }}
-                        className="imageUploader-overlay"
-                    >
+                    <div className="imageUploader-overlay">
                         <span style={{ color: "#fff", fontSize: "0.85rem", fontWeight: 600 }}>
                             📷 Change Image
                         </span>
@@ -216,8 +203,19 @@ export function ImageUploader({
             )}
 
             <style>{`
+        .imageUploader-overlay {
+          position: absolute;
+          inset: 0;
+          background: rgba(0,0,0,0.5);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          opacity: 0;
+          transition: opacity 0.2s;
+        }
         .imageUploader:hover .imageUploader-overlay {
-          opacity: 1 !important;
+          opacity: 1;
         }
       `}</style>
         </motion.div>

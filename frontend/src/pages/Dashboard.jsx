@@ -215,7 +215,7 @@ export default function Dashboard() {
     if (type === "cabinet") {
       setEditing({ name: "", role: "", degree: "", agNo: "", interests: [], phone: "", email: "", summary: "", avatar: "", socials: { linkedin: "", instagram: "", facebook: "" } });
     } else {
-      setEditing({ name: "", departmentRole: "Professor", education: "", experienceYears: 0, expertise: [], courses: [], universities: [], email: "", phone: "", summary: "", avatar: "", socials: { linkedin: "", website: "" } });
+      setEditing({ name: "", departmentRole: "Professor", education: "", experienceYears: 0, expertise: "", courses: "", universities: [], email: "", phone: "", summary: "", avatar: "", socials: { linkedin: "", website: "" } });
     }
     setModalType(type);
     setModalOpen(true);
@@ -224,8 +224,13 @@ export default function Dashboard() {
   const openPersonEdit = (item, type) => {
     // Convert arrays to strings for editing
     const editingItem = { ...item };
-    if (type === "faculty" && Array.isArray(item.expertise)) {
-      editingItem.expertise = item.expertise.join(", ");
+    if (type === "faculty") {
+      if (Array.isArray(item.expertise)) {
+        editingItem.expertise = item.expertise.join(", ");
+      }
+      if (Array.isArray(item.courses)) {
+        editingItem.courses = item.courses.join(", ");
+      }
     }
     setEditing(editingItem);
     setModalType(type);
@@ -256,10 +261,15 @@ export default function Dashboard() {
     try {
       const id = editing._id || editing.id;
 
-      // Process expertise string into array if it's faculty
+      // Process expertise and courses strings into arrays if it's faculty
       let payload = { ...editing };
-      if (modalType === "faculty" && typeof payload.expertise === "string") {
-        payload.expertise = payload.expertise.split(",").map(s => s.trim()).filter(Boolean);
+      if (modalType === "faculty") {
+        if (typeof payload.expertise === "string") {
+          payload.expertise = payload.expertise.split(",").map(s => s.trim()).filter(Boolean);
+        }
+        if (typeof payload.courses === "string") {
+          payload.courses = payload.courses.split(",").map(s => s.trim()).filter(Boolean);
+        }
       }
 
       if (modalType === "cabinet") {
@@ -735,7 +745,8 @@ export default function Dashboard() {
                   <div><div className="label">Email <span style={{ color: "var(--accent-red)" }}>*</span></div><input type="email" className="input" value={editing.email || ""} onChange={e => setEditing({ ...editing, email: e.target.value })} aria-label="Email" /></div>
                   <div><div className="label">Phone</div><input className="input" value={editing.phone || ""} onChange={e => setEditing({ ...editing, phone: e.target.value })} aria-label="Phone" /></div>
                 </div>
-                <div><div className="label">Expertise (comma sep)</div><input className="input" value={editing.expertise || ""} onChange={e => setEditing({ ...editing, expertise: e.target.value })} aria-label="Expertise areas" /></div>
+                <div><div className="label">Specializations / Expertise (comma sep)</div><input className="input" value={editing.expertise || ""} onChange={e => setEditing({ ...editing, expertise: e.target.value })} aria-label="Specializations" placeholder="e.g. Machine Learning, Data Mining" /></div>
+                <div><div className="label">Courses Taught (comma sep)</div><input className="input" value={editing.courses || ""} onChange={e => setEditing({ ...editing, courses: e.target.value })} aria-label="Courses" placeholder="e.g. AI, OOP, Data Structures" /></div>
               </>
             )}
             <div><div className="label">Summary</div><textarea className="input" style={{ minHeight: 70, borderRadius: 12 }} value={editing.summary} onChange={e => setEditing({ ...editing, summary: e.target.value })} aria-label="Summary" /></div>

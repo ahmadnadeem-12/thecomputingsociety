@@ -1,6 +1,7 @@
 
 import React from "react";
 import { deleteProgram } from "../../../services/programService";
+import "../../../assets/styles/pages/programs.css";
 
 export default function ProgramsTab({
     programs,
@@ -23,8 +24,13 @@ export default function ProgramsTab({
             <div className="hr" />
             <div className="cardGrid">
                 {programs.map(p => (
-                    <div key={p.id} className="card">
-                        <div style={{ display: "flex", gap: ".75rem", alignItems: "center" }}>
+                    <div key={p._id || p.id} className="card" style={{ position: "relative" }}>
+                        {p.type && (
+                            <span className={`programType ${p.type}`} style={{ fontSize: ".65rem", padding: "0.25rem 0.6rem", top: "0.75rem", right: "0.75rem" }}>
+                                {p.type}
+                            </span>
+                        )}
+                        <div style={{ display: "flex", gap: ".75rem", alignItems: "center", paddingRight: "4rem" }}>
                             <div style={{ fontSize: "2rem" }}>{p.icon}</div>
                             <div>
                                 <div style={{ fontWeight: 900 }}>{p.title}</div>
@@ -47,7 +53,7 @@ export default function ProgramsTab({
                             </button>
                             <button
                                 className="btn btnGhost"
-                                onClick={() => { deleteProgram(p.id); refresh(); }}
+                                onClick={() => { deleteProgram(p._id || p.id); refresh(); }}
                                 aria-label={`Delete ${p.title}`}
                             >
                                 Delete

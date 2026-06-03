@@ -299,30 +299,30 @@ export default function Tickets() {
             <div className="regGrid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem" }}>
               <div className="formGroup">
                 <label className="formLabel" style={{ color: "var(--accent-cyan)", fontSize: "0.9rem", fontWeight: 900, marginBottom: "0.8rem", display: "block" }}>STUDENT FULL NAME</label>
-                <input type="text" className="sexyInput" value={capitalizeTitle(user.name)} disabled />
+                <input type="text" className="glassInput" value={capitalizeTitle(user.name)} disabled />
               </div>
               <div className="formGroup">
                 <label className="formLabel" style={{ color: "var(--accent-cyan)", fontSize: "0.9rem", fontWeight: 900, marginBottom: "0.8rem", display: "block" }}>UNIVERSITY AG IDENTIFIER</label>
-                <input type="text" className="sexyInput" value={user.agNo} disabled />
+                <input type="text" className="glassInput" value={user.agNo} disabled />
               </div>
               <div className="formGroup">
                 <label className="formLabel" style={{ color: "var(--accent-cyan)", fontSize: "0.9rem", fontWeight: 900, marginBottom: "0.8rem", display: "block" }}>VERIFIED STUDENT EMAIL</label>
-                <input type="text" className="sexyInput" value={user.email} disabled />
+                <input type="text" className="glassInput" value={user.email} disabled />
               </div>
               <div className="formGroup">
                 <label className="formLabel" style={{ color: "var(--accent-cyan)", fontSize: "0.9rem", fontWeight: 900, marginBottom: "0.8rem", display: "block" }}>VERIFIED DEPARTMENT</label>
-                <input type="text" className="sexyInput" value={user.department} disabled style={{ border: user.isVerified ? "1px solid rgba(74, 222, 128, 0.3)" : "" }} />
+                <input type="text" className="glassInput" value={user.department} disabled style={{ border: user.isVerified ? "1px solid rgba(74, 222, 128, 0.3)" : "" }} />
               </div>
               <div className="formGroup">
                 <label className="formLabel" style={{ color: "var(--accent-cyan)", fontSize: "0.9rem", fontWeight: 900, marginBottom: "0.8rem", display: "block" }}>CURRENT SEMESTER</label>
-                <input type="text" className="sexyInput" value={user.semester} disabled />
+                <input type="text" className="glassInput" value={user.semester} disabled />
               </div>
 
               <div className="formGroup" style={{ position: "relative" }}>
                 <label className="formLabel" style={{ color: "var(--accent-pink)", fontSize: "0.9rem", fontWeight: 900, marginBottom: "0.8rem", display: "block" }}>SELECT ACTIVE EVENT <span style={{ color: "#fff" }}>*</span></label>
                 <div style={{ position: "relative" }}>
                   <select
-                    className="sexyInput"
+                    className="glassInput"
                     style={{ appearance: "none", cursor: "pointer", border: "1px solid rgba(255, 45, 149, 0.4)", paddingRight: "45px", background: "rgba(255, 45, 149, 0.08)", height: "55px" }}
                     value={`${form.selectionType}:${form.selectionId}`}
                     onChange={(e) => {
@@ -620,18 +620,18 @@ export default function Tickets() {
           border-color: rgba(16, 185, 129, 0.3);
           transform: translateY(-2px);
         }
-        .sexyInput {
+        .glassInput {
           width: 100%;
-          background: rgba(0, 0, 0, 0.3) !important;
-          border: 1px solid rgba(255, 255, 255, 0.15) !important;
+          background: rgba(0, 0, 0, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.15);
           border-radius: 12px;
           padding: 1rem 1.4rem;
-          color: #fff !important;
+          color: #fff;
           font-size: 1rem;
           transition: all 0.3s;
           outline: none;
         }
-        .sexyInput:focus { border-color: var(--accent-cyan) !important; box-shadow: 0 0 15px rgba(34, 211, 238, 0.2); }
+        .glassInput:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(34, 211, 238, 0.2); }
         .successModal { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.7); 
@@ -658,44 +658,44 @@ export default function Tickets() {
 
         /* Mobile specific overrides */
         @media (max-width: 992px) {
-          .regGrid { grid-template-columns: 1fr !important; }
-          .ticketContentGrid { grid-template-columns: 1fr 1fr 1fr !important; }
-          .horizontalTicketMobile { flex-direction: column !important; padding: 2rem !important; }
-          .ticketQrSection { width: 100% !important; border-right: none !important; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0 0 2rem 0 !important; }
-          .ticketInfoCol { padding: 2rem 0 !important; width: 100% !important; }
-          .ticketActionCol { width: 100% !important; padding: 1.5rem 0 0 0 !important; align-items: stretch !important; }
+          .regGrid { grid-template-columns: 1fr; }
+          .ticketContentGrid { grid-template-columns: 1fr 1fr 1fr; }
+          .horizontalTicketMobile { flex-direction: column; padding: 2rem; }
+          .ticketQrSection { width: 100%; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0 0 2rem 0; }
+          .ticketInfoCol { padding: 2rem 0; width: 100%; }
+          .ticketActionCol { width: 100%; padding: 1.5rem 0 0 0; align-items: stretch; }
         }
 
         @media (max-width: 768px) {
-          .regCard { padding: 1.2rem 1rem !important; border-radius: 25px !important; }
-          .regTitle { font-size: 1.4rem !important; }
-          .regSubtitle { font-size: 0.75rem !important; }
-          .ticketTitle { font-size: 1.4rem !important; }
-          .ticketContentGrid { grid-template-columns: 1fr 1fr !important; gap: 1rem !important; }
+          .regCard { padding: 1.2rem 1rem; border-radius: 25px; }
+          .regTitle { font-size: 1.4rem; }
+          .regSubtitle { font-size: 0.75rem; }
+          .ticketTitle { font-size: 1.4rem; }
+          .ticketContentGrid { grid-template-columns: 1fr 1fr; gap: 1rem; }
           .successModalContent { padding: 2rem 1.5rem; border-radius: 25px; }
           .successIcon { font-size: 3.5rem; }
           .ticketIdBox {
-            font-size: clamp(0.7rem, 2.5vw, 0.85rem) !important;
-            padding: 4px 10px !important;
-            letter-spacing: 0.5px !important;
+            font-size: clamp(0.7rem, 2.5vw, 0.85rem);
+            padding: 4px 10px;
+            letter-spacing: 0.5px;
           }
           
           /* Realme 5i / Small Mobile Buttons */
           .regCard .btnPrimary { 
-            font-size: 0.85rem !important; 
-            padding: 1rem !important; 
-            letter-spacing: 1px !important; 
-            border-radius: 15px !important; 
+            font-size: 0.85rem; 
+            padding: 1rem; 
+            letter-spacing: 1px; 
+            border-radius: 15px; 
           }
           .btnPrimary[style*="DOWNLOAD ALL"] {
-             font-size: 0.75rem !important;
-             padding: 0.6rem 1.5rem !important;
+             font-size: 0.75rem;
+             padding: 0.6rem 1.5rem;
           }
         }
 
         @media (max-width: 480px) {
-          .ticketContentGrid { grid-template-columns: 1fr !important; }
-          .regCard { padding: 1rem 0.8rem !important; border-radius: 20px !important; }
+          .ticketContentGrid { grid-template-columns: 1fr; }
+          .regCard { padding: 1rem 0.8rem; border-radius: 20px; }
         }
       `}</style>
     </section>

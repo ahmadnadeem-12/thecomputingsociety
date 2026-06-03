@@ -176,9 +176,9 @@ export default function Profile() {
         <div className="passContainer" style={{ maxWidth: "350px", margin: "1.5rem auto 0" }}>
           <input 
             type={showDelPass ? "text" : "password"} 
-            className="sexyInput" 
+            className="glassInput" 
             placeholder="Your Account Password" 
-            style={{ textAlign: "center", paddingRight: "50px", background: "rgba(0,0,0,0.3) !important", borderColor: "rgba(239, 68, 68, 0.3) !important" }}
+            style={{ textAlign: "center", paddingRight: "50px", background: "rgba(0,0,0,0.3)", borderColor: "rgba(239, 68, 68, 0.3)" }}
             value={delPass}
             onChange={e => setDelPass(e.target.value)}
             required
@@ -242,20 +242,20 @@ export default function Profile() {
           border: 1px solid rgba(34, 211, 238, 0.15);
           flex-shrink: 0;
         }
-        .sexyInput {
-          background: rgba(0, 0, 0, 0.4) !important;
-          border: 1px solid rgba(255, 255, 255, 0.15) !important;
-          border-radius: 14px !important;
-          color: #fff !important;
-          padding: 1.2rem 1.6rem !important;
-          font-size: 1.1rem !important;
-          transition: all 0.3s ease !important;
+        .glassInput {
+          background: rgba(0, 0, 0, 0.4);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          border-radius: 14px;
+          color: #fff;
+          padding: 1.2rem 1.6rem;
+          font-size: 1.1rem;
+          transition: all 0.3s ease;
           width: 100%;
           line-height: 1.5;
         }
-        .sexyInput:focus {
-          border-color: var(--accent-cyan) !important;
-          box-shadow: 0 0 20px rgba(34, 211, 238, 0.3) !important;
+        .glassInput:focus {
+          border-color: var(--accent-cyan);
+          box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
           outline: none;
         }
         .inputLabel {
@@ -278,7 +278,7 @@ export default function Profile() {
           right: 1.5rem;
           cursor: pointer;
           opacity: 0.6;
-          transition: all 0.3s;
+          transition: opacity 0.2s;
           font-size: 1.5rem;
           user-select: none;
           z-index: 10;
@@ -286,7 +286,6 @@ export default function Profile() {
         }
         .passToggle:hover { 
           opacity: 1;
-          transform: scale(1.1);
         }
         .verifiedBadge {
           position: absolute;
@@ -338,12 +337,12 @@ export default function Profile() {
           box-shadow: 0 15px 30px rgba(34, 211, 238, 0.4);
           background: #fff;
         }
-        select.sexyInput {
+        select.glassInput {
           appearance: none;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2322d3ee' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
-          background-repeat: no-repeat !important;
-          background-position: right 1.5rem center !important;
-          background-size: 1.2rem !important;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2322d3ee' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 1.5rem center;
+          background-size: 1.2rem;
         }
         .btnSecurity {
           padding: 0 2rem;
@@ -401,47 +400,47 @@ export default function Profile() {
 
         @media (max-width: 768px) {
           .glassCard { padding: 1.2rem; border-radius: 20px; }
-          .cardHeader h2 { font-size: 1.5rem !important; }
+          .cardHeader h2 { font-size: 1.5rem; }
           .infoGrid { gap: 1rem; }
           .fieldCell {
-            padding: 1rem !important;
-            flex-direction: row !important;
-            align-items: center !important;
-            gap: 1rem !important;
-            flex-wrap: wrap !important;
+            padding: 1rem;
+            flex-direction: row;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
           }
           .verifiedBadge {
-            position: static !important;
-            transform: none !important;
-            margin-top: 0.5rem !important;
-            padding: 4px 10px !important;
-            font-size: 0.7rem !important;
-            display: inline-block !important;
-            width: fit-content !important;
+            position: static;
+            transform: none;
+            margin-top: 0.5rem;
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            display: inline-block;
+            width: fit-content;
           }
-          .sexyInput { padding: 0.8rem 1rem !important; font-size: 1rem !important; }
+          .glassInput { padding: 0.8rem 1rem; font-size: 1rem; }
           .btnMajestic, .btnSecurity {
-            height: 50px !important;
-            font-size: 0.85rem !important;
-            white-space: nowrap !important;
-            letter-spacing: 0.5px !important;
-            padding: 0 1rem !important;
+            height: 50px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+            padding: 0 1rem;
           }
-          .infoGrid div div div { font-size: 1.2rem !important; }
-          .formRowMobileStack { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
+          .infoGrid div div div { font-size: 1.2rem; }
+          .formRowMobileStack { grid-template-columns: 1fr; gap: 1.5rem; }
           .profileTitle { font-size: 2rem; }
           .profileSection { padding: 1rem 0.5rem; }
-          .profileFormContainer { padding: 1.2rem 0.8rem !important; }
+          .profileFormContainer { padding: 1.2rem 0.8rem; }
         }
 
         @media (max-width: 480px) {
-          .cardHeader { margin-bottom: 1.5rem !important; }
-          .cardHeader h2 { font-size: 1.2rem !important; }
-          .iconCircle { width: 40px !important; height: 40px !important; font-size: 1rem !important; }
+          .cardHeader { margin-bottom: 1.5rem; }
+          .cardHeader h2 { font-size: 1.2rem; }
+          .iconCircle { width: 40px; height: 40px; font-size: 1rem; }
           .profileTitle { font-size: 1.6rem; }
-          .profileFormContainer { padding: 1rem 0.5rem !important; }
-          .glassCard { padding: 0.8rem !important; }
-          .fieldCell { padding: 0.8rem !important; gap: 0.75rem !important; }
+          .profileFormContainer { padding: 1rem 0.5rem; }
+          .glassCard { padding: 0.8rem; }
+          .fieldCell { padding: 0.8rem; gap: 0.75rem; }
         }
       `}</style>
 
@@ -541,7 +540,7 @@ export default function Profile() {
                         </span>
                       </span>
                       <input 
-                        className="sexyInput" 
+                        className="glassInput" 
                         value={name} 
                         onChange={e => {
                           const val = e.target.value;
@@ -554,7 +553,7 @@ export default function Profile() {
                    </div>
                    <div>
                       <span className="inputLabel">Department</span>
-                      <select className="sexyInput" value={department} onChange={e => setDepartment(e.target.value)} required>
+                      <select className="glassInput" value={department} onChange={e => setDepartment(e.target.value)} required>
                         <option value="Artificial Intelligence">Artificial Intelligence</option>
                         <option value="Bioinformatics">Bioinformatics</option>
                         <option value="Computer Science">Computer Science</option>
@@ -568,7 +567,7 @@ export default function Profile() {
                 <div className="formRowMobileStack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", alignItems: "flex-end" }}>
                   <div>
                     <span className="inputLabel">Current Semester</span>
-                    <select className="sexyInput" value={semester} onChange={e => setSemester(e.target.value)} required>
+                    <select className="glassInput" value={semester} onChange={e => setSemester(e.target.value)} required>
                       {[1,2,3,4,5,6,7,8].map(s => {
                         const suffix = s === 1 ? 'st' : s === 2 ? 'nd' : s === 3 ? 'rd' : 'th';
                         return <option key={s} value={`${s}${suffix}`}>{s}{suffix}</option>
@@ -604,8 +603,8 @@ export default function Profile() {
                   <div className="passContainer">
                     <input 
                         type={showPass.current ? "text" : "password"} 
-                        className="sexyInput" 
-                        style={{ background: "transparent !important", border: "none !important", paddingLeft: 0, paddingRight: "50px" }} 
+                        className="glassInput" 
+                        style={{ background: "transparent", border: "none", paddingLeft: 0, paddingRight: "50px" }} 
                         value={passwordForm.currentPassword} 
                         onChange={e => setPasswordForm({...passwordForm, currentPassword: e.target.value})} 
                         required 
@@ -635,8 +634,8 @@ export default function Profile() {
                   <div className="passContainer">
                     <input 
                         type={showPass.new ? "text" : "password"} 
-                        className="sexyInput" 
-                        style={{ background: "transparent !important", border: "none !important", paddingLeft: 0, paddingRight: "50px" }} 
+                        className="glassInput" 
+                        style={{ background: "transparent", border: "none", paddingLeft: 0, paddingRight: "50px" }} 
                         value={passwordForm.newPassword} 
                         onChange={e => setPasswordForm({...passwordForm, newPassword: e.target.value})} 
                         required 
@@ -667,8 +666,8 @@ export default function Profile() {
                   <div className="passContainer">
                     <input 
                         type={showPass.confirm ? "text" : "password"} 
-                        className="sexyInput" 
-                        style={{ background: "transparent !important", border: "none !important", paddingLeft: 0, paddingRight: "50px" }} 
+                        className="glassInput" 
+                        style={{ background: "transparent", border: "none", paddingLeft: 0, paddingRight: "50px" }} 
                         value={passwordForm.confirmPassword} 
                         onChange={e => setPasswordForm({...passwordForm, confirmPassword: e.target.value})} 
                         required 

@@ -106,23 +106,23 @@
 }
 
 .scanBtn {
-    padding: 0.75rem 1.5rem !important;
-    font-size: 0.9rem !important;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
     gap: 0.5rem;
 }
 
 /* Torch Button */
 .torchBtn {
-    background: rgba(255, 193, 7, 0.1) !important;
-    border: 1px solid rgba(255, 193, 7, 0.3) !important;
-    color: #ffc107 !important;
-    padding: 0.75rem 1rem !important;
-    font-weight: 700 !important;
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    color: #ffc107;
+    padding: 0.75rem 1rem;
+    font-weight: 700;
 }
 
 .torchBtn.active {
-    background: #ffc107 !important;
-    color: #000 !important;
+    background: #ffc107;
+    color: #000;
     box-shadow: 0 0 15px rgba(255, 193, 7, 0.4);
 }
 
@@ -235,15 +235,15 @@
 }
 
 #qr-reader {
-    border: none !important;
+    border: none;
 }
 
 #qr-reader__scan_region {
-    border-radius: 12px !important;
+    border-radius: 12px;
 }
 
 #qr-reader__dashboard {
-    display: none !important;
+    display: none;
 }
 
 /* ===== SCAN RESULT OVERLAY ===== */
@@ -536,8 +536,8 @@
 }
 
 .ticketBtn {
-    padding: 0.5rem 1rem !important;
-    font-size: 0.75rem !important;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
 }
 
 /* ===== EMPTY STATE ===== */
@@ -768,7 +768,7 @@
 
 .searchInput {
     width: 100%;
-    padding-right: 3rem !important;
+    padding-right: 3rem;
     font-size: 0.9rem;
 }
 
