@@ -122,7 +122,7 @@ export default function Home() {
           <div className="heroContentContainer" style={{ position: "relative", zIndex: 1 }}>
             {/* Desktop Top Badge */}
             <div className="desktopOnly heroSubtitleDesktop">
-              OFFICIAL SOCIETY • DEPT. OF COMPUTER SCIENCE • UAF
+              {heroBadge || "OFFICIAL SOCIETY • DEPT. OF COMPUTER SCIENCE • UAF"}
             </div>
 
             {/* Desktop Title - 3 Lines (Refined Weight 600) */}
@@ -133,9 +133,9 @@ export default function Home() {
               fontWeight: "700",
               letterSpacing: "-0.02em"
             }}>
-              <div style={{ color: "var(--accent-red)" }}>THE</div>
-              <div style={{ color: "var(--accent-pink)" }}>COMPUTING</div>
-              <div style={{ color: "#00d9ff", filter: "drop-shadow(0 0 15px rgba(0, 217, 255, 0.3))" }}>SOCIETY</div>
+              <div style={{ color: "var(--accent-red)" }}>{heroTitle?.line1 || "THE"}</div>
+              <div style={{ color: "var(--accent-pink)" }}>{heroTitle?.line2 || "COMPUTING"}</div>
+              <div style={{ color: "#00d9ff", filter: "drop-shadow(0 0 15px rgba(0, 217, 255, 0.3))" }}>{heroTitle?.line3 || "SOCIETY"}</div>
             </div>
 
             <div className="heroDescription desktopOnly" style={{
@@ -147,22 +147,19 @@ export default function Home() {
               marginBottom: "2rem",
               fontWeight: "500"
             }}>
-              The official hub for Computer Science excellence at UAF.
-              We bridge the gap between academic learning and industry
-              demands through cutting-edge workshops, hackathons,
-              and a vibrant network of tech professionals.
+              {heroDescription || "Connecting students, faculty, and industry through workshops, competitions, talks, hackathons, and social nights. Building the next generation of tech leaders at UAF."}
             </div>
 
             {/* Mobile Majestic Version */}
             <div className="heroBadge mobileOnly majesticBadgeMobile">
-              OFFICIAL SOCIETY • DEPT. OF COMPUTER SCIENCE • UAF
+              {heroBadge || "OFFICIAL SOCIETY • DEPT. OF COMPUTER SCIENCE • UAF"}
             </div>
             <div className="heroTitle mobileOnly majesticTitleMobile">
-              <span className="theText">The</span>
-              <span className="mainText">Computing Society</span>
+              <span className="theText">{heroTitle?.line1 || "The"}</span>
+              <span className="mainText">{heroTitle?.line2 || "Computing"} {heroTitle?.line3 || "Society"}</span>
             </div>
             <div className="heroDescription mobileOnly majesticDescMobile">
-              A community of innovators, problem solvers, and future tech leaders committed to driving technological advancement and academic excellence.
+              {heroDescription || "Connecting students, faculty, and industry through workshops, competitions, talks, hackathons, and social nights. Building the next generation of tech leaders at UAF."}
             </div>
 
             <div className="heroButtons desktopOnly" style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "1.25rem", width: "100%", alignItems: "center" }}>
