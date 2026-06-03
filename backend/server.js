@@ -138,7 +138,7 @@ const startSelfPing = () => {
 
     const intervalMinutes = parseInt(process.env.PING_INTERVAL_MINUTES) || 5;
     const intervalMs = intervalMinutes * 60 * 1000;
-    
+
     console.log(`  ⚙️ Self-ping initialized. Target: ${url} (Interval: ${intervalMinutes} mins)`);
 
     const https = require("https");
@@ -163,7 +163,7 @@ const startSelfPing = () => {
 const startServer = async () => {
     try {
         await connectDB();
-        
+
         // Automatically sync and drop stale Mongoose indexes for Tickets
         try {
             await Ticket.syncIndexes();

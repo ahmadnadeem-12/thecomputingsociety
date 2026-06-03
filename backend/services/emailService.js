@@ -86,9 +86,9 @@ const https = require("https");
 async function sendEmailViaBrevo(toEmail, subject, html) {
     return new Promise((resolve, reject) => {
         const data = JSON.stringify({
-            sender: { 
-                name: "The Computing Society", 
-                email: process.env.SMTP_USER || "thecomputingsocietyuaf@gmail.com" 
+            sender: {
+                name: "The Computing Society",
+                email: process.env.SMTP_USER || "thecomputingsocietyuaf@gmail.com"
             },
             to: [{ email: toEmail }],
             subject: subject,
@@ -285,7 +285,7 @@ async function sendEmail(options) {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    
+
     // Log preview link if on Ethereal
     if (nodemailer.getTestMessageUrl(info)) {
         console.log(`📬 Verification Email Preview: ${nodemailer.getTestMessageUrl(info)}`);

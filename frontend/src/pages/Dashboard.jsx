@@ -52,7 +52,7 @@ const ADMIN_TABS = [
 
 export default function Dashboard() {
   const nav = useNavigate();
-  const { user, isAdmin, logout } = useAuth();
+  const { user, isAdmin, logout, loading: authLoading } = useAuth();
   const { showAlert, showConfirm } = useModal();
   const eventsCtx = useContext(EventContext);
   const themeCtx = useContext(ThemeContext);
@@ -121,7 +121,6 @@ export default function Dashboard() {
     return null; // Wait for initial context loads
   }
 
-  const { loading: authLoading } = useAuth();
   if (authLoading) return null;
 
   if (!user) {

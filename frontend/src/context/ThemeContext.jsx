@@ -8,27 +8,27 @@ export const ThemeContext = createContext(null);
 // All theme variables with proper naming - MUST MATCH CSS VARIABLES IN global.css
 const DEFAULT_THEME = {
   // === Background Colors ===
-  "Background Dark": "#0a0a0f",
-  "Background Darker": "#050508",
-  "Background Purple": "#1a0a25",
-  "Background Card": "#120c1c",
+  "Main Page": "#0a0a0f",
+  "Deep Area": "#050508",
+  "App Base": "#1a0a25",
+  "Card Box": "#120c1c",
 
   // === Accent Colors ===
-  "Accent Red": "#dc2743",
-  "Accent Pink": "#c234a5",
-  "Accent Purple": "#9b59b6",
-  "Accent Cyan": "#00d9ff",
-  "Accent Gold": "#ffd700",
+  "Primary Accent": "#dc2743",
+  "Secondary Accent": "#c234a5",
+  "Tertiary Accent": "#9b59b6",
+  "Info Accent": "#00d9ff",
+  "Warning Accent": "#ffd700",
 
   // === Text Colors ===
-  "Text Primary": "#ffffff",
-  "Text Secondary": "#e8e0ed",
-  "Text Muted": "#9a8fa6",
-  "Text Dim": "#6b5f78",
+  "Main Text": "#ffffff",
+  "Sub Text": "#e8e0ed",
+  "Muted Text": "#9a8fa6",
+  "Dim Text": "#6b5f78",
 
   // === Border Colors ===
-  "Border Soft": "#292133",
-  "Border Glow": "#dc2743",
+  "Soft Line": "#292133",
+  "Glow Line": "#dc2743",
 
   // === Title Colors ===
   "Title THE": "#ff4d6d",
@@ -36,73 +36,73 @@ const DEFAULT_THEME = {
   "Title SOCIETY": "#00d9ff",
 
   // === Glass Effect ===
-  "Glass Background": "#140c1e",
-  "Glass Border": "#3a2050",
+  "Glass Box": "#140c1e",
+  "Glass Line": "#3a2050",
 
   // === Sidebar ===
-  "Sidebar Background": "#0f0812",
-  "Sidebar Border": "#3a2050",
-  "Sidebar Text": "#9a8fa6",
+  "Menu Box": "#0f0812",
+  "Menu Line": "#3a2050",
+  "Menu Text": "#9a8fa6",
 
   // === TCS Logo Gradient ===
-  "TCS Logo Start": "#ff4d6d",
-  "TCS Logo Middle": "#c234a5",
-  "TCS Logo End": "#9b59b6",
+  "Logo Start": "#ff4d6d",
+  "Logo Middle": "#c234a5",
+  "Logo End": "#9b59b6",
 
   // === Modal/Dialog ===
-  "Modal Background": "#120c1c",
-  "Modal Border": "#3a2050",
-  "Modal Header": "#ff4d6d",
+  "Popup Box": "#120c1c",
+  "Popup Line": "#3a2050",
+  "Popup Head": "#ff4d6d",
 
   // === Links & Buttons ===
-  "Link Color": "#00d9ff",
-  "Button Primary": "#dc2743",
-  "Button Hover": "#c234a5",
+  "Hyperlink Text": "#00d9ff",
+  "Main Button": "#dc2743",
+  "Hover Button": "#c234a5",
 };
 
 // Map friendly names to ACTUAL CSS variable names from global.css
 const THEME_VAR_MAP = {
-  "Background Dark": "--bg-dark",
-  "Background Darker": "--bg-darker",
-  "Background Purple": "--bg-purple",
-  "Background Card": "--bg-card",
+  "Main Page": "--bg-dark",
+  "Deep Area": "--bg-darker",
+  "App Base": "--bg-purple",
+  "Card Box": "--bg-card",
 
-  "Accent Red": "--accent-red",
-  "Accent Pink": "--accent-pink",
-  "Accent Purple": "--accent-purple",
-  "Accent Cyan": "--accent-cyan",
-  "Accent Gold": "--accent-gold",
+  "Primary Accent": "--accent-red",
+  "Secondary Accent": "--accent-pink",
+  "Tertiary Accent": "--accent-purple",
+  "Info Accent": "--accent-cyan",
+  "Warning Accent": "--accent-gold",
 
-  "Text Primary": "--text-main",
-  "Text Secondary": "--text-secondary",
-  "Text Muted": "--text-muted",
-  "Text Dim": "--text-dim",
+  "Main Text": "--text-main",
+  "Sub Text": "--text-secondary",
+  "Muted Text": "--text-muted",
+  "Dim Text": "--text-dim",
 
-  "Border Soft": "--border-soft",
-  "Border Glow": "--border-glow",
+  "Soft Line": "--border-soft",
+  "Glow Line": "--border-glow",
 
   "Title THE": "--title-the",
   "Title COMPUTING": "--title-computing",
   "Title SOCIETY": "--title-society",
 
-  "Glass Background": "--glass-bg",
-  "Glass Border": "--glass-border",
+  "Glass Box": "--glass-bg",
+  "Glass Line": "--glass-border",
 
-  "Sidebar Background": "--sidebar-bg",
-  "Sidebar Border": "--sidebar-border",
-  "Sidebar Text": "--sidebar-text",
+  "Menu Box": "--sidebar-bg",
+  "Menu Line": "--sidebar-border",
+  "Menu Text": "--sidebar-text",
 
-  "TCS Logo Start": "--tcs-logo-start",
-  "TCS Logo Middle": "--tcs-logo-middle",
-  "TCS Logo End": "--tcs-logo-end",
+  "Logo Start": "--tcs-logo-start",
+  "Logo Middle": "--tcs-logo-middle",
+  "Logo End": "--tcs-logo-end",
 
-  "Modal Background": "--modal-bg",
-  "Modal Border": "--modal-border",
-  "Modal Header": "--modal-header",
+  "Popup Box": "--modal-bg",
+  "Popup Line": "--modal-border",
+  "Popup Head": "--modal-header",
 
-  "Link Color": "--link-color",
-  "Button Primary": "--btn-primary",
-  "Button Hover": "--btn-hover",
+  "Hyperlink Text": "--link-color",
+  "Main Button": "--btn-primary",
+  "Hover Button": "--btn-hover",
 };
 
 // Apply theme to CSS variables - LIVE PREVIEW

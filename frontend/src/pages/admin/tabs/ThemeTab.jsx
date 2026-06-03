@@ -12,16 +12,16 @@ export default function ThemeTab({
     const { showAlert, showConfirm } = useModal();
     // Color groups
     const colorGroups = {
-        "🎨 Background Colors": ["Background Dark", "Background Darker", "Background Purple", "Background Card"],
-        "✨ Accent Colors": ["Accent Red", "Accent Pink", "Accent Purple", "Accent Cyan", "Accent Gold"],
-        "📝 Text Colors": ["Text Primary", "Text Secondary", "Text Muted", "Text Dim"],
-        "🔲 Border Colors": ["Border Soft", "Border Glow"],
-        "🏷️ Title Colors (THE COMPUTING SOCIETY)": ["Title THE", "Title COMPUTING", "Title SOCIETY"],
-        "🪟 Glass Effect": ["Glass Background", "Glass Border"],
-        "📌 Sidebar": ["Sidebar Background", "Sidebar Border", "Sidebar Text"],
-        "🎨 TCS Logo Gradient": ["TCS Logo Start", "TCS Logo Middle", "TCS Logo End"],
-        "💬 Modal/Dialog": ["Modal Background", "Modal Border", "Modal Header"],
-        "🔗 Links & Buttons": ["Link Color", "Button Primary", "Button Hover"]
+        "🎨 Background Areas": ["Main Page", "Deep Area", "App Base", "Card Box"],
+        "✨ Main Accents": ["Primary Accent", "Secondary Accent", "Tertiary Accent", "Info Accent", "Warning Accent"],
+        "📝 Text & Typography": ["Main Text", "Sub Text", "Muted Text", "Dim Text"],
+        "🔲 Lines & Borders": ["Soft Line", "Glow Line"],
+        "🏷️ Logo Texts": ["Title THE", "Title COMPUTING", "Title SOCIETY"],
+        "🪟 Glass Elements": ["Glass Box", "Glass Line"],
+        "📌 Navigation Menu": ["Menu Box", "Menu Line", "Menu Text"],
+        "🎨 Logo Gradient": ["Logo Start", "Logo Middle", "Logo End"],
+        "💬 Popups & Dialogs": ["Popup Box", "Popup Line", "Popup Head"],
+        "🔗 Actions & Links": ["Hyperlink Text", "Main Button", "Hover Button"]
     };
 
     // Get current theme with defaults

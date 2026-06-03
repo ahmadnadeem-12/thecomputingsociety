@@ -59,7 +59,7 @@ router.post("/", protect, async (req, res) => {
     if (eventId) {
         target = await Event.findById(eventId);
         if (!target) return res.status(404).json({ success: false, message: "Event not found" });
-        
+
         // Check Deadline
         if (target.registrationDeadline) {
             const deadlineDate = new Date(target.registrationDeadline);
@@ -78,9 +78,9 @@ router.post("/", protect, async (req, res) => {
 
     // Only check capacity if it's set (> 0)
     if (target.capacity > 0 && target.seatsRemaining <= 0) {
-        return res.status(400).json({ 
-            success: false, 
-            message: `Sorry, this ${eventId ? "event" : "program"} is fully booked! No seats remaining.` 
+        return res.status(400).json({
+            success: false,
+            message: `Sorry, this ${eventId ? "event" : "program"} is fully booked! No seats remaining.`
         });
     }
 
@@ -202,9 +202,9 @@ router.post("/qr-checkin", protect, adminOnly, async (req, res) => {
         });
     } catch (error) {
         console.error("QR Check-in Error:", error);
-        res.status(500).json({ 
-            success: false, 
-            message: "❌ Internal Server Error during check-in" 
+        res.status(500).json({
+            success: false,
+            message: "❌ Internal Server Error during check-in"
         });
     }
 });
@@ -243,7 +243,7 @@ router.delete("/:id", protect, adminOnly, async (req, res) => {
 // @desc    Delete ticket by AG No and Event/Program ID
 router.delete("/by-ag/:agNo/:targetId", protect, adminOnly, async (req, res) => {
     const { agNo, targetId } = req.params;
-    
+
     const ticket = await Ticket.findOneAndDelete({
         agNo: { $regex: new RegExp(`^${agNo.trim()}$`, "i") },
         $or: [{ eventId: targetId }, { programId: targetId }],
