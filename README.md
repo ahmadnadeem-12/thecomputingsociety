@@ -2,11 +2,15 @@
 
 ```text
 ========================================================================================
- _____ _   _ _____   ____ ___  __  __ ____  _   _ _____ ___ _   _  ____   ____   ___ 
-|_   _| | | | ____| / ___/ _ \|  \/  |  _ \| | | |_   _|_ _| \ | |/ ___| / ___| / _ \ 
-  | | | |_| |  _|  | |  | | | | |\/| | |_) | | | | | |  | ||  \| | |  _  \___ \| | | |
-  | | |  _  | |___ | |__| |_| | |  | |  __/| |_| | | |  | || |\  | |_| |  ___) | |_| |
-  |_| |_| |_|_____| \____\___/|_|  |_|_|    \___/  |_| |___|_| \_|\____| |____/ \___/ 
+  _____ _   _ _____    ____ ___  __  __ ____  _   _ _____ ___ _   _  ____  
+ |_   _| | | | ____|  / ___/ _ \|  \/  |  _ \| | | |_   _|_ _| \ | |/ ___| 
+   | | | |_| |  _|   | |  | | | | |\/| | |_) | | | | | |  | ||  \| | |  _  
+   | | |  _  | |___  | |__| |_| | |  | |  __/| |_| | | |  | || |\  | |_| | 
+  _|_| |_|_|_|_____|__\____\___/|_|__|_|_|    \___/  |_| |___|_| \_|\____| 
+ / ___| / _ \ / ___|_ _| ____|_   _\ \ / /                                 
+ \___ \| | | | |    | ||  _|   | |  \ V /                                  
+  ___) | |_| | |___ | || |___  | |   | |                                   
+ |____/ \___/ \____|___|_____| |_|   |_|                                   
                                                                                       
                   OFFICIAL MERN PLATFORM • DEPARTMENT OF COMPUTER SCIENCE
 ========================================================================================
@@ -288,10 +292,15 @@ The platform is built using a modern, performance-optimized technology stack:
 
 ## 🔒 Security & Performance Engineering
 
+* **In-Memory Query Caching**: High-traffic read endpoints (home, events, faculty) use custom in-memory caching middleware, ensuring sub-millisecond response times and bypassing slow internet delays.
+* **Parallel DB Queries**: Aggregation and complex lookups are parallelized using `Promise.all()` with Mongoose `.lean()` to drastically reduce backend latency.
+* **Protected PDF Generation**: Certificate and ticket PDF generators strictly validate JWT sessions, preventing unauthorized access and ensuring users only view their own documents.
+* **Premium Glassmorphism UI**: Key UI components (like Programs) are engineered using CSS-heavy glassmorphism and CSS grids for a truly premium aesthetic and 100% responsive behavior.
 * **Auto-Syncing Indexes**: On server startup, the backend automatically drops outdated indexes and synchronizes current collections on schemas (such as `Ticket.js`) via Mongoose's `syncIndexes()`, preventing duplicate key collisions.
 * **Input Validation & Sanitization**: Strict email patterns, character limits, and data validation are enforced on both client and server layers.
 * **Rate-Limit Protections**: Global rate-limiting middleware blocks repetitive script attacks, brute-force login attempts, and endpoint abuse.
 * **Gzip Compression**: Gzip payload compression reduces transit times for data packets, keeping responses fast on slower networks.
+
 
 ---
 

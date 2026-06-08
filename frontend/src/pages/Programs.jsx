@@ -169,22 +169,36 @@ export default function Programs() {
                   </div>
                 )}
 
-                {/* Stats */}
-                <div className="programStats">
-                  <div className="programStat">
-                    <div className="programStatValue">{p.duration}</div>
-                    <div className="programStatLabel">Duration</div>
+                {/* Heavy Stats & Info Grid */}
+                <div className="programDetailsGrid">
+                  <div className="programDetailBox">
+                    <div className="detailIcon">⏱️</div>
+                    <div className="detailContent">
+                      <div className="detailVal">{p.duration}</div>
+                      <div className="detailLbl">Duration</div>
+                    </div>
                   </div>
-                  <div className="programStat">
-                    <div className="programStatValue">{p.participants}</div>
-                    <div className="programStatLabel">Participants</div>
+                  <div className="programDetailBox">
+                    <div className="detailIcon">👥</div>
+                    <div className="detailContent">
+                      <div className="detailVal">{p.participants}</div>
+                      <div className="detailLbl">Capacity</div>
+                    </div>
                   </div>
-                </div>
-
-                {/* Info */}
-                <div style={{ marginTop: "1rem", fontSize: ".82rem", color: "var(--text-muted)" }}>
-                  <div>📅 {p.startDate || "TBA"}</div>
-                  <div>👨‍🏫 {p.instructor || "TBA"}</div>
+                  <div className="programDetailBox">
+                    <div className="detailIcon">📅</div>
+                    <div className="detailContent">
+                      <div className="detailVal">{p.startDate || "TBA"}</div>
+                      <div className="detailLbl">Start Date</div>
+                    </div>
+                  </div>
+                  <div className="programDetailBox">
+                    <div className="detailIcon">👨‍🏫</div>
+                    <div className="detailContent">
+                      <div className="detailVal" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.instructor || "TBA"}</div>
+                      <div className="detailLbl">Instructor</div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Status & Action */}

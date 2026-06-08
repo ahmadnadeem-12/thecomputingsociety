@@ -4,6 +4,8 @@ const HomeContent = require("../models/HomeContent");
 const Announcement = require("../models/Announcement");
 const Event = require("../models/Event");
 const Ticket = require("../models/Ticket");
+const User = require("../models/User");
+const Faculty = require("../models/Faculty");
 const { protect, adminOnly } = require("../middleware/auth");
 
 // Default home content
@@ -46,9 +48,26 @@ router.get("/", async (req, res) => {
     let data = content.toJSON();
     
     try {
-        const latestAnn = await Announcement.findOne().sort({ createdAt: -1 });
-        const latestEvent = await Event.findOne().sort({ createdAt: -1 });
-        const latestTicket = await Ticket.findOne().sort({ createdAt: -1 });
+        const [userCount, facultyCount, latestAnn, latestEvent, latestTicket] = await Promise.all([
+            User.countDocuments(),
+            Faculty.countDocuments(),
+            Announcement.findOne().sort({ createdAt: -1 }).lean(),
+            Event.findOne().sort({ createdAt: -1 }).lean(),
+            Ticket.findOne().sort({ createdAt: -1 }).lean()
+        ]);
+
+        if (data.stats && Array.isArray(data.stats)) {
+            data.stats = data.stats.map(stat => {
+                const label = (stat.label || "").toLowerCase();
+                if (label.includes("active") || label.includes("member")) {
+                    return { ...stat, number: userCount.toString() };
+                }
+                if (label.includes("faculty") || label.includes("mentor")) {
+                    return { ...stat, number: facultyCount.toString() };
+                }
+                return stat;
+            });
+        }
         
         if (data.notices && data.notices.length >= 3) {
             if (latestAnn) data.notices[0].timestamp = latestAnn.createdAt;

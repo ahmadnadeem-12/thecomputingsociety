@@ -82,34 +82,84 @@
   margin-bottom: 1.25rem;
 }
 
-/* Program Stats */
-.programStats {
-  display: flex;
-  gap: 1.5rem;
-  padding-top: 1rem;
+/* Heavy Stats & Info Grid */
+.programDetailsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.25rem;
+  padding-top: 1.25rem;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.programStat {
+.programDetailBox {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 0.7rem;
+  border-radius: var(--radius-md);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 }
 
-.programStatValue {
+.programDetailBox:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.detailIcon {
+  font-size: 1rem;
+  opacity: 0.9;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.programDetailBox:hover .detailIcon {
+  background: var(--gradient-main);
+  border-color: transparent;
+  color: white;
+}
+
+.detailContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  overflow: hidden;
+  width: 100%;
+}
+
+.detailVal {
   font-family: 'Outfit', sans-serif;
-  font-size: 1.25rem;
-  font-weight: 800;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.programDetailBox:nth-child(1) .detailVal,
+.programDetailBox:nth-child(2) .detailVal {
   background: var(--gradient-main);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.programStatLabel {
-  font-size: 0.7rem;
+.detailLbl {
+  font-size: 0.6rem;
   color: var(--text-dim);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
+  font-weight: 600;
 }
 
 /* Program Actions */

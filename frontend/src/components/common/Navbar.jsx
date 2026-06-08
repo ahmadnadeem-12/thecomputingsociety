@@ -125,7 +125,14 @@ export default function Navbar() {
                   ✕
                 </button>
 
-                <div className="mobileMenuLogo">
+                <div 
+                  className="mobileMenuLogo"
+                  onClick={() => {
+                    navigate("/");
+                    setMobileMenuOpen(false);
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
                   <div className="logoCircle" style={{ width: 68, height: 68 }}>
                     <span className="logoText" style={{ fontSize: "1.1rem" }}>TCS</span>
                   </div>
@@ -189,7 +196,12 @@ export default function Navbar() {
         variants={sidebarVariants}
       >
         {/* Header */}
-        <motion.div className="sidebarHeader" variants={itemVariants}>
+        <motion.div 
+          className="sidebarHeader" 
+          variants={itemVariants}
+          onClick={() => navigate("/")}
+          style={{ cursor: "pointer" }}
+        >
           <motion.div
             className="logoCircle"
             whileHover={{ scale: 1.05, rotate: 3 }}

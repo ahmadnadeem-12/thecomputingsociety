@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { downloadCertificatePDF } from "../services/pdfService";
+import { useAuth } from "../hooks/useAuth";
 import "../assets/styles/pages/certificate-preview.css";
 import awardSealImg from "../assets/images/award-seal.png";
 
@@ -37,15 +38,25 @@ const Dots = ({ n = 18 }) =>
 export default function CertificatePreview() {
   const location = useLocation();
   const nav = useNavigate();
+  const { user, isAdmin } = useAuth();
 
-  // Get data from location state or fallback to hardcoded (for testing)
-  const d = location.state || {
-    name: "AHMAD NADEEM",
-    agNo: "2022-AG-0000",
+  // Get data from location state or fallback to logged in user details
+  const defaultData = {
+    name: user?.name?.toUpperCase() || "STUDENT NAME",
+    agNo: user?.agNo || "AG-NUMBER",
     eventTitle: "Industry Expert Talk Series",
-    eventDate: "2026-01-10",
-    description: 'For participating in "Industry Expert Talk Series"  organized by The Computing Society, University of Agriculture Faisalabad.'
+    eventDate: new Date().toISOString().split('T')[0],
+    description: 'For participating in "Industry Expert Talk Series" organized by The Computing Society, University of Agriculture Faisalabad.',
+    eventVenue: "UAF"
   };
+
+  const d = { ...(location.state || defaultData) };
+
+  // Enforce that regular users can only see their own name and AG no
+  if (!isAdmin && user) {
+    d.name = user.name?.toUpperCase() || d.name;
+    d.agNo = user.agNo || d.agNo;
+  }
 
   return (
     <section className="section">

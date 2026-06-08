@@ -51,7 +51,11 @@ export default function AppRoutes() {
             <Profile />
           </ProtectedRoute>
         } />
-        <Route path="/certificate-preview" element={<CertificatePreview />} />
+        <Route path="/certificate-preview" element={
+          <ProtectedRoute>
+            <CertificatePreview />
+          </ProtectedRoute>
+        } />
 
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />

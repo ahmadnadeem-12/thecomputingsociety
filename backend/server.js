@@ -17,6 +17,7 @@ const compression = require("compression");
 const rateLimit = require("express-rate-limit");
 const connectDB = require("./config/db");
 const { errorHandler, notFound } = require("./middleware/errorHandler");
+const { cacheMiddleware } = require("./middleware/cache");
 
 // Initialize Express
 const app = express();
@@ -68,16 +69,16 @@ if (process.env.NODE_ENV === "development") {
 // API Routes
 // ========================
 app.use("/api/auth", require("./routes/auth"));
-app.use("/api/events", require("./routes/events"));
-app.use("/api/announcements", require("./routes/announcements"));
-app.use("/api/cabinet", require("./routes/cabinet"));
-app.use("/api/faculty", require("./routes/faculty"));
-app.use("/api/tickets", require("./routes/tickets"));
-app.use("/api/gallery", require("./routes/gallery"));
-app.use("/api/programs", require("./routes/programs"));
-app.use("/api/degrees", require("./routes/degrees"));
+app.use("/api/events", cacheMiddleware(300), require("./routes/events"));
+app.use("/api/announcements", cacheMiddleware(300), require("./routes/announcements"));
+app.use("/api/cabinet", cacheMiddleware(300), require("./routes/cabinet"));
+app.use("/api/faculty", cacheMiddleware(300), require("./routes/faculty"));
+app.use("/api/tickets", require("./routes/tickets")); // Ticket validation shouldn't be heavily cached
+app.use("/api/gallery", cacheMiddleware(300), require("./routes/gallery"));
+app.use("/api/programs", cacheMiddleware(300), require("./routes/programs"));
+app.use("/api/degrees", cacheMiddleware(300), require("./routes/degrees"));
 app.use("/api/theme", require("./routes/theme"));
-app.use("/api/home", require("./routes/home"));
+app.use("/api/home", cacheMiddleware(300), require("./routes/home"));
 
 // ========================
 // API Root & Health Check
