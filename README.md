@@ -41,8 +41,8 @@ Follow these exact steps to clone the repository, configure variables, resolve p
 ### 1. Clone the Codebase
 Open your terminal, navigate to your workspace directory, and clone the official repository:
 ```bash
-git clone https://github.com/ahmadnadeem-12/TCS-U3F.git
-cd TCS-U3F
+git clone https://github.com/ahmadnadeem-12/thecomputingsociety.git
+cd thecomputingsociety
 ```
 
 ### 2. Configure Backend Environment Variables
