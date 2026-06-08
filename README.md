@@ -1,4 +1,4 @@
-# 🎓 THE COMPUTING SOCIETY (TCS) — THE MASTER MANUAL 🚀
+# 🎓 THE COMPUTING SOCIETY (TCS) 
 
 ```text
 ========================================================================================
@@ -120,9 +120,9 @@ THE COMPUTING SOCIETY/
 │   ├── config/                     # Configuration scripts
 │   │   └── db.js                   # Mongoose connection and indexing setups
 │   ├── middleware/                 # System security and filter layers
-│   │   ├── authMiddleware.js       # Protects paths via JWT validations and checks roles
-│   │   ├── errorHandler.js         # Standardizes JSON error messages and captures crashes
-│   │   └── validation.js           # Validates request data formats (such as emails)
+│   │   ├── auth.js                 # Protects paths via JWT validations and checks roles
+│   │   ├── cache.js                # In-memory caching for high-traffic read routes
+│   │   └── errorHandler.js         # Standardizes JSON error messages and captures crashes
 │   ├── models/                     # Database Schemas (Mongoose ODM)
 │   │   ├── Announcement.js         # Pushed bulletin and updates details
 │   │   ├── AuditLog.js             # Records critical admin modifications
@@ -138,8 +138,12 @@ THE COMPUTING SOCIETY/
 │   │   └── User.js                 # Authentication records (Admin vs Student)
 │   ├── routes/                     # Maps API endpoints to schemas
 │   │   ├── auth.js                 # Logins, signups, and recovery routes
+│   │   ├── home.js                 # Optimized parallel endpoints for the landing page
 │   │   ├── tickets.js              # Ticket issuances, updates, and scanner check-ins
-│   │   └── events.js               # Managing scheduler records
+│   │   └── events.js               # Managing scheduler records (and more...)
+│   ├── services/                   # External API services
+│   │   └── emailService.js         # Nodemailer setup for password recoveries
+│   ├── utils/                      # Helper scripts
 │   ├── seed.js                     # Script to populate database with realistic mock data
 │   └── server.js                   # Entrypoint that bootstraps middlewares and servers
 │
@@ -152,13 +156,16 @@ THE COMPUTING SOCIETY/
 │   │   │       ├── global.css      # Standard colors, global variables, and alignments
 │   │   │       └── pages/          # CSS sheets dedicated to individual pages
 │   │   ├── components/             # Reusable React components
-│   │   │   ├── common/             # Navbar, Footer, Loader, ProtectedRoute, ErrorBoundary
-│   │   │   └── ui/                 # EventSpotlight, LoadingSpinner, Custom Buttons
+│   │   │   ├── common/             # Navbar, Footer, Loader, ProtectedRoute
+│   │   │   └── ui/                 # EventSpotlight, Modal, LoadingSpinner
 │   │   ├── context/                # Global contexts
 │   │   │   ├── AuthContext.jsx     # Tracks session states and logged-in profiles
 │   │   │   └── ThemeContext.jsx    # Sets active design CSS variables live
+│   │   ├── hooks/                  # Custom React hooks (e.g. useAuth, useTheme)
 │   │   ├── pages/                  # Top-level website pages
 │   │   │   ├── Home.jsx            # Landing page with spotlights and notices
+│   │   │   ├── Programs.jsx        # Glassmorphism grid layout for programs
+│   │   │   ├── CertificatePreview.jsx # Protected personal PDF certificate generator
 │   │   │   ├── Profile.jsx         # User profile details and registered tickets list
 │   │   │   ├── Tickets.jsx         # Student ticket page for checking dynamic passes
 │   │   │   └── admin/              # Central control panel pages
@@ -169,6 +176,7 @@ THE COMPUTING SOCIETY/
 │   │   ├── services/               # Handles network and utility requests
 │   │   │   ├── api.js              # Axios instance configured with tokens
 │   │   │   └── pdfService.js       # Renders tickets and certificates into high-quality PDFs
+│   │   ├── utils/                  # Client-side utility functions
 │   │   └── App.jsx                 # Entry layout with preloader booting system
 │   └── vite.config.js              # Configures bundles, HMR, and build parameters
 └── README.md                       # Explains working details
