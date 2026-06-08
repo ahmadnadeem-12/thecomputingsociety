@@ -30,6 +30,13 @@ export default function AdminLogin() {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      document.getElementById("adminSubmitBtn")?.click();
+    }
+  };
+
   return (
     <section className="section">
       <div className="sectionHeader">
@@ -43,17 +50,17 @@ export default function AdminLogin() {
       <form className="card" onSubmit={onSubmit} style={{ maxWidth: 560 }}>
         <div>
           <div className="label">Email</div>
-          <input type="email" className="input" value={email} onChange={e => setEmail(e.target.value)} required />
+          <input type="email" className="input" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={handleKeyDown} required />
         </div>
         <div style={{ marginTop: ".7rem" }}>
           <div className="label">Password</div>
-          <input type="password" className="input" value={password} onChange={e => setPassword(e.target.value)} required />
+          <input type="password" className="input" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={handleKeyDown} required />
         </div>
 
         {err && <div style={{ marginTop: ".7rem", color: "#ffd2d7" }}>{err}</div>}
 
         <div style={{ marginTop: "1rem", display: "flex", gap: ".6rem", flexWrap: "wrap" }}>
-          <button className="btn btnPrimary" type="submit">Login</button>
+          <button id="adminSubmitBtn" className="btn btnPrimary" type="submit">Login</button>
           <button className="btn btnGhost" type="button" onClick={() => nav("/")}>Back</button>
         </div>
       </form>

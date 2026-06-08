@@ -50,6 +50,13 @@ export default function Register() {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      document.getElementById("registerSubmitBtn")?.click();
+    }
+  };
+
   return (
     <section className="section auth-responsive">
       <div className="sectionHeader">
@@ -71,6 +78,7 @@ export default function Register() {
               const titleCased = val.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
               setName(titleCased);
             }} 
+            onKeyDown={handleKeyDown}
             placeholder="Full Name"
             required
           />
@@ -82,18 +90,19 @@ export default function Register() {
             className="input" 
             value={email} 
             onChange={e => setEmail(e.target.value)} 
+            onKeyDown={handleKeyDown}
             placeholder="example@gmail.com"
             required 
           />
         </div>
         <div style={{ marginTop: ".7rem" }}>
           <div className="label">AG Number</div>
-          <input className="input" value={agNo} onChange={e => setAgNo(e.target.value)} placeholder="20xx-AG-xxxx" required />
+          <input className="input" value={agNo} onChange={e => setAgNo(e.target.value)} onKeyDown={handleKeyDown} placeholder="20xx-AG-xxxx" required />
         </div>
         <div className="formRow" style={{ marginTop: ".7rem" }}>
           <div>
             <div className="label">Department</div>
-            <select className="input" value={department} onChange={e => setDepartment(e.target.value)} required>
+            <select className="input" value={department} onChange={e => setDepartment(e.target.value)} onKeyDown={handleKeyDown} required>
               <option value="">Select Dept</option>
               <option value="Artificial Intelligence">Artificial Intelligence</option>
               <option value="Bioinformatics">Bioinformatics</option>
@@ -105,7 +114,7 @@ export default function Register() {
           </div>
           <div>
             <div className="label">Semester</div>
-            <select className="input" value={semester} onChange={e => setSemester(e.target.value)} required>
+            <select className="input" value={semester} onChange={e => setSemester(e.target.value)} onKeyDown={handleKeyDown} required>
               <option value="">Select</option>
               {[1,2,3,4,5,6,7,8].map(s => {
                 const suffix = s === 1 ? 'st' : s === 2 ? 'nd' : s === 3 ? 'rd' : 'th';
@@ -122,6 +131,7 @@ export default function Register() {
               className="input" 
               value={password} 
               onChange={e => setPassword(e.target.value)} 
+              onKeyDown={handleKeyDown}
               placeholder="At least 6 characters"
               style={{ paddingRight: "2.5rem" }}
               required 
@@ -162,7 +172,7 @@ export default function Register() {
         {err && <div style={{ marginTop: ".7rem", color: "#ffd2d7" }}>{err}</div>}
 
         <div style={{ marginTop: "1rem", display: "flex", gap: ".6rem", flexWrap: "wrap" }}>
-          <button className="btn btnPrimary" type="submit" disabled={isLoading}>
+          <button id="registerSubmitBtn" className="btn btnPrimary" type="submit" disabled={isLoading}>
             {isLoading ? "⏳ Creating Account..." : "Create Account"}
           </button>
           <button className="btn btnGhost" type="button" onClick={() => nav("/login")} disabled={isLoading}>Back to login</button>
