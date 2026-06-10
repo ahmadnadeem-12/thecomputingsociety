@@ -193,8 +193,13 @@ async function sendResetEmail(toEmail, resetUrl, userName) {
     `;
 
     if (process.env.BREVO_API_KEY) {
-        console.log(`📧 Sending Reset Email via Brevo HTTP API to: ${toEmail}`);
-        return await sendEmailViaBrevo(toEmail, "🔐 Reset Your Password — TCS", html);
+        try {
+            console.log(`📧 Sending Reset Email via Brevo HTTP API to: ${toEmail}`);
+            return await sendEmailViaBrevo(toEmail, "🔐 Reset Your Password — TCS", html);
+        } catch (error) {
+            console.error(`❌ Brevo Email Failed: ${error.message}`);
+            console.log("⚠️ Falling back to Gmail SMTP / Ethereal...");
+        }
     }
 
     const transporter = await getTransporter();
@@ -270,8 +275,13 @@ async function sendEmail(options) {
     `;
 
     if (process.env.BREVO_API_KEY) {
-        console.log(`📧 Sending Email via Brevo HTTP API to: ${options.email}`);
-        return await sendEmailViaBrevo(options.email, options.subject || "Verification — TCS", html);
+        try {
+            console.log(`📧 Sending Email via Brevo HTTP API to: ${options.email}`);
+            return await sendEmailViaBrevo(options.email, options.subject || "Verification — TCS", html);
+        } catch (error) {
+            console.error(`❌ Brevo Email Failed: ${error.message}`);
+            console.log("⚠️ Falling back to Gmail SMTP / Ethereal...");
+        }
     }
 
     const transporter = await getTransporter();
